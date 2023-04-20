@@ -1,4 +1,4 @@
-import { editAttendeeStatus } from "@packages/core/src/database";
+import { editAttendeeStatus } from "@backend-event-app/core/database";
 
 export async function main(event) {
 

@@ -1,4 +1,4 @@
-import { createAttendee } from "@packages/core/src/database";
+import { createAttendee } from "@backend-event-app/core/database";
 
 export async function main(event) {
   try {

@@ -1,4 +1,4 @@
-import { getEligibilityTypes } from "@packages/core/src/database";
+import { getEligibilityTypes } from "@backend-event-app/core/database";
 
 export async function main(event) {
   try {

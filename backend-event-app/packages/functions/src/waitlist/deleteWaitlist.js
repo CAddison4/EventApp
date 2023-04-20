@@ -1,4 +1,4 @@
-import { deleteWaitlist } from "@packages/core/src/database";
+import { deleteWaitlist } from "@backend-event-app/core/database";
 
 export async function main(event) {
   try {

@@ -1,4 +1,4 @@
-import { anyCapacity } from "@packages/core/src/database";
+import { anyCapacity } from "@backend-event-app/core/database";
 
 export async function main(event) {
 

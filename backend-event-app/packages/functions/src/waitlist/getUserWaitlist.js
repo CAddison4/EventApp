@@ -1,4 +1,4 @@
-import { getUserWaitlist } from "@packages/core/src/database";
+import { getUserWaitlist } from "@backend-event-app/core/database";
 
 export async function main(event) {
 

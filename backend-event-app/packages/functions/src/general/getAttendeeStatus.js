@@ -1,4 +1,4 @@
-import { getAttendeeStatuses } from "@packages/core/src/database";
+import { getAttendeeStatuses } from "@backend-event-app/core/database";
 
 export async function main(event) {
   try {

@@ -1,4 +1,4 @@
-import { getAttendeesByEvent } from "@packages/core/src/database";
+import { getAttendeesByEvent } from "@backend-event-app/core/database";
 
 export async function main(event) {
   

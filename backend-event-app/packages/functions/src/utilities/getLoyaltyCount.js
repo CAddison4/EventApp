@@ -1,4 +1,4 @@
-import { loyaltyCount } from "@packages/core/src/database";
+import { loyaltyCount } from "@backend-event-app/core/database";
 
 export async function main(event) {
 

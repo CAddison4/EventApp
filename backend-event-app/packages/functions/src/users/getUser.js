@@ -1,5 +1,4 @@
-import { getUser } from "@packages/core/src/database";
-
+import { getUser } from "@backend-event-app/core/database";
 export async function main(event) {
 
   try {

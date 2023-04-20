@@ -1,4 +1,4 @@
-import { editUser } from "@packages/core/src/database";
+import { editUser } from "@backend-event-app/core/database";
 
 export async function main(event) {
 

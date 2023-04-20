@@ -1,4 +1,4 @@
-import { createEvent } from "@packages/core/src/database";
+import { createEvent } from "@backend-event-app/core/database";
 
 export async function main(event) {
   try {

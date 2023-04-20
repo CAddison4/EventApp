@@ -1,4 +1,4 @@
-import { getWaitlistPosition } from "@packages/core/src/database";
+import { getWaitlistPosition } from "@backend-event-app/core/database";
 
 export async function main(event) {
 
