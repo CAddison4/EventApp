@@ -33,8 +33,8 @@ export function API({ stack }) {
       "POST /waitlist/{eventId}/{userId}": "packages/functions/src/waitlist/postWaitlist.main",
       "DELETE /waitlist/{eventId}/{userId}": "packages/functions/src/waitlist/deleteWaitlist.main",
       // Routes for getting users waitlisted for an event, getting events a user is waitlisted for
-      "GET /waitlist/{eventId}": "packages/functions/src/waitlist/getEventWaitlist.main",
-      "GET /waitlist/{userId}": "packages/functions/src/waitlist/getUserWaitlist.main",
+      "GET /waitlist/users/{eventId}": "packages/functions/src/waitlist/getEventWaitlist.main",
+      "GET /waitlist/events/{userId}": "packages/functions/src/waitlist/getUserWaitlist.main",
       // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously
       "GET /waitlistposition/{eventId}/{userId}": "packages/functions/src/waitlist/getWaitlistPosition.main",
       "GET /anycapacity/{eventId}": "packages/functions/src/waitlist/getAnyCapacity.main",
@@ -48,12 +48,12 @@ export function API({ stack }) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    UserPoolId: auth.userPoolId,
-    IdentityPoolId: auth.cognitoIdentityPoolId ?? "",
-    UserPoolClientId: auth.userPoolClientId,
+    // UserPoolId: auth.userPoolId,
+    // IdentityPoolId: auth.cognitoIdentityPoolId ?? "",
+    // UserPoolClientId: auth.userPoolClientId,
   });
 
   return {
-    api, auth
+    api,
   };
 }
