@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 
 import * as React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,34 +14,28 @@ import EventListItem from "../../../components/EventListItem";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-export const eventObjs = [
-	{
-		id: 1,
-		name: "Event 1",
-		description: "This is the first event",
-		date: "2021-10-10",
-		time: "10:00",
-		location: "Location 1",
-		status: "Invited",
-	},
-	{
-		id: 2,
-		name: "Event 2",
-		description: "This is the second event",
-		date: "2021-10-10",
-		time: "10:00",
-		location: "Location 2",
-		status: "Invited",
-	},
-];
 export default function Invited({ navigation }) {
+
+	const [eventObjs, setEventObjs] = useState([]);
+
+	useEffect(() => {
+        const allEvents = async () => {
+            const response = await axios.get(
+                "https://c030d30f5d.execute-api.us-west-2.amazonaws.com/events"
+            );
+			setEventObjs(response.data);
+		//		response.data.filter((event) => event.event_name !== null)
+        };
+        allEvents();
+    }, []);
+	
 	return (
 		<View style={styles.container}>
 			<Text>Invited Screen</Text>
 			{eventObjs.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.id}>
+					<View key={eventObj.event_id}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
