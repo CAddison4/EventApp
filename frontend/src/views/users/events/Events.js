@@ -7,40 +7,30 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Declined from "./Declined";
-import Invited from "./Invited";
-import Registered from "./Registered";
-import Upcoming from "./Upcoming";
+// import Declined from "./Declined";
+// import Invited from "./Invited";
+// import Registered from "./Registered";
+// import Upcoming from "./Upcoming";
 import EventsCal from "./EventsCal";
+import EventsList from "./EventsList";
 import { eventObjs } from "./Invited";
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
-export default function EventsList() {
+export default function Events() {
 	return (
 		<Tab.Navigator
-			initialRouteName="Invited"
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
 
-					if (route.name === "Upcoming") {
+					if (route.name === "EventsList") {
 						iconName = focused ? "ios-list" : "ios-list-outline";
 					}
-					if (route.name === "Invited") {
-						iconName = focused ? "mail" : "mail-outline";
-					}
-					// if (route.name === "EventsCal") {
-					// 	iconName = focused ? "calendar" : "calendar-outline";
-					// }
-					if (route.name === "Registered") {
-						iconName = focused
-							? "checkmark-circle"
-							: "checkmark-circle-outline";
-					}
-					if (route.name === "Declined") {
-						iconName = focused ? "close-circle" : "close-circle-outline";
+
+					if (route.name === "EventsCal") {
+						iconName = focused ? "calendar" : "calendar-outline";
 					}
 
 					// You can return any component that you like here!
@@ -48,15 +38,10 @@ export default function EventsList() {
 				},
 				tabBarActiveTintColor: "tomato",
 				tabBarInactiveTintColor: "gray",
+				tabBarShowLabel: false,
 			})}>
-			<Tab.Screen name="Upcoming" component={Upcoming} />
-			<Tab.Screen
-				name="Invited"
-				component={Invited}
-				//	options={{ tabBarBadge: eventObjs.length }}
-			/>
-			<Tab.Screen name="Registered" component={Registered} />
-			<Tab.Screen name="Declined" component={Declined} />
+			<Tab.Screen name="EventsList" component={EventsList} />
+			<Tab.Screen name="EventsCal" component={EventsCal} />
 		</Tab.Navigator>
 	);
 }
