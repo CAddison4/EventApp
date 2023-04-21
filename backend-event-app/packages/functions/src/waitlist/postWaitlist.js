@@ -16,7 +16,7 @@ export async function main(event) {
 
     const waitlist = await createWaitlist(eventId, userId);
 
-    if (waitlist.rows.length === 0) {
+    if (!waitlist) {
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Failed to create waitlist record' })

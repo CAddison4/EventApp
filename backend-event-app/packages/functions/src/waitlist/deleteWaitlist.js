@@ -22,7 +22,7 @@ export async function main(event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({}),
+      body: JSON.stringify({ deletedEntry }),
     }
   } catch (error) {
     // Error handling logic

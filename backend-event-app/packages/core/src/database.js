@@ -18,7 +18,7 @@ function getPool() {
 export async function getMembershipStatuses() {
   const res = await getPool().query(`
   SELECT * FROM membershipstatuses
-  ORDER BY status_id
+  ORDER BY membership_status_id
   `)
   return res.rows
 }
@@ -97,13 +97,13 @@ export async function createEvent(eventName, eventDate, eventStart, eventEnd, ev
 }
 
 // Update an existing event
-export async function editEvent(eventId, eventName, eventDate, eventStart, eventEnd, eventLocation, eventCapacity, eligibilityType, loyaltyMax, cancelled, reasonCancelled) {
+export async function editEvent(eventId, eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, eligibilityType, loyaltyMax, cancelled, reasonCancelled) {
   const res = await getPool().query(`
   UPDATE events SET (event_name, event_date, event_start, event_end, event_location, capacity, type_id, loyalty_max, cancelled, reason) =
                                    ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
   WHERE event_id = $1
   RETURNING *
-  `, [eventId, eventName, eventDate, eventStart, eventEnd, eventLocation, eventCapacity, eligibilityType, loyaltyMax, cancelled, reasonCancelled])
+  `, [eventId, eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, eligibilityType, loyaltyMax, cancelled, reasonCancelled])
   return res.rows[0]
 }
 
@@ -128,7 +128,8 @@ export async function getEvents() {
 export async function createAttendee(eventId, userId, attendeeStatusId) {
   const res = await getPool().query(`
   INSERT INTO eventattendees (event_id, user_id, attendee_status_id, attendance_status_id)
-  VALUES ($1, $2, $3, $4)`, [eventId, userId, attendeeStatusId, 'No Show'])
+  VALUES ($1, $2, $3, $4)
+  RETURNING event_id, user_id`, [eventId, userId, attendeeStatusId, 'No Show'])
   return res.rows[0]
 }
 
@@ -190,7 +191,8 @@ export async function editAttendanceStatus(eventId, userId, attendanceStatusId) 
 export async function createWaitlist(eventId, userId) {
   const res = await getPool().query(`
   INSERT INTO eventwaitlist (event_id, user_id)
-  VALUES ($1, $2)`, [eventId, userId])
+  VALUES ($1, $2)
+  RETURNING event_id, user_id`, [eventId, userId])
   return res.rows[0]
 }
 
@@ -235,7 +237,7 @@ export async function getWaitlistPosition(eventId, userId) {
   SELECT COUNT(*) + 1 AS waitlist_position
   FROM eventwaitlist
   WHERE event_id = $1
-  AND waitlist_date <= (SELECT waitlist_date FROM eventwaitlist WHERE event_id = $1 AND user_id = $2)
+  AND waitlist_date < (SELECT waitlist_date FROM eventwaitlist WHERE event_id = $1 AND user_id = $2)
   `, [eventId, userId])
   return res.rows[0].waitlist_position
 }

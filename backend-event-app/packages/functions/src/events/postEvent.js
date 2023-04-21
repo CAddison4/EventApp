@@ -13,7 +13,7 @@ export async function main(event) {
     
     const res = await createEvent(body.eventName, body.eventDate, body.eventStart, body.eventEnd, body.eventLocation, body.capacity, body.typeId, body.loyaltyMax);
 
-    if (res.rows.length === 0) {
+    if (!res) {
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Failed to create event' })
