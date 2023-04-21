@@ -14,10 +14,6 @@ import QRCode from "./src/views/users/events/QRCode";
 import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
 import eventObjs from "./src/views/users/events/Invited";
-import { Amplify } from "aws-amplify";
-import config from "./src/aws-exports";
-
-Amplify.configure(config);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
