@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Button } from "react-native";
 
 import * as React from "react";
 import { Amplify } from "aws-amplify";
-import config from './src/aws-exports';
+import config from "./src/aws-exports";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -14,6 +14,7 @@ import QRCode from "./src/views/users/events/QRCode";
 import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
 import eventObjs from "./src/views/users/events/Invited";
+import Events from "./src/views/users/events/Events";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,7 +25,7 @@ export default function App() {
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
-				initialRouteName="EventsList"
+				initialRouteName="Events"
 				screenOptions={{
 					headerStyle: {
 						backgroundColor: "#607D8B",
@@ -34,9 +35,10 @@ export default function App() {
 						fontWeight: "bold",
 					},
 				}}>
+				<Stack.Screen name="EventsList" component={EventsList} />
 				<Stack.Screen
-					name="EventsList"
-					component={EventsList}
+					name="Events"
+					component={Events}
 					options={{ title: "Event App" }}
 				/>
 				<Stack.Screen name="EventListItem" component={EventListItem} />
