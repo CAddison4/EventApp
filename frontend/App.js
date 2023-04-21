@@ -9,7 +9,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import EventDetails from "./src/views/users/events/EventDetails";
 import Confirmation from "./src/views/users/events/Confirmation";
 import QRCode from "./src/views/users/events/QRCode";
-import Events from "./src/views/users/events/EventsList";
+import EventsList from "./src/views/users/events/EventsList";
+import EventListItem from "./src/components/EventListItem";
 import eventObjs from "./src/views/users/events/Invited";
 
 const Stack = createNativeStackNavigator();
@@ -31,9 +32,10 @@ export default function App() {
 				}}>
 				<Stack.Screen
 					name="EventsList"
-					component={Events}
+					component={EventsList}
 					options={{ title: "Event App" }}
 				/>
+				<Stack.Screen name="EventListItem" component={EventListItem} />
 				<Stack.Screen name="EventDetails" component={EventDetails} />
 				<Stack.Screen name="Confirmation" component={Confirmation} />
 				<Stack.Screen name="QRCode" component={QRCode} />
