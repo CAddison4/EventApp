@@ -72,7 +72,7 @@ export default function EventsList() {
 			<Tab.Screen
 				name="Invited"
 				component={Invited}
-				options={{ tabBarBadge: eventObjs.length }}
+			//	options={{ tabBarBadge: eventObjs.length }}
 			/>
 			<Tab.Screen name="EventsCal" component={EventsCal} />
 			<Tab.Screen name="Registered" component={Registered} />

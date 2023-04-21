@@ -14,7 +14,7 @@ export async function main(event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ users: users }),
+      body: JSON.stringify(users),
     }
   } catch (error) {
     console.error(error);
