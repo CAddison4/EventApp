@@ -11,7 +11,7 @@ import EventDetails from "./EventDetails";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const eventObjs = [
+export const eventObjs = [
 	{
 		id: 1,
 		name: "Event 1",

@@ -11,9 +11,11 @@ import Declined from "./Declined";
 import Invited from "./Invited";
 import Registered from "./Registered";
 import Upcoming from "./Upcoming";
+import EventsCal from "./EventsCal";
+import { eventObjs } from "./Invited";
 
 const Stack = createNativeStackNavigator();
-const Tab = createMaterialTopTabNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function EventsList() {
 	return (
@@ -39,30 +41,40 @@ export default function EventsList() {
 		<Tab.Navigator
 			initialRouteName="Invited"
 			screenOptions={({ route }) => ({
-				// tabBarIcon: ({ focused, color, size }) => {
-				// 	let iconName;
+				tabBarIcon: ({ focused, color, size }) => {
+					let iconName;
 
-				// 	if (route.name === "Upcoming") {
-				// 		iconName = focused ? "ios-list" : "ios-list-outline";
-				// 	}
-				// 	if (route.name === "Invited") {
-				// 		iconName = focused ? "ios-list" : "ios-list-outline";
-				// 	}
-				// 	if (route.name === "Registered") {
-				// 		iconName = focused ? "ios-list" : "ios-list-outline";
-				// 	}
-				// 	if (route.name === "Declined") {
-				// 		iconName = focused ? "ios-list" : "ios-list-outline";
-				// 	}
+					if (route.name === "Upcoming") {
+						iconName = focused ? "ios-list" : "ios-list-outline";
+					}
+					if (route.name === "Invited") {
+						iconName = focused ? "mail" : "mail-outline";
+					}
+					if (route.name === "EventsCal") {
+						iconName = focused ? "calendar" : "calendar-outline";
+					}
+					if (route.name === "Registered") {
+						iconName = focused
+							? "checkmark-circle"
+							: "checkmark-circle-outline";
+					}
+					if (route.name === "Declined") {
+						iconName = focused ? "close-circle" : "close-circle-outline";
+					}
 
-				// 	// You can return any component that you like here!
-				// 	return <Ionicons name={iconName} size={size} color={color} />;
-				// },
+					// You can return any component that you like here!
+					return <Ionicons name={iconName} size={size} color={color} />;
+				},
 				tabBarActiveTintColor: "tomato",
 				tabBarInactiveTintColor: "gray",
 			})}>
 			<Tab.Screen name="Upcoming" component={Upcoming} />
-			<Tab.Screen name="Invited" component={Invited} />
+			<Tab.Screen
+				name="Invited"
+				component={Invited}
+				options={{ tabBarBadge: eventObjs.length }}
+			/>
+			<Tab.Screen name="EventsCal" component={EventsCal} />
 			<Tab.Screen name="Registered" component={Registered} />
 			<Tab.Screen name="Declined" component={Declined} />
 		</Tab.Navigator>

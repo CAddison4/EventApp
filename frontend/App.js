@@ -9,8 +9,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import EventDetails from "./src/views/users/events/EventDetails";
 import Confirmation from "./src/views/users/events/Confirmation";
 import QRCode from "./src/views/users/events/QRCode";
-
 import Events from "./src/views/users/events/EventsList";
+import eventObjs from "./src/views/users/events/Invited";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,7 +22,7 @@ export default function App() {
 				initialRouteName="EventsList"
 				screenOptions={{
 					headerStyle: {
-						backgroundColor: "#BE3455",
+						backgroundColor: "#607D8B",
 					},
 					headerTintColor: "#fff",
 					headerTitleStyle: {
