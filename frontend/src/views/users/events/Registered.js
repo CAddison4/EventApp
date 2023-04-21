@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import QRCode from "./QRCode";
+import EventListItem from "../../../components/EventListItem";
 
 const eventObjs = [
 	{
@@ -29,6 +30,7 @@ export default function Registered({ navigation }) {
 			<Text>Invited Screen</Text>
 			{eventObjs.map((eventObj) => (
 				<View>
+					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
 					<View key={eventObj.id}>
 						<Text
 							onPress={() =>
@@ -36,12 +38,7 @@ export default function Registered({ navigation }) {
 									eventObj: eventObj,
 								})
 							}>
-							<Text>{eventObj.name}</Text>
-							<Text>{eventObj.description}</Text>
-							<Text>{eventObj.date}</Text>
-							<Text>{eventObj.time}</Text>
-							<Text>{eventObj.location}</Text>
-							<Text>{eventObj.status}</Text>
+							<EventListItem eventObj={eventObj} />
 						</Text>
 					</View>
 					<Button
