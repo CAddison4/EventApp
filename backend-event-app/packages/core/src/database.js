@@ -79,6 +79,15 @@ export async function getUser(userId) {
   return res.rows[0]
 }
 
+// Get user by email
+export async function getUserByEmail(email) {
+  const res = await getPool().query(`
+  SELECT * FROM users
+  WHERE email = $1
+  `, [email])
+  return res.rows[0]
+}
+
 // Get all users
 export async function getUsers() {
   const res = await getPool().query(`

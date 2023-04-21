@@ -21,6 +21,7 @@ export function API({ stack }) {
       // Routes for getting single/all users, creating and updating users
       "GET /users": "packages/functions/src/users/getUsers.main",
       "GET /user/{userId}": "packages/functions/src/users/getUser.main",
+      "GET /user/email/{email}": "packages/functions/src/users/getUserByEmail.main",
       "POST /user": "packages/functions/src/users/postUser.main",
       "PUT /user/{userId}": "packages/functions/src/users/putUser.main",
       // Routes for getting single/all events, creating and updating events
