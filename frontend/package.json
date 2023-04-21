@@ -1,4 +1,5 @@
 {
+
   "name": "eventapp",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
@@ -32,4 +33,5 @@
     "@babel/core": "^7.20.0"
   },
   "private": true
+
 }

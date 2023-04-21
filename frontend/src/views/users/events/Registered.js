@@ -2,6 +2,11 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import QRCode from "./QRCode";
 import EventListItem from "../../../components/EventListItem";
+import { API } from "aws-amplify";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const userId = "4283c2ad-b9ab-41d6-bc02-597125f21ccd";
 
 const eventObjs = [
 	{
@@ -25,13 +30,36 @@ const eventObjs = [
 ];
 
 export default function Registered({ navigation }) {
+	const [registeredEvents, setRegisteredEvents] = useState([]);
+	useEffect(() => {
+		// const apiURL = "https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com";
+		// API.get(
+		// 	"https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com",
+		// 	"/attendee/events/" + userId
+		// ).then((response) => {
+		// 	console.log("test", response);
+		// });
+		const getRegisteredUserEvents = async () => {
+			const response = await axios.get(
+				"https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com/attendee/events/" +
+					userId
+			);
+			const data = response.data;
+			setRegisteredEvents(
+				data.filter((event) => event.attendee_status_id === "Registered")
+			);
+		};
+		getRegisteredUserEvents();
+	}, []);
+
 	return (
 		<View style={styles.container}>
-			<Text>Invited Screen</Text>
-			{eventObjs.map((eventObj) => (
+			<Text>Registered Screen</Text>
+
+			{registeredEvents.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.id}>
+					<View key={eventObj.event_id}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {

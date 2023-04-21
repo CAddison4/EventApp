@@ -10,13 +10,13 @@ export default function EventDetails({ navigation, route }) {
 	// const event = JSON.parse(eventObj);
 	return (
 		<View>
-			<View key={eventObj.id}>
-				<Text>{eventObj.name}</Text>
+			<View key={`${eventObj.event_id}${eventObj.user_id}`}>
+				<Text>{eventObj.event_name}</Text>
 				<Text>{eventObj.description}</Text>
-				<Text>{eventObj.date}</Text>
-				<Text>{eventObj.time}</Text>
-				<Text>{eventObj.location}</Text>
-				<Text>{eventObj.status}</Text>
+				<Text>{eventObj.event_date}</Text>
+				<Text>{eventObj.event_start}</Text>
+				<Text>{eventObj.event_location}</Text>
+				<Text>{eventObj.attendee_status_id}</Text>
 			</View>
 			<Button
 				title="Accept"
