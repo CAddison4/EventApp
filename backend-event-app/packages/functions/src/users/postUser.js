@@ -12,7 +12,7 @@ export async function main(event) {
 
     const user = await createUser(body.email, body.firstName, body.lastName, body.roleId, body.membershipStatusId);
 
-    if (res.rows.length === 0) {
+    if (!user) {
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Failed to create user' })

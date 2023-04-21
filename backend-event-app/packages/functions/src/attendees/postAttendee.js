@@ -13,7 +13,7 @@ export async function main(event) {
 
     const attendee = await createAttendee(body.eventId, body.userId, body.attendeeStatus);
 
-    if (res.rows.length === 0) {
+    if (!attendee) {
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Failed to create event attendee' })

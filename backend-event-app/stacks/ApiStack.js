@@ -5,6 +5,13 @@ import * as iam from "aws-cdk-lib/aws-iam";
 export function API({ stack }) {
 
   const api = new Api(stack, "api", {
+    defaults: {
+      function: {
+        environment: {
+          DATABASE_URL: process.env.DATABASE_URL,
+        },
+      }, 
+    },
     routes: {
       // Routes for getting records from status type tables
       "GET /membership": "packages/functions/src/general/getMembership.main",
@@ -36,9 +43,9 @@ export function API({ stack }) {
       "GET /waitlist/users/{eventId}": "packages/functions/src/waitlist/getEventWaitlist.main",
       "GET /waitlist/events/{userId}": "packages/functions/src/waitlist/getUserWaitlist.main",
       // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously
-      "GET /waitlistposition/{eventId}/{userId}": "packages/functions/src/waitlist/getWaitlistPosition.main",
-      "GET /anycapacity/{eventId}": "packages/functions/src/waitlist/getAnyCapacity.main",
-      "GET /loyalty/{userId}": "packages/functions/src/waitlist/getLoyaltyCount.main",
+      "GET /waitlistposition/{eventId}/{userId}": "packages/functions/src/utilities/getWaitlistPosition.main",
+      "GET /anycapacity/{eventId}": "packages/functions/src/utilities/getAnyCapacity.main",
+      "GET /loyalty/{userId}": "packages/functions/src/utilities/getLoyaltyCount.main",
     },
     authorizer: {
       name: "none"
