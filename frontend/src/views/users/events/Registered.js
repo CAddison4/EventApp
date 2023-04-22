@@ -57,7 +57,7 @@ export default function Registered({ navigation }) {
 			{registeredEvents.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.event_id}>
+					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
