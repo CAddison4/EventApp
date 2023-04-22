@@ -15,6 +15,7 @@ import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
+import EventsCal from "./src/views/users/events/EventsCal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,6 +37,7 @@ export default function App() {
 					},
 				}}>
 				<Stack.Screen name="EventsList" component={EventsList} />
+				<Stack.Screen name="EventsCal" component={EventsCal} />
 				<Stack.Screen
 					name="Events"
 					component={Events}
@@ -45,6 +47,8 @@ export default function App() {
 				<Stack.Screen name="EventDetails" component={EventDetails} />
 				<Stack.Screen name="Confirmation" component={Confirmation} />
 				<Stack.Screen name="QRCode" component={QRCode} />
+
+
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

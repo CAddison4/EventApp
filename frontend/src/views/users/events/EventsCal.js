@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 
-export default function EventsCal(navigation, route) {
+export default function EventsCal({navigation}) {
 	const [selected, setSelected] = useState('');
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
@@ -73,11 +73,11 @@ export default function EventsCal(navigation, route) {
 			markingType={'multi-dot'}
 			markedDates={{
 			  ...markedDates,
-			  [selected]: {
-				dots: [{ key: 'selected', color: 'blue' }],
-				selected: true,
-				selectedColor: 'blue',
-			  },
+			// if you want to mark the selected date
+			//   [selected]: {
+			// 	dots: [{ key: 'selected', color: 'green' }],
+			// 	selected: true,
+			//   },
 			}}
 		  />
 		</View>
