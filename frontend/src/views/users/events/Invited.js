@@ -4,38 +4,33 @@ import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import EventDetails from "./EventDetails";
 import EventListItem from "../../../components/EventListItem";
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 
 export default function Invited({ navigation }) {
 
-	const [eventObjs, setEventObjs] = useState([]);
-
+	const [invitedEvents, setInvitedEvents] = useState([]);
 	useEffect(() => {
-        const allEvents = async () => {
-            const response = await axios.get(
-                "https://c030d30f5d.execute-api.us-west-2.amazonaws.com/events"
-            );
-			setEventObjs(response.data);
-		//		response.data.filter((event) => event.event_name !== null)
-        };
-        allEvents();
-    }, []);
+		const getInvitedUserEvents = async () => {
+			const response = await axios.get(
+				`https://c030d30f5d.execute-api.us-west-2.amazonaws.com/attendee/events/${userId}`
+			);
+			const data = response.data;
+			setInvitedEvents(
+				data.filter((event) => event.attendee_status_id === "Invited")
+			);
+		};
+		getInvitedUserEvents();
+	}, []);
 	
 	return (
 		<View style={styles.container}>
 			<Text>Invited Screen</Text>
-			{eventObjs.map((eventObj) => (
+			{invitedEvents.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.event_id}>
+					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {

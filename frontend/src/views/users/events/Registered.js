@@ -41,8 +41,7 @@ export default function Registered({ navigation }) {
 		// });
 		const getRegisteredUserEvents = async () => {
 			const response = await axios.get(
-				"https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com/attendee/events/" +
-					userId
+				`https://c030d30f5d.execute-api.us-west-2.amazonaws.com/attendee/events/${userId}`
 			);
 			const data = response.data;
 			setRegisteredEvents(
@@ -59,7 +58,7 @@ export default function Registered({ navigation }) {
 			{registeredEvents.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.event_id}>
+					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
