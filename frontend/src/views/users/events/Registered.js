@@ -40,9 +40,8 @@ export default function Registered({ navigation }) {
 		// 	console.log("test", response);
 		// });
 		const getRegisteredUserEvents = async () => {
-			const response = await axios.get(
-				`https://c030d30f5d.execute-api.us-west-2.amazonaws.com/attendee/events/${userId}`
-			);
+			const apiURL = "https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com";
+			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
 			const data = response.data;
 			setRegisteredEvents(
 				data.filter((event) => event.attendee_status_id === "Registered")
