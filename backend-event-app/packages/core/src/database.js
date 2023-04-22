@@ -273,3 +273,14 @@ export async function loyaltyCount(userId) {
   return res.rows[0].count
 }
 
+// Count how many events a specific user has of each status
+export async function eventCounts(userId) {
+  const res = await getPool().query(`
+  SELECT ea.attendee_status_id, COUNT(*) as count FROM eventattendees ea
+  JOIN events e ON ea.event_id = e.event_id
+  WHERE ea.user_id = $1 AND e.event_date > now()
+  GROUP BY ea.attendee_status_id
+  `, [userId])
+  return res.rows
+}
+

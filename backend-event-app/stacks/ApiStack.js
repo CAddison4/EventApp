@@ -47,6 +47,7 @@ export function API({ stack }) {
       "GET /waitlistposition/{eventId}/{userId}": "packages/functions/src/utilities/getWaitlistPosition.main",
       "GET /anycapacity/{eventId}": "packages/functions/src/utilities/getAnyCapacity.main",
       "GET /loyalty/{userId}": "packages/functions/src/utilities/getLoyaltyCount.main",
+      "GET /eventcounts/{userId}": "packages/functions/src/utilities/getEventCounts.main",
     },
     authorizer: {
       name: "none"
