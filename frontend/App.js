@@ -23,7 +23,9 @@ import config from "./src/aws-exports";
 
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
+
 import EventsCal from "./src/views/users/events/EventsCal";
+import ProfileNavButton from "./src/components/ProfileNavButton";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +88,7 @@ const App = () => {
             <Stack.Screen name="EventDetails" component={EventDetails} />
             <Stack.Screen name="Confirmation" component={Confirmation} />
             <Stack.Screen name="QRCode" component={QRCode} />
+            <Stack.Screen name="ProfileNavButton" component={ProfileNavButton} />
 			<Stack.Screen name="MainProfile" component={MainProfile} />
           </>
         )}
