@@ -19,7 +19,6 @@ import ProfileNavButton from "./src/components/ProfileNavButton";
 import EventsCal from "./src/views/users/events/EventsCal";
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
 
 Amplify.configure(config);
 
