@@ -1,5 +1,6 @@
 import * as React from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
+import { formatDate, formatDateTime } from "../../../utilities/dates"
 
 export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
@@ -12,9 +13,8 @@ export default function EventDetails({ navigation, route }) {
 		<View>
 			<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 				<Text>{eventObj.event_name}</Text>
-				<Text>{eventObj.description}</Text>
-				<Text>{eventObj.event_date}</Text>
-				<Text>{eventObj.event_start}</Text>
+				<Text>{formatDate(eventObj.event_date)}</Text>
+				<Text>{formatDateTime(eventObj.event_start)}</Text>
 				<Text>{eventObj.event_location}</Text>
 				<Text>{eventObj.attendee_status_id}</Text>
 			</View>

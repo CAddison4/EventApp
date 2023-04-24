@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,12 +14,46 @@ import Invited from "./Invited";
 import Registered from "./Registered";
 import Upcoming from "./Upcoming";
 import EventsCal from "./EventsCal";
-import { eventObjs } from "./Invited";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
+
 export default function EventsList() {
+
+	const [invitedCount, setInvitedCount] = useState([]);
+	const [registeredCount, setRegisteredCount] = useState([]);
+	const [declinedCount, setDeclinedCount] = useState([]);
+	const [upcomingCount, setUpcomingCount] = useState([]);
+	useEffect(() => {
+		const getUserEventCounts = async () => {
+			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
+			const response = await axios.get(`${apiURL}/eventcounts/${userId}`);
+			const data = response.data;
+			let upcoming = 0;
+			upcoming = parseInt(upcoming);
+			data.forEach(element => {
+				upcoming += parseInt(element.count);
+				switch (element.attendee_status_id) {
+					case "Registered":
+						setRegisteredCount(element.count);
+						break;
+					case "Invited":
+						setInvitedCount(element.count);
+						break;
+					case "Declined":
+						setDeclinedCount(element.count);
+						break;
+					default:
+						break;
+				}	
+			});
+			setUpcomingCount(upcoming);
+		};
+		getUserEventCounts();
+	}, []);
+
 	return (
 		<Tab.Navigator
 			initialRouteName="Invited"
@@ -49,14 +85,34 @@ export default function EventsList() {
 				tabBarActiveTintColor: "tomato",
 				tabBarInactiveTintColor: "gray",
 			})}>
-			<Tab.Screen name="Upcoming" component={Upcoming} />
+			<Tab.Screen
+				name="Upcoming"
+				component={Upcoming}
+					options={{ tabBarBadge: upcomingCount,
+						       tabBarBadgeStyle: { color: 'white', backgroundColor: 'red', fontSize: 11 },
+					}}
+			/>
 			<Tab.Screen
 				name="Invited"
 				component={Invited}
-				//	options={{ tabBarBadge: eventObjs.length }}
+					options={{ tabBarBadge: invitedCount,
+							   tabBarBadgeStyle: { color: 'white', backgroundColor: 'red', fontSize: 11 },
+					}}
 			/>
-			<Tab.Screen name="Registered" component={Registered} />
-			<Tab.Screen name="Declined" component={Declined} />
+			<Tab.Screen
+				name="Registered"
+				component={Registered}
+					options={{ tabBarBadge: registeredCount,
+							   tabBarBadgeStyle: { color: 'white', backgroundColor: 'red', fontSize: 11 },
+					}}
+			/>
+			<Tab.Screen
+				name="Declined"
+				component={Declined}
+					options={{ tabBarBadge: declinedCount,
+							   tabBarBadgeStyle: { color: 'white', backgroundColor: 'red', fontSize: 11 },
+					}}
+			/>
 		</Tab.Navigator>
 	);
 }

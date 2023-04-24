@@ -99,9 +99,9 @@ export async function getUsers() {
 // Create a new event
 export async function createEvent(eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax) {
   const res = await getPool().query(`
-  INSERT INTO events (event_name, event_date, event_start, event_end, event_location, capacity, type_id, loyalty_max, reason )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-  RETURNING event_id`, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, ""])
+  INSERT INTO events (event_name, event_date, event_start, event_end, event_location, capacity, type_id, loyalty_max, cancelled, reason )
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+  RETURNING event_id`, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, false, ""])
   return res.rows[0]
 }
 
@@ -138,7 +138,7 @@ export async function createAttendee(eventId, userId, attendeeStatusId) {
   const res = await getPool().query(`
   INSERT INTO eventattendees (event_id, user_id, attendee_status_id, attendance_status_id)
   VALUES ($1, $2, $3, $4)
-  RETURNING event_id, user_id`, [eventId, userId, attendeeStatusId, 'No Show'])
+  RETURNING event_id, user_id`, [eventId, userId, attendeeStatusId, 'Unknown'])
   return res.rows[0]
 }
 
@@ -271,5 +271,16 @@ export async function loyaltyCount(userId) {
   WHERE ea.user_id = $1 AND ea.attendance_status_id = 'Attended' AND e.event_date < now()
   `, [userId])
   return res.rows[0].count
+}
+
+// Count how many events a specific user has of each status
+export async function eventCounts(userId) {
+  const res = await getPool().query(`
+  SELECT ea.attendee_status_id, COUNT(*) as count FROM eventattendees ea
+  JOIN events e ON ea.event_id = e.event_id
+  WHERE ea.user_id = $1 AND e.event_date > now()
+  GROUP BY ea.attendee_status_id
+  `, [userId])
+  return res.rows
 }
 

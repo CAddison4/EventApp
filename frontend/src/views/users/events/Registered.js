@@ -6,7 +6,7 @@ import { API } from "aws-amplify";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const userId = "4283c2ad-b9ab-41d6-bc02-597125f21ccd";
+const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 
 const eventObjs = [
 	{
@@ -40,7 +40,7 @@ export default function Registered({ navigation }) {
 		// 	console.log("test", response);
 		// });
 		const getRegisteredUserEvents = async () => {
-			const apiURL = "https://44rfrxgjq6.execute-api.us-west-2.amazonaws.com";
+			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
 			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
 			const data = response.data;
 			setRegisteredEvents(
@@ -57,7 +57,7 @@ export default function Registered({ navigation }) {
 			{registeredEvents.map((eventObj) => (
 				<View>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={eventObj.event_id}>
+					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
