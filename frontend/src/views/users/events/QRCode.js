@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function QRCode({ navigation, route }) {
+export default function QRCode({ route }) {
 	const eventObj = route.params.eventObj;
 
 	// const event = JSON.parse(eventObj);

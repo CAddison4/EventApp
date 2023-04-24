@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { API_END_POINT } from '@env'
 
 import EventListItem from "../../../components/EventListItem";
 
@@ -15,7 +16,7 @@ export default function Upcoming() {
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	useEffect(() => {
 		const getUpcomingUserEvents = async () => {
-			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
+			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
 			const data = response.data;
 			setUpcomingEvents(data);
