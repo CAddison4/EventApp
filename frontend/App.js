@@ -27,6 +27,10 @@ import Events from "./src/views/users/events/Events";
 import EventsCal from "./src/views/users/events/EventsCal";
 import ProfileNavButton from "./src/components/ProfileNavButton";
 
+
+import { API_END_POINT } from '@env'
+console.log('API_END_POINT', API_END_POINT);
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 Amplify.configure(config);

@@ -5,6 +5,7 @@ import EventListItem from "../../../components/EventListItem";
 import { API } from "aws-amplify";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_END_POINT } from '@env'
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 
@@ -40,7 +41,7 @@ export default function Registered({ navigation }) {
 		// 	console.log("test", response);
 		// });
 		const getRegisteredUserEvents = async () => {
-			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
+			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
 			const data = response.data;
 			setRegisteredEvents(

@@ -14,6 +14,7 @@ import Invited from "./Invited";
 import Registered from "./Registered";
 import Upcoming from "./Upcoming";
 import EventsCal from "./EventsCal";
+import { API_END_POINT } from '@env'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,7 +29,7 @@ export default function EventsList() {
 	const [upcomingCount, setUpcomingCount] = useState([]);
 	useEffect(() => {
 		const getUserEventCounts = async () => {
-			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
+			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/eventcounts/${userId}`);
 			const data = response.data;
 			let upcoming = 0;
