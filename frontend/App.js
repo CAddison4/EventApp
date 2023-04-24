@@ -8,8 +8,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CommonActions } from '@react-navigation/native';
 
-import eventObjs from "./src/views/users/events/Invited";
-import Events from "./src/views/users/events/Events";
 import { requireAuth } from "./src/components/middleware/AuthMiddleware";
 import MainProfile from "./src/views/users/profile/MainProfile";
 
@@ -22,7 +20,6 @@ import EventListItem from "./src/components/EventListItem";
 
 import { Amplify, Hub } from "aws-amplify";
 import config from "./src/aws-exports";
-
 
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
