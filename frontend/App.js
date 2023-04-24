@@ -11,6 +11,7 @@ import { CommonActions } from '@react-navigation/native';
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
 import { requireAuth } from "./src/components/middleware/AuthMiddleware";
+import MainProfile from "./src/views/users/profile/MainProfile";
 
 import AuthForm from "./src/views/AuthForm";
 import EventDetails from "./src/views/users/events/EventDetails";
@@ -18,19 +19,21 @@ import Confirmation from "./src/views/users/events/Confirmation";
 import QRCode from "./src/views/users/events/QRCode";
 import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
-import MainProfile from "./src/views/users/profile/MainProfile";
 
 import { Amplify, Hub } from "aws-amplify";
 import config from "./src/aws-exports";
-Amplify.configure(config);
+
+
+import eventObjs from "./src/views/users/events/Invited";
+import Events from "./src/views/users/events/Events";
+import EventsCal from "./src/views/users/events/EventsCal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+Amplify.configure(config);
 
 const App = () => {
-  const [authenticated, setAuthenticated] = React.useState(false);
-
-  
+  const [authenticated, setAuthenticated] = React.useState(false);  
 
   useEffect(() => {
     Hub.listen("auth", (data) => {
@@ -65,6 +68,7 @@ const App = () => {
         ) : (
           <>
             <Stack.Screen name="EventsList" component={EventsList} />
+            <Stack.Screen name="EventsCal" component={EventsCal} />
             <Stack.Screen
               name="Events"
               component={Events}
@@ -92,6 +96,7 @@ const App = () => {
     </NavigationContainer>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
