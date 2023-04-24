@@ -25,6 +25,10 @@ import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
 import EventsCal from "./src/views/users/events/EventsCal";
 
+
+import { API_END_POINT } from '@env'
+console.log('API_END_POINT', API_END_POINT);
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 Amplify.configure(config);
