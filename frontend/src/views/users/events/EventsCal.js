@@ -58,6 +58,8 @@ export default function EventsCal({navigation}) {
 		<View style={styles.container}>
 		  <Text>EventsCal Screen</Text>
 		  <Calendar
+		   style={[styles.calendar, {height: 700}]}
+		   calendarStyle={styles.customCalendarStyle}
 			onDayPress={day => {
 				setSelected(day.dateString);
 				const {eventId} = markedDates[day.dateString];
@@ -84,13 +86,34 @@ export default function EventsCal({navigation}) {
 		</View>
 	  );
 }
-
-  
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
+	  flex: 1,
+	  backgroundColor: "#fff",
+	  alignItems: "center",
+	  justifyContent: "center",
 	},
-});
+	calendar: {
+	  marginTop: 50,
+	  padding: 10,
+	  width: 400,
+	},
+	customCalendarStyle: {
+	  dayTextAtIndex0: {
+		color: 'red',
+		fontSize: 16, // customize the font size for days
+	  },
+	  dayTextAtIndex6: {
+		color: 'blue',
+		fontSize: 16, // customize the font size for days
+	  },
+	  textMonth: {
+		fontWeight: 'bold',
+		fontSize: 16, // customize the font size for month text
+	  },
+	  textDayHeader: {
+		fontWeight: '300',
+		fontSize: 16, // customize the font size for day header
+	  },
+	},
+  });
