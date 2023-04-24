@@ -60,7 +60,7 @@ const App = () => {
           },
         }}
       >
-        {authenticated == true ? (
+        {authenticated == false ? (
           <Stack.Screen name="AuthForm" component={AuthForm} />
         ) : (
           <>
