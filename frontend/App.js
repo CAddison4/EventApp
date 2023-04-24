@@ -15,6 +15,8 @@ import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
+import ProfileNavButton from "./src/components/ProfileNavButton";
+import EventsCal from "./src/views/users/events/EventsCal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,6 +32,7 @@ export default function App() {
 					headerStyle: {
 						backgroundColor: "#607D8B",
 					},
+					headerRight: () => <ProfileNavButton />,
 					headerTintColor: "#fff",
 					headerTitleStyle: {
 						fontWeight: "bold",
@@ -45,6 +48,7 @@ export default function App() {
 				<Stack.Screen name="EventDetails" component={EventDetails} />
 				<Stack.Screen name="Confirmation" component={Confirmation} />
 				<Stack.Screen name="QRCode" component={QRCode} />
+				<Stack.Screen name="ProfileNavButton" component={ProfileNavButton} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
