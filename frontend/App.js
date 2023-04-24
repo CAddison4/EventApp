@@ -22,23 +22,24 @@ import EventsCal from "./src/views/users/events/EventsCal";
 
 import { Provider, useDispatch } from "react-redux";
 
-import store  from "./src/components/store/index";
+import store from "./src/components/store/index";
 
 import { Amplify, Hub } from "aws-amplify";
 import config from "./src/aws-exports";
+
+Amplify.configure(config);
 
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
 
 import ProfileNavButton from "./src/components/ProfileNavButton";
 
-import { API_END_POINT } from "@env";
-console.log("API_END_POINT", API_END_POINT);
+import { API_URL } from "@env";
+console.log("API_URL", API_URL);
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-
   const [authenticated, setAuthenticated] = React.useState(false);
 
   useEffect(() => {
@@ -56,69 +57,59 @@ const App = () => {
     });
   }, []);
 
-
   return (
     <Provider store={store}>
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="MainProfile"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#607D8B",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-        }}
-      >
-        {authenticated == false ? (
-          <Stack.Screen name="AuthForm" component={AuthForm} 
-          options=
-          {
-            {
-              title: "Event App"
-            }
-          }/>
-        ) : (
-          <>
-            <Stack.Screen name="EventsList" component={EventsList} />
-            <Stack.Screen
-              name="Events"
-              component={Events}
-              options={{
-                title: "Event App",
-				headerRight: () => (
-					<Button
-					onPress={() => {
-					  navigation.navigate('MainProfile');
-					}}
-					title="Info"
-					color="#fff"
-				  />
-                ),
-              }}
-            />
-            <Stack.Screen name="EventListItem" component={EventListItem} />
-            <Stack.Screen name="EventDetails" component={EventDetails} />
-            <Stack.Screen name="Confirmation" component={Confirmation} />
-            <Stack.Screen name="QRCode" component={QRCode} />
-			<Stack.Screen name="MainProfile" component={MainProfile} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Events"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "#607D8B",
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+          }}
+        >
+          {authenticated == false ? (
+            <Stack.Screen name="AuthForm" component={AuthForm} />
+          ) : (
+            <>
+              <Stack.Screen name="EventsList" component={EventsList} />
+              <Stack.Screen name="EventsCal" component={EventsCal} />
+              <Stack.Screen name="MainProfile" component={MainProfile} />
+              <Stack.Screen
+                name="Events"
+                component={Events}
+                options={{
+                  title: "Event App",
+                  headerRight: () => <ProfileNavButton />,
+                }}
+              />
+              <Stack.Screen name="EventListItem" component={EventListItem} />
+              <Stack.Screen name="EventDetails" component={EventDetails} />
+              <Stack.Screen name="Confirmation" component={Confirmation} />
+              <Stack.Screen name="QRCode" component={QRCode} />
+              <Stack.Screen
+                name="ProfileNavButton"
+                component={ProfileNavButton}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default App;

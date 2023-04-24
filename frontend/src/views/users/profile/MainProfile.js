@@ -15,9 +15,9 @@ const  MainProfile = () => {
 
     const user = useSelector((state) => state.user);
 
-	if (!user) {
-		return <Text>Loading...</Text>;
-	  }
+	// if (!user) {
+	// 	return <Text>Loading...</Text>;
+	//   }
     return (
 		<View>
 		  {Object.keys(user).map((key) => (
