@@ -7,7 +7,7 @@ import ConfirmationForm from './partials/userAuthPartials/ConfirmationForm';
 import ResetPasswordForm from './partials/userAuthPartials/ResetPasswordForm';
 import { Auth } from 'aws-amplify';
 
-const AuthForm = ({ onAuthChange }) => {
+const AuthForm = ( ) => {
   const [formType, setFormType] = useState('signIn');
   const [username, setUsername] = useState('');
 
@@ -62,7 +62,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
   },
   tabText: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     fontWeight: 'bold',
+    height: 50,
+    width: 100,
   },
   activeTab: {
     color: 'blue',

@@ -4,7 +4,7 @@ import * as React from "react";
 import { useEffect } from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CommonActions } from "@react-navigation/native";
 
@@ -20,90 +20,96 @@ import EventListItem from "./src/components/EventListItem";
 
 import EventsCal from "./src/views/users/events/EventsCal";
 
+import { Provider, useDispatch } from "react-redux";
+
+import store from "./src/components/store/index";
+
 import { Amplify, Hub } from "aws-amplify";
 import config from "./src/aws-exports";
+
+Amplify.configure(config);
 
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
 
 import ProfileNavButton from "./src/components/ProfileNavButton";
 
-import { API_END_POINT } from "@env";
-console.log("API_END_POINT", API_END_POINT);
+import { API_URL } from "@env";
+console.log("API_URL", API_URL);
 
 const Stack = createNativeStackNavigator();
 
-// const Tab = createBottomTabNavigator();
-Amplify.configure(config);
-
 const App = () => {
-	const [authenticated, setAuthenticated] = React.useState(false);
-	// const navigation = useNavigation();
+  const [authenticated, setAuthenticated] = React.useState(false);
 
-	useEffect(() => {
-		Hub.listen("auth", (data) => {
-			switch (data.payload.event) {
-				case "signIn":
-					console.log("signed in", data.payload.data);
-					setAuthenticated(true);
-					break;
-				case "signOut":
-					console.log("signed out", data.payload.data);
-					setAuthenticated(false);
-					break;
-			}
-		});
-	}, []);
-	return (
-		<NavigationContainer>
-			<Stack.Navigator
-				initialRouteName="Events"
-				screenOptions={{
-					headerStyle: {
-						backgroundColor: "#607D8B",
-					},
-					headerTintColor: "#fff",
-					headerTitleStyle: {
-						fontWeight: "bold",
-					},
-				}}>
-				{authenticated == true ? (
-					<Stack.Screen name="AuthForm" component={AuthForm} />
-				) : (
-					<>
-						<Stack.Screen name="EventsList" component={EventsList} />
-						<Stack.Screen name="EventsCal" component={EventsCal} />
-						<Stack.Screen name="MainProfile" component={MainProfile} />
-						<Stack.Screen
-							name="Events"
-							component={Events}
-							options={{
-								title: "Event App",
-								headerRight: () => <ProfileNavButton />,
-							}}
-						/>
-						<Stack.Screen name="EventListItem" component={EventListItem} />
-						<Stack.Screen name="EventDetails" component={EventDetails} />
-						<Stack.Screen name="Confirmation" component={Confirmation} />
-						<Stack.Screen name="QRCode" component={QRCode} />
-						<Stack.Screen
-							name="ProfileNavButton"
-							component={ProfileNavButton}
-						/>
-					</>
-				)}
-			</Stack.Navigator>
-		</NavigationContainer>
-	);
+  useEffect(() => {
+    Hub.listen("auth", (data) => {
+      switch (data.payload.event) {
+        case "signIn":
+          console.log("signed in", data.payload.data);
+          setAuthenticated(true);
+          break;
+        case "signOut":
+          console.log("signed out", data.payload.data);
+          setAuthenticated(false);
+          break;
+      }
+    });
+  }, []);
+
+  return (
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Events"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "#607D8B",
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+          }}
+        >
+          {authenticated == false ? (
+            <Stack.Screen name="AuthForm" component={AuthForm} />
+          ) : (
+            <>
+              <Stack.Screen name="EventsList" component={EventsList} />
+              <Stack.Screen name="EventsCal" component={EventsCal} />
+              <Stack.Screen name="MainProfile" component={MainProfile} />
+              <Stack.Screen
+                name="Events"
+                component={Events}
+                options={{
+                  title: "Event App",
+                  headerRight: () => <ProfileNavButton />,
+                }}
+              />
+              <Stack.Screen name="EventListItem" component={EventListItem} />
+              <Stack.Screen name="EventDetails" component={EventDetails} />
+              <Stack.Screen name="Confirmation" component={Confirmation} />
+              <Stack.Screen name="QRCode" component={QRCode} />
+              <Stack.Screen
+                name="ProfileNavButton"
+                component={ProfileNavButton}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
+  );
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default App;
