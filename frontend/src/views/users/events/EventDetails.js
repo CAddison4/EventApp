@@ -13,7 +13,6 @@ export default function EventDetails({ navigation, route }) {
 		<View>
 			<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 				<Text>{eventObj.event_name}</Text>
-				<Text>{eventObj.description}</Text>
 				<Text>{formatDate(eventObj.event_date)}</Text>
 				<Text>{formatDateTime(eventObj.event_start)}</Text>
 				<Text>{eventObj.event_location}</Text>

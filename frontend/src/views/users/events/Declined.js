@@ -13,9 +13,8 @@ export default function Declined({ navigation }) {
 	const [declinedEvents, setDeclinedEvents] = useState([]);
 	useEffect(() => {
 		const getDeclinedUserEvents = async () => {
-			const response = await axios.get(
-				`https://c030d30f5d.execute-api.us-west-2.amazonaws.com/attendee/events/${userId}`
-			);
+			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
+			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
 			const data = response.data;
 			setDeclinedEvents(
 				data.filter((event) => event.attendee_status_id === "Declined")
