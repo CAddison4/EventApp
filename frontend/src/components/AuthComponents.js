@@ -1,5 +1,7 @@
 import { Auth } from 'aws-amplify';
-import axios from 'axios';
+import { useDispatch } from "react-redux";
+import { setUser } from "./store/userSlice";
+import { API_URL } from '@env';
 
 export const handleSignUp = async (email, password, password_confirmation, firstName, lastName) => {
 
@@ -12,7 +14,7 @@ export const handleSignUp = async (email, password, password_confirmation, first
                 email: email,
               },
             });
-            const apiEndpoint = 'https://0isomakqk4.execute-api.us-west-2.amazonaws.com/user';
+            const apiEndpoint =  `${API_URL}/user`;
             const apiResponse = await fetch(apiEndpoint, {
               method: 'POST',
               headers: {
@@ -34,8 +36,21 @@ export const handleSignUp = async (email, password, password_confirmation, first
     }
   };
 
-export const handleSignIn = async (username, password) => {
+
+
+export const handleSignIn = async (username, password, dispatch) => {
     try {
+      const apiEndpoint = `https://0isomakqk4.execute-api.us-west-2.amazonaws.com/user/email/${username}`;
+      const apiResponse = await fetch(apiEndpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const apiResponseJson = await apiResponse.json();
+      dispatch(setUser(apiResponseJson));
+      console.log('API response:', apiResponseJson);
+      
       await Auth.signIn(username, password);
       console.log('Successfully signed in');
     } catch (error) {
