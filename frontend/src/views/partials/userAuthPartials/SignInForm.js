@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, Button, SafeAreaView, View } from 'react-native';
 import { handleSignIn } from '../../../components/AuthComponents';
+import { useDispatch } from 'react-redux';
 
 const SignInForm = ({ onFormTypeChange }) => {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async () => {
     try {
-      await handleSignIn(username, password);
-      onAuthChange(true);
+      await handleSignIn(username, password, dispatch);
     } catch (error) {
       console.log('Error signing in:', error);
     }
