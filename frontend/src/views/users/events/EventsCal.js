@@ -17,7 +17,7 @@ export default function EventsCal({navigation}) {
 		const data = response.data;
 		setEvents(data);
 		//console.log(data);  
-		// create an array for the event dates to use in the calendar00000000
+		// create an array for the event dates to use in the calendar
 		const eventDatesArray = data.map(event => {
 		 // console.log(event.event_date);
 		  // check the date is valid
