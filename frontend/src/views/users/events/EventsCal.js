@@ -16,11 +16,11 @@ export default function EventsCal({navigation}) {
 		const response = await axios.get(`${apiURL}/events`);
 		const data = response.data;
 		setEvents(data);
-		console.log(data);
+		// console.log("full-list",data);
   
 		// create an array for the event dates to use in the calendar00000000
 		const eventDatesArray = data.map(event => {
-		  console.log(event.event_date);
+		  // console.log(event.event_date);
 		  // check the date is valid
 		  if (event.event_date && Date.parse(event.event_date)) {
 			const originalDate = new Date(event.event_date);
@@ -30,19 +30,18 @@ export default function EventsCal({navigation}) {
 			return null; // invalid date
 		  }
 		});
-  
-		console.log(eventDatesArray);
+
+		// console.log(eventDatesArray);
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray); 
 		// use eventDatesArray to create a new object
-		console.log(mergedMarkedDates);
+	    console.log(mergedMarkedDates);
 		setMarkedDates(mergedMarkedDates); 
-  
 		return eventDatesArray; 
 	  };
   
 	  getAllEvents()
 		.then(eventDatesArray => {
-		  console.log("eventdate", eventDatesArray);
+		  // console.log("eventdate", eventDatesArray);
 		})
 		.catch(error => {
 		  console.error(error);
@@ -61,12 +60,16 @@ export default function EventsCal({navigation}) {
 		   style={[styles.calendar, {height: 700}]}
 		   calendarStyle={styles.customCalendarStyle}
 			onDayPress={day => {
+				// filter the events array to find the event that matches the selected date
 				setSelected(day.dateString);
+				
+
 				const {eventId} = markedDates[day.dateString];
+				console.log('eventId', eventId);
 				if (eventId) {
-					console.log('eventId', eventId);
+					// console.log('eventId', eventId);
 					const eventObj = events.find(event => event.event_id === eventId);
-					console.log('eventObj', eventObj)
+					// console.log('eventObj', eventObj)
 										// navigate to the event details screen
 					navigation.navigate("EventDetails", {
 						eventObj: eventObj,
