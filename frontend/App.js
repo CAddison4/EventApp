@@ -60,7 +60,7 @@ const App = () => {
 	}, []);
 
 	// const testUser = { role_id: "Host" };
-  const testUser = { role_id: "Attendee" };
+	const testUser = { role_id: "Attendee" };
 
 	return (
 		<Provider store={store}>
@@ -76,7 +76,7 @@ const App = () => {
 							fontWeight: "bold",
 						},
 					}}>
-					{authenticated == false ? (
+					{authenticated == true ? (
 						<Stack.Screen name="AuthForm" component={AuthForm} />
 					) : (
 						<>
@@ -101,6 +101,7 @@ const App = () => {
 							/>
 
 							<Stack.Screen name="HostMenu" component={HostMenu} />
+
 							<Stack.Screen name="CreateEvent" component={CreateEvent} />
 						</>
 					)}
