@@ -11,10 +11,8 @@ export default function EventsCal({navigation}) {
 	const [markedDates, setMarkedDates] = useState({});
 	const [filter, setFilter] = useState('All');
 	const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
-
 	
 	const getAllEvents = async () => {
-		
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/events`);
 			const data = response.data;
@@ -37,31 +35,30 @@ export default function EventsCal({navigation}) {
 	};
 
 
-	const getEligibleUserEvents = async () => {
-		console.log("getEligibleUserEvents");
-		// check the user tier and loyalty 
-		// fetch all the events and filter
-		const allEvents = await getAllEvents();
-		const eligibleEvents = allEvents.filter(event => event.type_id === 'Gold Tier');
+	// const getEligibleUserEvents = async () => {
+	// 	console.log("getEligibleUserEvents");
+	// 	// check the user tier and loyalty 
+	// 	// fetch all the events and filter
+	// 	const allEvents = await getAllEvents();
+	// 	const eligibleEvents = allEvents.filter(event => event.type_id === 'Gold Tier');
 
-		// check this user's registered events
-		const registeredEvents = await getRegisteredUserEvents();
+	// 	// check this user's registered events
+	// 	const registeredEvents = await getRegisteredUserEvents();
 		
-		// check this user's waitisted events
-		const waitlistedEvents = await getWaitlistedUserEvents();
+	// 	// check this user's waitisted events
+	// 	const waitlistedEvents = await getWaitlistedUserEvents();
 
-		// combine the registered and waitlisted events
-		const combinedEvents = registeredEvents.concat(waitlistedEvents);
+	// 	// combine the registered and waitlisted events
+	// 	const combinedEvents = registeredEvents.concat(waitlistedEvents);
 
-		// map the registered events and remove the event if the event is in combinedEvents array and return the ones only not in the combinedEvents array
-		const notInCombined = eligibleEvents.filter((eligibleEvent) => {
-			return !combinedEvents.some(
-			  (combinedEvent) => combinedEvent.event_id === eligibleEvent.event_id
-			);
-		  });
-		  
-		  return notInCombined;
-	};
+	// 	// map the registered events and remove the event if the event is in combinedEvents array and return the ones only not in the combinedEvents array
+	// 	const notInCombined = eligibleEvents.filter((eligibleEvent) => {
+	// 		return !combinedEvents.some(
+	// 		  (combinedEvent) => combinedEvent.event_id === eligibleEvent.event_id
+	// 		);
+	// 	  });
+	// 	  return notInCombined;
+	// };
 
 
 	useEffect(() => {
