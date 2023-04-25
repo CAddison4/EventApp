@@ -59,8 +59,8 @@ const App = () => {
 		});
 	}, []);
 
-	// const testUser = { role_id: "Host" };
-	const testUser = { role_id: "Attendee" };
+	const testUser = { role_id: "Host" };
+	// const testUser = { role_id: "Attendee" };
 
 	return (
 		<Provider store={store}>
