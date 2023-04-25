@@ -142,12 +142,23 @@ export async function createAttendee(eventId, userId, attendeeStatusId) {
   return res.rows[0]
 }
 
+// Delete a waitlist record for a specific event and user
+export async function deleteAttendee(eventId, userId) {
+  const res = await getPool().query(`
+  DELETE FROM eventattendees
+  WHERE event_id = $1
+  AND user_id = $2
+  RETURNING *
+  `, [eventId, userId])
+  return res.rows[0]
+}
+
 // Get attendee records for all events for a specific user 
 export async function getAttendeesByUser(userId) {
   const res = await getPool().query(`
-  SELECT ea.*, e.* FROM eventattendees ea
-  JOIN events e ON ea.event_id = e.event_id
-  WHERE ea.user_id = $1
+  SELECT ea.*, e.* FROM events e
+  LEFT JOIN eventattendees ea ON e.event_id = ea.event_id
+  AND ea.user_id = $1
   ORDER BY e.event_date
   `, [userId])
   return res.rows
@@ -229,6 +240,15 @@ export async function getEventWaitlist(eventId) {
 }
 
 // Get all events for which a specific user is waitlisted
+export async function getUserEventWaitlist(eventId, userId) {
+  const res = await getPool().query(`
+  SELECT COUNT(*) FROM eventwaitlist ew
+    WHERE ew.event_id = $1 AND ew.user_id = $2
+  `, [eventId, userId])
+  return res.rows[0].count;
+}
+
+// Check if user is waitlisted for a specific event
 export async function getUserWaitlist(userId) {
   const res = await getPool().query(`
   SELECT ew.*, e.*, u.* FROM eventwaitlist ew
@@ -276,9 +296,10 @@ export async function loyaltyCount(userId) {
 // Count how many events a specific user has of each status
 export async function eventCounts(userId) {
   const res = await getPool().query(`
-  SELECT ea.attendee_status_id, COUNT(*) as count FROM eventattendees ea
-  JOIN events e ON ea.event_id = e.event_id
-  WHERE ea.user_id = $1 AND e.event_date > now()
+  SELECT ea.attendee_status_id, COUNT(*) as count FROM events e
+  LEFT JOIN eventattendees ea ON ea.event_id = e.event_id
+  AND ea.user_id = $1
+  WHERE e.event_date > now()
   GROUP BY ea.attendee_status_id
   `, [userId])
   return res.rows

@@ -29,8 +29,9 @@ export function API({ stack }) {
       "GET /event/{eventId}": "packages/functions/src/events/getEvent.main",
       "POST /event": "packages/functions/src/events/postEvent.main",
       "PUT /event/{eventId}": "packages/functions/src/events/putEvent.main",
-      // Routes for creating an attendee, getting attendees for an event, getting events for a specific attendee, getting a specific attendee
-      "POST /attendee": "packages/functions/src/attendees/postAttendee.main",
+      // Routes for creating an attendee, getting attendees for an event, getting events for a specific attendee, getting a specific attendee, deleting an attendee
+      "POST /attendee/{eventId}/{userId}": "packages/functions/src/attendees/postAttendee.main",
+      "DELETE /attendee/{eventId}/{userId}": "packages/functions/src/waitlist/deleteAttendee.main",
       "GET /attendee/events/{userId}": "packages/functions/src/attendees/getAttendeeEvents.main",
       "GET /attendee/users/{eventId}": "packages/functions/src/attendees/getAttendeeUsers.main",
       "GET /attendee/{userId}/{eventId}": "packages/functions/src/attendees/getAttendee.main",
@@ -40,10 +41,11 @@ export function API({ stack }) {
       // Routes for creating and deleting waitlist entries
       "POST /waitlist/{eventId}/{userId}": "packages/functions/src/waitlist/postWaitlist.main",
       "DELETE /waitlist/{eventId}/{userId}": "packages/functions/src/waitlist/deleteWaitlist.main",
-      // Routes for getting users waitlisted for an event, getting events a user is waitlisted for
+      // Routes for getting users waitlisted for an event, getting events a user is waitlisted for, checking if a user is waitlisted for a particular event
       "GET /waitlist/users/{eventId}": "packages/functions/src/waitlist/getEventWaitlist.main",
       "GET /waitlist/events/{userId}": "packages/functions/src/waitlist/getUserWaitlist.main",
-      // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously
+      "GET /waitlist/inwaitlist/{eventId}/{userId}": "packages/functions/src/waitlist/getUserEventWaitlist.main",
+      // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously for loyalty events, get upcoming events with counts for a particular user
       "GET /waitlistposition/{eventId}/{userId}": "packages/functions/src/utilities/getWaitlistPosition.main",
       "GET /anycapacity/{eventId}": "packages/functions/src/utilities/getAnyCapacity.main",
       "GET /loyalty/{userId}": "packages/functions/src/utilities/getLoyaltyCount.main",
