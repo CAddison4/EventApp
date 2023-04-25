@@ -15,11 +15,11 @@ export default function EventsCal({navigation}) {
 		const response = await axios.get(`${apiURL}/events`);
 		const data = response.data;
 		setEvents(data);
-		console.log(data);
+	//	console.log(data);
   
 		// create an array for the event dates to use in the calendar00000000
 		const eventDatesArray = data.map(event => {
-		  console.log(event.event_date);
+	//	  console.log(event.event_date);
 		  // check the date is valid
 		  if (event.event_date && Date.parse(event.event_date)) {
 			const originalDate = new Date(event.event_date);
@@ -30,10 +30,10 @@ export default function EventsCal({navigation}) {
 		  }
 		});
   
-		console.log(eventDatesArray);
+	//	console.log(eventDatesArray);
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray); 
 		// use eventDatesArray to create a new object
-		console.log(mergedMarkedDates);
+	//	console.log(mergedMarkedDates);
 		setMarkedDates(mergedMarkedDates); 
   
 		return eventDatesArray; 
@@ -41,7 +41,7 @@ export default function EventsCal({navigation}) {
   
 	  getAllEvents()
 		.then(eventDatesArray => {
-		  console.log("eventdate", eventDatesArray);
+		//   console.log("eventdate", eventDatesArray);
 		})
 		.catch(error => {
 		  console.error(error);
@@ -50,7 +50,7 @@ export default function EventsCal({navigation}) {
   
 	useEffect(() => {
 	  // update the markedDates state when the selected date changes
-	  console.log("markedDates updated", markedDates);
+//	  console.log("markedDates updated", markedDates);
 	}, [markedDates]);
   
 	return (
@@ -61,9 +61,9 @@ export default function EventsCal({navigation}) {
 				setSelected(day.dateString);
 				const {eventId} = markedDates[day.dateString];
 				if (eventId) {
-					console.log('eventId', eventId);
+				//	console.log('eventId', eventId);
 					const eventObj = events.find(event => event.event_id === eventId);
-					console.log('eventObj', eventObj)
+				//	console.log('eventObj', eventObj)
 										// navigate to the event details screen
 					navigation.navigate("EventDetails", {
 						eventObj: eventObj,

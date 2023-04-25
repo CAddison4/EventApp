@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { API_END_POINT } from '@env';
 
 import EventListItem from "../../../components/EventListItem";
 
@@ -13,8 +14,7 @@ export default function Invited({ navigation }) {
 	const [invitedEvents, setInvitedEvents] = useState([]);
 	useEffect(() => {
 		const getInvitedUserEvents = async () => {
-			const apiURL = "https://c030d30f5d.execute-api.us-west-2.amazonaws.com";
-			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
+			const response = await axios.get(`${API_END_POINT}/attendee/events/${userId}`);
 			const data = response.data;
 			setInvitedEvents(
 				data.filter((event) => event.attendee_status_id === "Invited")
@@ -27,9 +27,9 @@ export default function Invited({ navigation }) {
 		<View style={styles.container}>
 			<Text>Invited Screen</Text>
 			{invitedEvents.map((eventObj) => (
-				<View>
+				<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
+					<View>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
@@ -40,7 +40,7 @@ export default function Invited({ navigation }) {
 						</Text>
 					</View>
 					<Button
-						title="Accept"
+						title="Register"
 						onPress={() =>
 							//Store the EventAttendee Status in UseState and pass this status through as the status prop to the Confirmation Screen.
 							// This button should call a handleInviteresponse function that removes the event from the list.
@@ -51,15 +51,6 @@ export default function Invited({ navigation }) {
 						}
 					/>
 
-					<Button
-						title="Decline"
-						onPress={() =>
-							// This button should call a handleInviteresponse function that removes the event from the list.
-							console.log(
-								"Remove this from the list using a handleInviteResponse function."
-							)
-						}
-					/>
 				</View>
 			))}
 		</View>
