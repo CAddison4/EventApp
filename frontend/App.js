@@ -22,6 +22,7 @@ import QRCode from "./src/views/users/events/QRCode";
 
 import HostMenu from "./src/views/hosts/events/HostMenu";
 import CreateEvent from "./src/views/hosts/events/CreateEvent";
+import InviteList from "./src/views/hosts/events/InviteList";
 
 import { Provider, useDispatch } from "react-redux";
 
@@ -101,8 +102,8 @@ const App = () => {
 							/>
 
 							<Stack.Screen name="HostMenu" component={HostMenu} />
-
 							<Stack.Screen name="CreateEvent" component={CreateEvent} />
+							<Stack.Screen name="InviteList" component={InviteList} />
 						</>
 					)}
 				</Stack.Navigator>
