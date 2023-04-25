@@ -8,6 +8,7 @@ import { API_END_POINT } from '@env';
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
 import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
 
+
 import EventListItem from "../../../components/EventListItem";
 
 //Upcoming is Tier & Loyalty Events
@@ -24,6 +25,7 @@ export default function Upcoming() {
 	useEffect(() => {
 		const getUpcomingEvents = async () => {
 			const response = await axios.get(`${API_END_POINT}/attendee/events/${userId}`);
+
 			const data = response.data;
 			await Promise.all(data.map(async (eventObj) => {
 				await determineEventFlags(eventObj);

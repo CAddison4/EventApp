@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {Calendar, LocaleConfig} from 'react-native-calendars';
+import { API_END_POINT } from '@env'
 
 export default function EventsCal({navigation}) {
 	const [selected, setSelected] = useState('');
@@ -11,15 +12,14 @@ export default function EventsCal({navigation}) {
 	
 	useEffect(() => {
 	  const getAllEvents = async () => {
-		const apiURL = "https://dhkil9f47g.execute-api.us-west-2.amazonaws.com";
+		const apiURL = API_END_POINT;
 		const response = await axios.get(`${apiURL}/events`);
 		const data = response.data;
 		setEvents(data);
-	//	console.log(data);
-  
+		//console.log(data);  
 		// create an array for the event dates to use in the calendar00000000
 		const eventDatesArray = data.map(event => {
-	//	  console.log(event.event_date);
+		 // console.log(event.event_date);
 		  // check the date is valid
 		  if (event.event_date && Date.parse(event.event_date)) {
 			const originalDate = new Date(event.event_date);
@@ -41,7 +41,9 @@ export default function EventsCal({navigation}) {
   
 	  getAllEvents()
 		.then(eventDatesArray => {
+
 		//   console.log("eventdate", eventDatesArray);
+
 		})
 		.catch(error => {
 		  console.error(error);
