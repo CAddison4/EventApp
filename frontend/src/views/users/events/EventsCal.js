@@ -9,7 +9,9 @@ export default function EventsCal({navigation}) {
 	const [selected, setSelected] = useState('');
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
-	
+	const [filter, setFilter] = useState('All');
+	const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
+
 	useEffect(() => {
 	  const getAllEvents = async () => {
 		const apiURL = API_END_POINT;
@@ -18,8 +20,20 @@ export default function EventsCal({navigation}) {
 		setEvents(data);
 		// console.log("full-list",data);
   
-		// create an array for the event dates to use in the calendar00000000
+		// check the filter state and filter the events array accordingly
+
+		// create an array for the event dates to use in the calendar
 		const eventDatesArray = data.map(event => {
+			if (filter === 'All') {
+				return event;
+			} else if (filter === 'Registered') {
+				return events.find(event => event.userId === eventId);
+			} else if (filter === 'Eligible') {
+				return event.invited;
+			} else if (filter === 'Waitlisted') {
+				return event.waitlisted;
+			}
+
 		  // console.log(event.event_date);
 		  // check the date is valid
 		  if (event.event_date && Date.parse(event.event_date)) {
@@ -29,7 +43,7 @@ export default function EventsCal({navigation}) {
 		  } else {
 			return null; // invalid date
 		  }
-		});
+	    } );
 
 		// console.log(eventDatesArray);
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray); 
