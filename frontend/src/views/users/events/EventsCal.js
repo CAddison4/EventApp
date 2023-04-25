@@ -76,6 +76,7 @@ export default function EventsCal({navigation}) {
 		const response = await axios.get(`${apiURL}/events`);
 		const data = response.data;
 		setEvents(data);
+
 		// console.log("full-list",data);
   
 		// check the filter state and filter the events array accordingly
@@ -127,6 +128,7 @@ export default function EventsCal({navigation}) {
   
 	return (
 		<View style={styles.container}>
+		
 		  <Text>EventsCal Screen</Text>
 		  <Calendar
 		   style={[styles.calendar, {height: 700}]}
