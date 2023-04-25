@@ -22,7 +22,14 @@ import QRCode from "./src/views/users/events/QRCode";
 
 import HostMenu from "./src/views/hosts/events/HostMenu";
 import CreateEvent from "./src/views/hosts/events/CreateEvent";
+import EventsHost from "./src/views/hosts/events/EventsHost";
+import EventDetailsHost from "./src/views/hosts/events/EventDetailsHost";
+import UpcomingEventsHost from "./src/views/hosts/events/UpcomingEvents";
+import PastEventsHost from "./src/views/hosts/events/PastEvents";
+
 import InviteList from "./src/views/hosts/events/InviteList";
+import Users from "./src/views/hosts/events/Users";
+import UserDetails from "./src/views/hosts/events/UserDetails";
 
 import { Provider, useDispatch } from "react-redux";
 
@@ -60,8 +67,8 @@ const App = () => {
 		});
 	}, []);
 
-	const testUser = { role_id: "Host" };
-	// const testUser = { role_id: "Attendee" };
+	// const testUser = { role_id: "Host" };
+	const testUser = { role_id: "Attendee" };
 
 	return (
 		<Provider store={store}>
@@ -103,7 +110,20 @@ const App = () => {
 
 							<Stack.Screen name="HostMenu" component={HostMenu} />
 							<Stack.Screen name="CreateEvent" component={CreateEvent} />
+							<Stack.Screen name="EventsHost" component={EventsHost} />
+							<Stack.Screen
+								name="EventDetailsHost"
+								component={EventDetailsHost}
+							/>
+							{/* <Stack.Screen
+								name="UpcomingEventsHost"
+								component={UpcomingEventsHost}
+							/>
+							<Stack.Screen name="PastEventsHost" component={PastEventsHost} /> */}
+
 							<Stack.Screen name="InviteList" component={InviteList} />
+							<Stack.Screen name="Users" component={Users} />
+							<Stack.Screen name="UserDetails" component={UserDetails} />
 						</>
 					)}
 				</Stack.Navigator>
