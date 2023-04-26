@@ -47,7 +47,9 @@ const SignInForm = ({ onFormTypeChange }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
+
       {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -105,6 +107,7 @@ const styles = StyleSheet.create({
     flex: 3,
     width: "100%",
     maxWidth: 400,
+
     backgroundColor: "#fff",
     paddingHorizontal: 20,
   },
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 40,
+
   },
 
   input: {
@@ -140,6 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",
+
   },
 });
 
