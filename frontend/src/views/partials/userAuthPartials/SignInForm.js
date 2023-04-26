@@ -14,6 +14,7 @@ const SignInForm = ({ onFormTypeChange }) => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const [message, setMessage] = useState("");
 
@@ -22,7 +23,7 @@ const SignInForm = ({ onFormTypeChange }) => {
     try {
       await handleSignIn(username, password, dispatch);
     } catch (error) {
-      console.log("Error signing in:", error);
+      console.log("Error signing in:", error);r
     }
   };
 
@@ -48,7 +49,6 @@ const SignInForm = ({ onFormTypeChange }) => {
           secureTextEntry
         />
         <Text
-
           onPress={() => onFormTypeChange("forgotPassword")}
           style={styles.secondaryButton}
         >
@@ -62,6 +62,7 @@ const SignInForm = ({ onFormTypeChange }) => {
           onPress={() => onFormTypeChange("signUp")}
           style={styles.primaryButton}
         />
+        
         <Button
           title="Sign In"
           onPress={handleSubmit}
@@ -74,8 +75,9 @@ const SignInForm = ({ onFormTypeChange }) => {
 
 const styles = StyleSheet.create({
   container: {
-
-    flex: 1,
+    flex: 3,
+    width: "100%",
+    maxWidth: 400,
 
     backgroundColor: "#fff",
     paddingHorizontal: 20,
@@ -84,6 +86,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    marginVertical: 30,
+  },
+  inputContainer: {
+    marginBottom: 40,
 
   },
 
@@ -107,6 +113,8 @@ const styles = StyleSheet.create({
   secondaryButton: {
     width: "100%",
     fontSize: 13,
+    textDecorationLine: "underline",
+    color: "#888",
 
   },
 });
