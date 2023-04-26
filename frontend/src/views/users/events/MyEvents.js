@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -32,8 +32,12 @@ export default function MyEvents() {
 				tabBarShowLabel: false,
 				headerShown: false,
 			})}>
-			<Tab.Screen name="List" component={EventsList} />
-			<Tab.Screen name="Calendar" component={EventsCal} />
+			<Tab.Screen name="List"
+				component={EventsList}
+				initialParams={{ type: "myevents" }} />
+			<Tab.Screen name="Calendar"
+				component={EventsCal}
+				initialParams={{ type: "myevents" }} />
 		</Tab.Navigator>
 	);
 }

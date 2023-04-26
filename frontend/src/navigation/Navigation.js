@@ -48,6 +48,7 @@ Amplify.configure(config);
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+
 	const [authenticated, setAuthenticated] = React.useState(false);
 	const user = useSelector((state) => state.user);
 
