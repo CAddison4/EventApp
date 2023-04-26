@@ -30,12 +30,14 @@ export default function EventsList({ route }) {
 	}
 
 	useEffect(() => {
+
 		const getEvents = async () => {
 			let loyaltyCount = 0;
 			if (type === "upcoming") {
 				loyaltyCount = await getLoyaltyCount(userId);
 			}
 			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
+
 			const data = response.data;
 			let filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
 			

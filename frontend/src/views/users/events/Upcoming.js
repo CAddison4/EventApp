@@ -1,15 +1,20 @@
+
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
 
+
 const Tab = createBottomTabNavigator();
+
 
 export default function Upcoming() {
 	return (
+
 		<Tab.Navigator
 			initialRouteName="EventsList"
 			screenOptions={({ route }) => ({
@@ -38,6 +43,7 @@ export default function Upcoming() {
 			   component={EventsCal}
 			   initialParams={{ type: "upcoming" }} />
 		</Tab.Navigator>
+
 	);
 }
 const styles = StyleSheet.create({

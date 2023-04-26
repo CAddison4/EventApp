@@ -3,18 +3,17 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { API_END_POINT } from '@env';
+import { API_END_POINT } from "@env";
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 
 export default function Invited({ navigation }) {
-
 	const [invitedEvents, setInvitedEvents] = useState([]);
 	useEffect(() => {
 		const getInvitedUserEvents = async () => {
 			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
+			const response = await axios.get(`${apiURL}attendee/events/${userId}`);
 			const data = response.data;
 			setInvitedEvents(
 				data.filter((event) => event.attendee_status_id === "Invited")
@@ -22,7 +21,7 @@ export default function Invited({ navigation }) {
 		};
 		getInvitedUserEvents();
 	}, []);
-	
+
 	return (
 		<View style={styles.container}>
 			<Text>Invited Screen</Text>
@@ -50,7 +49,6 @@ export default function Invited({ navigation }) {
 							})
 						}
 					/>
-
 				</View>
 			))}
 		</View>

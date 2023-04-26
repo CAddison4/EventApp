@@ -1,18 +1,14 @@
 import { StyleSheet, Text, View, Button } from "react-native";
-
 import * as React from "react";
-
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector } from "react-redux";
-
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+import { handleSignOut } from "../../../components/AuthComponents";
 
 const MainProfile = () => {
   const user = useSelector((state) => state.user);
+
+  const handleSubmit = () => {
+    handleSignOut();
+  };
 
 
   if (!user) {
@@ -27,6 +23,7 @@ const MainProfile = () => {
           </Text>
         </View>
       ))}
+      <Button title="Sign Out" onPress={handleSubmit} />
     </View>
   );
 };
