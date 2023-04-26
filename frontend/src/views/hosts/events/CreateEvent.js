@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 import { useEffect, useState } from "react";
 export default function CreateEvent({ navigation }) {
-	const eventId = 1;
+	// const eventId = 1;
 	const defaultValue = "Guest List";
 
 	const [selectedEventType, setSelectedEventType] = useState(defaultValue); 
@@ -46,18 +46,19 @@ export default function CreateEvent({ navigation }) {
 			eligibilityType: selectedEventType,
 			eventName: inpEvnName,
 			capacity: inpEvnMax,
-			eventDate: "2021-10-10",
-			eventStart:  '2016-01-25 10:10:10',
-			eventEnd:  '2016-01-25 10:10:10',
+			eventDate: "2023-10-10",
+			eventStart:  '2023-10-10 10:10:10',
+			eventEnd:  '2023-10-14 10:10:10',
 			eventLocation: inpEvnLocation,
 			loyaltyMax: 0,
 		  });
-	  
-		  console.log("Event created successfully!", response.data);
+		  console.log("Event created successfully!", response.data.event.event_id);
 		  
+		  // Navigate to InviteList screen
+		  navigation.navigate("InviteList", {
+			eventId: response.data.event.event_id,})
 		} catch (error) {
 		  console.error("Error creating event:", error);
-		  
 		}
 	  };
 
@@ -99,6 +100,7 @@ export default function CreateEvent({ navigation }) {
 							style={styles.nameInput}
 							onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)} />
 					<Button title="Proceed" onPress={handleCreateEvent} /></>
+
 		)}
 		</>
 	  </View>
