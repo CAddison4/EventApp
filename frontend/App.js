@@ -12,13 +12,24 @@ import { requireAuth } from "./src/components/middleware/AuthMiddleware";
 import MainProfile from "./src/views/users/profile/MainProfile";
 
 import AuthForm from "./src/views/AuthForm";
+import Events from "./src/views/users/events/Events";
 import EventDetails from "./src/views/users/events/EventDetails";
-import Confirmation from "./src/views/users/events/Confirmation";
-import QRCode from "./src/views/users/events/QRCode";
 import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
-
 import EventsCal from "./src/views/users/events/EventsCal";
+import Confirmation from "./src/views/users/events/Confirmation";
+import QRCode from "./src/views/users/events/QRCode";
+
+import HostMenu from "./src/views/hosts/events/HostMenu";
+import CreateEvent from "./src/views/hosts/events/CreateEvent";
+import EventsHost from "./src/views/hosts/events/EventsHost";
+import EventDetailsHost from "./src/views/hosts/events/EventDetailsHost";
+import UpcomingEventsHost from "./src/views/hosts/events/UpcomingEvents";
+import PastEventsHost from "./src/views/hosts/events/PastEvents";
+
+import InviteList from "./src/views/hosts/events/InviteList";
+import Users from "./src/views/hosts/events/Users";
+import UserDetails from "./src/views/hosts/events/UserDetails";
 
 import { Provider, useDispatch } from "react-redux";
 
@@ -30,86 +41,106 @@ import config from "./src/aws-exports";
 Amplify.configure(config);
 
 import eventObjs from "./src/views/users/events/Invited";
-import Events from "./src/views/users/events/Events";
 
 import ProfileNavButton from "./src/components/ProfileNavButton";
 
-import { API_URL } from "@env";
-console.log("API_URL", API_URL);
+// import { API_URL } from "@env";
+// console.log("API_URL", API_END_POINT);
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [authenticated, setAuthenticated] = React.useState(false);
 
-  useEffect(() => {
-    Hub.listen("auth", (data) => {
-      switch (data.payload.event) {
-        case "signIn":
-          console.log("signed in", data.payload.data);
-          setAuthenticated(true);
-          break;
-        case "signOut":
-          console.log("signed out", data.payload.data);
-          setAuthenticated(false);
-          break;
-      }
-    });
-  }, []);
+	const [authenticated, setAuthenticated] = React.useState(false);
 
-  return (
-    <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Events"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#607D8B",
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-          }}
-        >
-          {authenticated == true ? (
-            <Stack.Screen name="AuthForm" component={AuthForm} />
-          ) : (
-            <>
-              <Stack.Screen name="EventsList" component={EventsList} />
-              <Stack.Screen name="EventsCal" component={EventsCal} />
-              <Stack.Screen name="MainProfile" component={MainProfile} />
-              <Stack.Screen
-                name="Events"
-                component={Events}
-                options={{
-                  title: "Event App",
-                  headerRight: () => <ProfileNavButton />,
-                }}
-              />
-              <Stack.Screen name="EventListItem" component={EventListItem} />
-              <Stack.Screen name="EventDetails" component={EventDetails} />
-              <Stack.Screen name="Confirmation" component={Confirmation} />
-              <Stack.Screen name="QRCode" component={QRCode} />
-              <Stack.Screen
-                name="ProfileNavButton"
-                component={ProfileNavButton}
-              />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </Provider>
-  );
+	useEffect(() => {
+		Hub.listen("auth", (data) => {
+			switch (data.payload.event) {
+				case "signIn":
+					console.log("signed in", data.payload.data);
+					setAuthenticated(true);
+					break;
+				case "signOut":
+					console.log("signed out", data.payload.data);
+					setAuthenticated(false);
+					break;
+			}
+		});
+	}, []);
+
+	// const testUser = { role_id: "Host" };
+	const testUser = { role_id: "Attendee" };
+
+	return (
+		<Provider store={store}>
+			<NavigationContainer>
+				<Stack.Navigator
+					initialRouteName={testUser.role_id == "Host" ? "HostMenu" : "Events"}
+					screenOptions={{
+						headerStyle: {
+							backgroundColor: "#607D8B",
+						},
+						headerTintColor: "#fff",
+						headerTitleStyle: {
+							fontWeight: "bold",
+						},
+					}}>
+					{authenticated == true ? (
+						<Stack.Screen name="AuthForm" component={AuthForm} />
+					) : (
+						<>
+							<Stack.Screen name="MainProfile" component={MainProfile} />
+							<Stack.Screen
+								name="Events"
+								component={Events}
+								options={{
+									title: "Event App",
+									headerRight: () => <ProfileNavButton />,
+								}}
+							/>
+							<Stack.Screen name="EventsList" component={EventsList} />
+							<Stack.Screen name="EventsCal" component={EventsCal} />
+							<Stack.Screen name="EventListItem" component={EventListItem} />
+							<Stack.Screen name="EventDetails" component={EventDetails} />
+							<Stack.Screen name="Confirmation" component={Confirmation} />
+							<Stack.Screen name="QRCode" component={QRCode} />
+							<Stack.Screen
+								name="ProfileNavButton"
+								component={ProfileNavButton}
+							/>
+
+							<Stack.Screen name="HostMenu" component={HostMenu} />
+							<Stack.Screen name="CreateEvent" component={CreateEvent} />
+							<Stack.Screen name="EventsHost" component={EventsHost} />
+							<Stack.Screen
+								name="EventDetailsHost"
+								component={EventDetailsHost}
+							/>
+							{/* <Stack.Screen
+								name="UpcomingEventsHost"
+								component={UpcomingEventsHost}
+							/>
+							<Stack.Screen name="PastEventsHost" component={PastEventsHost} /> */}
+
+							<Stack.Screen name="InviteList" component={InviteList} />
+							<Stack.Screen name="Users" component={Users} />
+							<Stack.Screen name="UserDetails" component={UserDetails} />
+						</>
+					)}
+				</Stack.Navigator>
+			</NavigationContainer>
+		</Provider>
+	);
+
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+	container: {
+		flex: 1,
+		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center",
+	},
 });
 
 export default App;
