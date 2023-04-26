@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import { useSelector } from "react-redux";
-
+import { handleSignOut } from "../../../components/AuthComponents";
 
 const MainProfile = () => {
   const user = useSelector((state) => state.user);
+
+  const handleSubmit = () => {
+    handleSignOut();
+  };
 
 
   if (!user) {
@@ -19,6 +23,7 @@ const MainProfile = () => {
           </Text>
         </View>
       ))}
+      <Button title="Sign Out" onPress={handleSubmit} />
     </View>
   );
 };

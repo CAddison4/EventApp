@@ -90,7 +90,7 @@ const Navigation = () => {
           },
         }}
       >
-        {authenticated == true ? (
+        {authenticated == false ? (
           <Stack.Screen name="AuthForm">{() => <AuthForm />}</Stack.Screen>
         ) : (
           
