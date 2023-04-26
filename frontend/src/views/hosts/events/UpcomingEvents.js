@@ -19,7 +19,7 @@ export default function UpcomingEvents({ navigation }) {
 			// setEventObjs(data);
 		};
 		getEvents();
-	}, []);
+	}, [API_END_POINT]);
 	return (
 		<View>
 			<Text>Upcoming Events</Text>
