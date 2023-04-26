@@ -16,9 +16,6 @@ const SignInForm = ({ onFormTypeChange }) => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const [message, setMessage] = useState("");
-
-
   const handleSubmit = async () => {
     try {
       await handleSignIn(username, password, dispatch);
