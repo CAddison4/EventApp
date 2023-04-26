@@ -69,8 +69,8 @@ const Navigation = () => {
     });
   }, []);
 
-//   const testUserRole = { role_id: "Host" };
-  const testUserRole = { role_id: "Attendee" };
+const testUserRole = { role_id: "Host" };
+// const testUserRole = { role_id: "Attendee" };
 
 //   const testUserStatus = { membership_status_id: "None" };
   const testUserStatus = { membership_status_id: "Gold" };
@@ -89,7 +89,7 @@ const Navigation = () => {
           },
         }}
       >
-        {authenticated == false ? (
+        {authenticated == true ? (
           <Stack.Screen name="AuthForm">{() => <AuthForm />}</Stack.Screen>
         ) : (
           <>
