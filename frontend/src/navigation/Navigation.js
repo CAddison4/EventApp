@@ -69,8 +69,9 @@ const Navigation = () => {
     });
   }, []);
 
-const testUserRole = { role_id: "Host" };
-// const testUserRole = { role_id: "Attendee" };
+
+//   const testUserRole = { role_id: "Host" };
+  const testUserRole = { role_id: "Attendee" };
 
 //   const testUserStatus = { membership_status_id: "None" };
   const testUserStatus = { membership_status_id: "Gold" };
@@ -92,6 +93,7 @@ const testUserRole = { role_id: "Host" };
         {authenticated == true ? (
           <Stack.Screen name="AuthForm">{() => <AuthForm />}</Stack.Screen>
         ) : (
+          
           <>
             {user && testUserStatus.membership_status_id === "None" ? (
               <Stack.Screen
