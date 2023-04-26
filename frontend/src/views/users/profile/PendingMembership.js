@@ -8,8 +8,9 @@ import {handleSignOut} from '../../../components/AuthComponents'
 const PendingMembership = () => {
     
     const user = useSelector((state) => state.user);
-    
+
     const handleSubmit = () => {
+        console.warn("Sign out In Pending Membership")
         handleSignOut();
     };
     
