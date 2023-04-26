@@ -5,30 +5,9 @@ import EventListItem from "../../../components/EventListItem";
 import { API } from "aws-amplify";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_END_POINT } from '@env'
+import { API_END_POINT } from '@env';
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
-
-const eventObjs = [
-	{
-		id: 1,
-		name: "Event 1",
-		description: "This is the first event",
-		date: "2021-10-10",
-		time: "10:00",
-		location: "Location 1",
-		status: "Invited",
-	},
-	{
-		id: 2,
-		name: "Event 2",
-		description: "This is the second event",
-		date: "2021-10-10",
-		time: "10:00",
-		location: "Location 2",
-		status: "Invited",
-	},
-];
 
 export default function Registered({ navigation }) {
 	const [registeredEvents, setRegisteredEvents] = useState([]);
@@ -41,8 +20,7 @@ export default function Registered({ navigation }) {
 		// 	console.log("test", response);
 		// });
 		const getRegisteredUserEvents = async () => {
-			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
+			const response = await axios.get(`${API_END_POINT}/attendee/events/${userId}`);
 			const data = response.data;
 			setRegisteredEvents(
 				data.filter((event) => event.attendee_status_id === "Registered")
@@ -56,9 +34,9 @@ export default function Registered({ navigation }) {
 			<Text>Registered Screen</Text>
 
 			{registeredEvents.map((eventObj) => (
-				<View>
+				<View key={`${eventObj.event_id}${eventObj.user_id}`}>
 					{/* This could probably be combined into a single component once we decide on what to display here (currently duplicated in multiple views).*/}
-					<View key={`${eventObj.event_id}${eventObj.user_id}`}>
+					<View>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetails", {
@@ -79,7 +57,7 @@ export default function Registered({ navigation }) {
 					/>
 
 					<Button
-						title="Unregister"
+						title="Withdraw"
 						onPress={() =>
 							// This button should call a handleInviteresponse function that removes the event from the list and updates the EventAttendeeStatus to Declined.
 							console.log(
