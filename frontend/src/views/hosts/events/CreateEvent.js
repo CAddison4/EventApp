@@ -7,16 +7,22 @@ import { useEffect, useState } from "react";
 export default function CreateEvent({ navigation }) {
 	const eventId = 1;
 	const defaultValue = "Guest List";
-	const [inpEvnType, setInpEvnType] = useState('');
+
+	const [selectedEventType, setSelectedEventType] = useState(defaultValue); 
 	const [inpEvnName, setInpEvnName] = useState('');
 	const [inpEvnDate, setInpEvnDate] = useState('');
 	const [inpEvnMax, setInpEvnMax] = useState('');
 	const [inpEvnStartTime, setInpEvnStartTime] = useState('');
 	const [inpEvnEndTime, setInpEvnEndTime] = useState('');
 	const [inpEvnLocation, setInpEvnLocation] = useState('');
-	const [eligibilityData, setEligibilityData] = useState([]); 
 
-	 const [selectedEventType, setSelectedEventType] = useState(defaultValue); 
+	const [eligibilityData, setEligibilityData] = useState([]); 
+	const [isPickerVisible, setIsPickerVisible] = useState(false);
+
+	 const handleEventTypeChange = (itemValue, itemIndex) => {
+		setSelectedEventType(itemValue); // Update the state with the selected event type value
+	  };
+
 	useEffect(() => {
 		const geteligibility = async () => {
 			// API
@@ -25,7 +31,8 @@ export default function CreateEvent({ navigation }) {
 			const response = await axios.get(`${apiURL}/eligibility`);
 			const data = response.data;
 			setEligibilityData(response.data);
-			console.log(data);
+			setIsPickerVisible(true);
+			console.log("Eligibility", data.eligibilityTypes);
 		};
 		geteligibility();
 	}, []);
@@ -37,7 +44,7 @@ export default function CreateEvent({ navigation }) {
 		// POST
 		try {
 		  const response = await axios.post(`${apiURL}/event`, {
-			eventType: inpEvnType,
+			eventType: selectedEventType,
 			eventName: inpEvnName,
 			eventDate: inpEvnDate,
 			maxParticipants: inpEvnMax,
@@ -56,22 +63,22 @@ export default function CreateEvent({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			<Picker
-				selectedValue={selectedEventType}
-				onValueChange={(itemValue, itemIndex) => setSelectedEventType(itemValue)}
-			>
-				{eligibilityData.map((item, index) => {
-					return (
-						<Picker.Item
-
-							label={item.eventType}
-							value={item.eventType}
-							key={index}
-						/>
-					);
-				})}
-			</Picker>
-
+		<>
+		{isPickerVisible && (  // check if the eligibility data is fetched
+		<Picker
+		selectedValue={selectedEventType}
+		onValueChange={handleEventTypeChange} 
+		>
+		{eligibilityData.eligibilityTypes.map((item, index) => ( // map the eligibility types
+			<Picker.Item
+			value={item.type_id} 
+			key={index}
+			label={item.type_id} 
+			/>
+		))}
+		</Picker>
+		)}
+		</>
 
 		<TextInput
 		  placeholder="Event Type"
