@@ -8,7 +8,7 @@ export default function PastEvents({ navigation }) {
 	useEffect(() => {
 		const getEvents = async () => {
 			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}/events`);
+			const response = await axios.get(`${apiURL}events`);
 			const data = response.data.filter((eventObj) => {
 				//Decide if we want this to be the event start date or event end date. Ensure Upcoming Events is updated too.
 				const eventDate = new Date(eventObj.event_date);

@@ -31,7 +31,7 @@ export default function EventsList() {
 	useEffect(() => {
 		const getUserEventCounts = async () => {
 			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}/eventcounts/${userId}`);
+			const response = await axios.get(`${apiURL}eventcounts/${userId}`);
 			const data = response.data;
 			// let upcoming = 0;
 			// upcoming = parseInt(upcoming);
