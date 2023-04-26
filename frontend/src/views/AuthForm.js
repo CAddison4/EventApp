@@ -10,11 +10,14 @@ import { Auth } from 'aws-amplify';
 const AuthForm = ( ) => {
   const [formType, setFormType] = useState('signIn');
   const [username, setUsername] = useState('');
+  const [appUser, setAppUser] = useState(null);
 
   const handleFormTypeChange = (newFormType, username) => {
     setFormType(newFormType);
     setUsername(username);
+
   };
+
 
 
 

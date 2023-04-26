@@ -11,7 +11,7 @@ import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 
-export default function Upcoming() {
+export default function Upcoming({navigation}) {
 
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	useEffect(() => {

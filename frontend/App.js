@@ -17,10 +17,10 @@ import Confirmation from "./src/views/users/events/Confirmation";
 import QRCode from "./src/views/users/events/QRCode";
 import EventsList from "./src/views/users/events/EventsList";
 import EventListItem from "./src/components/EventListItem";
-
+import ProfileNavButton from "./src/components/ProfileNavButton";
 import EventsCal from "./src/views/users/events/EventsCal";
 
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from "./src/components/store/index";
 
@@ -32,20 +32,22 @@ Amplify.configure(config);
 import eventObjs from "./src/views/users/events/Invited";
 import Events from "./src/views/users/events/Events";
 
-import ProfileNavButton from "./src/components/ProfileNavButton";
-
-import { API_URL } from "@env";
-console.log("API_URL", API_URL);
-
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+
+  const handleSignInSuccess = (appUser) => {
+    console.log("appUser", appUser)
+    setUser(appUser);
+  };
 
   useEffect(() => {
     Hub.listen("auth", (data) => {
       switch (data.payload.event) {
         case "signIn":
+          console.log("user", user);
           console.log("signed in", data.payload.data);
           setAuthenticated(true);
           break;
@@ -73,28 +75,42 @@ const App = () => {
           }}
         >
           {authenticated == false ? (
-            <Stack.Screen name="AuthForm" component={AuthForm} />
+            <Stack.Screen name="AuthForm">
+              {() => <AuthForm handleSignInSuccess={handleSignInSuccess} />}
+            </Stack.Screen>
           ) : (
             <>
-              <Stack.Screen name="EventsList" component={EventsList} />
-              <Stack.Screen name="EventsCal" component={EventsCal} />
-              <Stack.Screen name="MainProfile" component={MainProfile} />
-              <Stack.Screen
-                name="Events"
-                component={Events}
-                options={{
-                  title: "Event App",
-                  headerRight: () => <ProfileNavButton />,
-                }}
-              />
-              <Stack.Screen name="EventListItem" component={EventListItem} />
-              <Stack.Screen name="EventDetails" component={EventDetails} />
-              <Stack.Screen name="Confirmation" component={Confirmation} />
-              <Stack.Screen name="QRCode" component={QRCode} />
-              <Stack.Screen
-                name="ProfileNavButton"
-                component={ProfileNavButton}
-              />
+              {user && user.membership_status_id === "None" ? (
+                <Stack.Screen
+                  name="MembershipPending"
+                  component={MembershipPending}
+                />
+              ) : (
+                <>
+                  <Stack.Screen name="EventsList" component={EventsList} />
+                  <Stack.Screen name="EventsCal" component={EventsCal} />
+                  <Stack.Screen name="MainProfile" component={MainProfile} />
+                  <Stack.Screen
+                    name="Events"
+                    component={Events}
+                    options={{
+                      title: "Event App",
+                      headerRight: () => <ProfileNavButton />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="EventListItem"
+                    component={EventListItem}
+                  />
+                  <Stack.Screen name="EventDetails" component={EventDetails} />
+                  <Stack.Screen name="Confirmation" component={Confirmation} />
+                  <Stack.Screen name="QRCode" component={QRCode} />
+                  <Stack.Screen
+                    name="ProfileNavButton"
+                    component={ProfileNavButton}
+                  />
+                </>
+              )}
             </>
           )}
         </Stack.Navigator>
