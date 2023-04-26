@@ -62,12 +62,9 @@ export const handleSignIn = async (username, password, dispatch) => {
       });
       const apiResponseJson = await apiResponse.json();
       await dispatch(setUser(apiResponseJson));
-      console.log()
-      console.log('API response:', apiResponseJson);
       await Auth.signIn(username, password);
-      console.log('Successfully signed in');
     } catch (error) {
-      console.log('Error signing in:', error);
+      return('Error signing in:' + error);
     }
   };
   

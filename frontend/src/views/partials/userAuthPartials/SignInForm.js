@@ -10,15 +10,18 @@ import {
 import { handleSignIn } from "../../../components/AuthComponents";
 import { useDispatch } from "react-redux";
 
-const SignInForm = ({ onFormTypeChange }) => {
+const SignInForm = ({ onFormTypeChange, message }) => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [formMessage, setFormMessage] = useState(message ? message : "" );
 
   const handleSubmit = async () => {
     try {
-      await handleSignIn(username, password, dispatch);
+      const errorMessage = await handleSignIn(username, password, dispatch);
+      if (errorMessage) {
+        setFormMessage(errorMessage);
+      }
     } catch (error) {
       console.log("Error signing in:", error);r
     }
@@ -48,7 +51,7 @@ const SignInForm = ({ onFormTypeChange }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
 
-      {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
+      {formMessage ? <Text style={styles.errorMessage}>{formMessage}</Text> : null}
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -146,6 +149,11 @@ const styles = StyleSheet.create({
     color: "#888",
 
   },
+  errorMessage: {
+    color: "red",
+    marginBottom: 20,
+  },
+
 });
 
 export default SignInForm;
