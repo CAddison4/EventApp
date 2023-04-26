@@ -10,16 +10,13 @@ import { Auth } from "aws-amplify";
 const AuthForm = ( ) => {
   const [formType, setFormType] = useState('signIn');
   const [username, setUsername] = useState('');
-  const [appUser, setAppUser] = useState(null);
+
 
   const handleFormTypeChange = (newFormType, username) => {
     setFormType(newFormType);
     setUsername(username);
 
   };
-
-
-
 
   return (
     <View style={styles.formView}>
@@ -29,7 +26,7 @@ const AuthForm = ( ) => {
       {formType === 'confirmation' && <ConfirmationForm onFormTypeChange={handleFormTypeChange } username={username} />}
       {formType === 'forgotPassword' && <ForgotPasswordForm onFormTypeChange={handleFormTypeChange} />}
       {formType === 'resetPassword' && <ResetPasswordForm onFormTypeChange={handleFormTypeChange} username={username} />}
-      <Button title="Sign Out" onPress={() => Auth.signOut()} />
+
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tab} onPress={() => handleFormTypeChange('confirmation', username)}>
           <Text style={[styles.tabText, formType === 'confirmation' && styles.activeTab]}>Confirmation</Text>
@@ -46,12 +43,13 @@ const AuthForm = ( ) => {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
+  formView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+
 	tabBar: {
 		justifyContent: "center",
 		flexDirection: "row",
@@ -63,6 +61,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: "#eee",
+    width: 100,
 	},
 	tabText: {
 		display: "flex",
@@ -70,23 +69,12 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		fontWeight: "bold",
 		height: 50,
-		width: 100,
+		width: 110,
 	},
 	activeTab: {
 		color: "blue",
 	},
 
-	// tab: {
-	//   flex: 1,
-	//   justifyContent: 'center',
-	//   alignItems: 'center',
-	// },
-	// tabText: {
-	//   fontWeight: 'bold',
-	// },
-	// activeTab: {
-	//   color: 'blue',
-	// },
 });
 
 export default AuthForm;
