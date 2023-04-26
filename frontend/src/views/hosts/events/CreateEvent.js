@@ -32,7 +32,6 @@ export default function CreateEvent({ navigation }) {
 			const data = response.data;
 			setEligibilityData(response.data);
 			setIsPickerVisible(true);
-			console.log("Eligibility", data.eligibilityTypes);
 		};
 		geteligibility();
 	}, []);
@@ -42,40 +41,30 @@ export default function CreateEvent({ navigation }) {
 		const apiURL = API_END_POINT;
 		// POST
 		try {
-<<<<<<< HEAD
 		  const response = await axios.post(`${apiURL}/event`, {
 			eligibilityType: selectedEventType,
 			eventName: inpEvnName,
 			capacity: inpEvnMax,
-			eventDate: "2023-10-10",
-			eventStart:  '2023-10-10 10:10:10',
-			eventEnd:  '2023-10-14 10:10:10',
+			eventDate: "2023-09-21",
+			eventStart:  '2023-09-21 10:10:10',
+			eventEnd:  '2023-09-23 10:10:10',
 			eventLocation: inpEvnLocation,
 			loyaltyMax: 0,
 		  });
 		  console.log("Event created successfully!", response.data.event.event_id);
 		  
+		if(selectedEventType == "Guest List")
+		{
 		  // Navigate to InviteList screen
 		  navigation.navigate("InviteList", {
-			eventId: response.data.event.event_id,})
+			eventObj: response.data.event})
+		}else{
+			navigation.navigate("EventDetails", {
+			eventObj: response.data.event})
+		}
+
 		} catch (error) {
 		  console.error("Error creating event:", error);
-=======
-			const response = await axios.post(`${apiURL}event`, {
-				eligibilityType: selectedEventType,
-				eventName: inpEvnName,
-				capacity: inpEvnMax,
-				eventDate: "2021-10-10",
-				eventStart: "2016-01-25 10:10:10",
-				eventEnd: "2016-01-25 10:10:10",
-				eventLocation: inpEvnLocation,
-				loyaltyMax: 0,
-			});
-
-			console.log("Event created successfully!", response.data);
-		} catch (error) {
-			console.error("Error creating event:", error);
->>>>>>> main
 		}
 	};
 
@@ -128,29 +117,15 @@ export default function CreateEvent({ navigation }) {
 						<TextInput
 							placeholder="Location"
 							style={styles.nameInput}
-<<<<<<< HEAD
 							onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)} />
-					<Button title="Proceed" onPress={handleCreateEvent} /></>
-
-		)}
-		</>
-	  </View>
-  );
-};
-
-=======
-							onChangeText={(inpEvnLocation) =>
-								setInpEvnLocation(inpEvnLocation)
-							}
-						/>
-						<Button title="Proceed" onPress={handleCreateEvent} />
+						<Button title="Create" onPress={handleCreateEvent} />
 					</>
 				)}
 			</>
-		</View>
-	);
-}
->>>>>>> main
+	  </View>
+ 	);
+};
+
 
 const styles = StyleSheet.create({
 	container: {
