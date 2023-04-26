@@ -13,15 +13,15 @@ import EventListItem from "../../../components/EventListItem";
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 const membership_status = "Gold";
 
-export default function Upcoming() {
+export default function Upcoming({navigation}) {
 
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [reRender, setReRender] = useState([false]);
-	const navigation = useNavigation();
+	// const navigation = useNavigation();
 
 	// Count number of events this user has attended prior to today
 	const getLoyaltyCount = async (userId) => {
-		response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
+		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
 		return response.data.eventCount;
 	}
 
