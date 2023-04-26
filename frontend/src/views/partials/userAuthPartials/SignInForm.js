@@ -24,6 +24,26 @@ const SignInForm = ({ onFormTypeChange }) => {
     }
   };
 
+  const handleAttendeeSignIn = async () => {
+    try {
+      const attendeeUserName = "scott.c19@live.com";
+      const attendeePassword = "td3j5FnhiLHRa$KA";
+      await handleSignIn(attendeeUserName, attendeePassword, dispatch);
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+  const handleHostSignIn = async () => {
+    try {
+      const hostUserName = "scroin@my.bcit.ca";
+      const hostPassword = "s&PrpDLBAG94rY3$";
+      await handleSignIn(hostUserName, hostPassword, dispatch);
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -57,10 +77,22 @@ const SignInForm = ({ onFormTypeChange }) => {
           onPress={() => onFormTypeChange("signUp")}
           style={styles.primaryButton}
         />
-        
+
         <Button
           title="Sign In"
           onPress={handleSubmit}
+          style={styles.primaryButton}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Sign In as Attendee"
+          onPress={handleAttendeeSignIn}
+          style={styles.primaryButton}
+        />
+        <Button
+          title="Sign In as Host"
+          onPress={handleHostSignIn}
           style={styles.primaryButton}
         />
       </View>
