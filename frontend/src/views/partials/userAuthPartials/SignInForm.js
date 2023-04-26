@@ -20,7 +20,7 @@ const SignInForm = ({ onFormTypeChange }) => {
     try {
       await handleSignIn(username, password, dispatch);
     } catch (error) {
-      console.log("Error signing in:", error);
+      console.log("Error signing in:", error);r
     }
   };
 
@@ -57,6 +57,7 @@ const SignInForm = ({ onFormTypeChange }) => {
           onPress={() => onFormTypeChange("signUp")}
           style={styles.primaryButton}
         />
+        
         <Button
           title="Sign In"
           onPress={handleSubmit}
