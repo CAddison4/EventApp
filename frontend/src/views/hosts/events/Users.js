@@ -10,7 +10,7 @@ export default function Users({ navigation }) {
 	useEffect(() => {
 		const getUsers = async () => {
 			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}/users`);
+			const response = await axios.get(`${apiURL}users`);
 			const data = response.data;
 			setUsers(data);
 		};
