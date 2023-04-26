@@ -38,10 +38,9 @@ export const handleSignUp = async (email, password, password_confirmation, first
   };
 
 
-
 export const handleSignIn = async (username, password, dispatch) => {
     try {
-      const apiEndpoint = `${API_END_POINT}/${username}`;
+      const apiEndpoint = `${API_END_POINT}/user/email/${username}`;
       const apiResponse = await fetch(apiEndpoint, {
         method: 'GET',
         headers: {
@@ -49,7 +48,8 @@ export const handleSignIn = async (username, password, dispatch) => {
         },
       });
       const apiResponseJson = await apiResponse.json();
-      dispatch(setUser(apiResponseJson));
+      await dispatch(setUser(apiResponseJson));
+      console.log()
       console.log('API response:', apiResponseJson);
       await Auth.signIn(username, password);
       console.log('Successfully signed in');

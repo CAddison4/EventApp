@@ -20,7 +20,7 @@ export default function Upcoming({navigation}) {
 
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [reRender, setReRender] = useState([false]);
-	const navigation = useNavigation();
+	// const navigation = useNavigation();
 
 	useEffect(() => {
 		const getUpcomingEvents = async () => {
