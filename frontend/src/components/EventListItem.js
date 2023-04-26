@@ -4,8 +4,10 @@ export default function EventListItem({ eventObj, navigation }) {
 
 	return (
 		<View key={`${eventObj.event_id}${eventObj.user_id}`}>
-			<Text>{eventObj.event_name}</Text>
+			<Text style={{ fontWeight: 400 }}>{eventObj.event_name}</Text>
 			<Text>{formatDate(eventObj.event_date)}  {eventObj.type_id}</Text>
 		</View>
 	);
 }
+
+
