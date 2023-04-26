@@ -10,10 +10,10 @@ export default function CreateEvent({ navigation }) {
 
 	const [selectedEventType, setSelectedEventType] = useState(defaultValue); 
 	const [inpEvnName, setInpEvnName] = useState('');
-	const [inpEvnDate, setInpEvnDate] = useState('');
+
 	const [inpEvnMax, setInpEvnMax] = useState('');
-	const [inpEvnStartTime, setInpEvnStartTime] = useState('');
-	const [inpEvnEndTime, setInpEvnEndTime] = useState('');
+	const [inpEvnStartDateTime, setInpEvnStartDatetime] = useState('');
+	const [inpEvnEndDateTime, setInpEvnEndDatetime] = useState('');
 	const [inpEvnLocation, setInpEvnLocation] = useState('');
 
 	const [eligibilityData, setEligibilityData] = useState([]); 
@@ -40,17 +40,17 @@ export default function CreateEvent({ navigation }) {
 	const handleCreateEvent = async () => {
 		// API
 		const apiURL = API_END_POINT;
-	  
 		// POST
 		try {
 		  const response = await axios.post(`${apiURL}/event`, {
-			eventType: selectedEventType,
+			eligibilityType: selectedEventType,
 			eventName: inpEvnName,
-			eventDate: inpEvnDate,
-			maxParticipants: inpEvnMax,
-			startTime: inpEvnStartTime,
-			endTime: inpEvnEndTime,
-			location: inpEvnLocation,
+			capacity: inpEvnMax,
+			eventDate: "2021-10-10",
+			eventStart:  '2016-01-25 10:10:10',
+			eventEnd:  '2016-01-25 10:10:10',
+			eventLocation: inpEvnLocation,
+			loyaltyMax: 0,
 		  });
 	  
 		  console.log("Event created successfully!", response.data);
@@ -65,62 +65,42 @@ export default function CreateEvent({ navigation }) {
 		<View style={styles.container}>
 		<>
 		{isPickerVisible && (  // check if the eligibility data is fetched
-		<Picker
-		selectedValue={selectedEventType}
-		onValueChange={handleEventTypeChange} 
-		>
-		{eligibilityData.eligibilityTypes.map((item, index) => ( // map the eligibility types
-			<Picker.Item
-			value={item.type_id} 
-			key={index}
-			label={item.type_id} 
-			/>
-		))}
-		</Picker>
+		<>
+			<Picker
+			selectedValue={selectedEventType}
+			onValueChange={handleEventTypeChange}
+			>
+				{eligibilityData.eligibilityTypes.map((item, index) => ( // map the eligibility types
+					<Picker.Item
+						value={item.type_id}
+						key={index}
+						label={item.type_id} />
+				))}
+			</Picker>		
+					<TextInput
+							placeholder="Event Name"
+							style={styles.nameInput}
+							onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)} />
+					<TextInput
+							placeholder="Max Participants"
+							style={styles.nameInput}
+							onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
+							keyboardType="numeric" />
+					<TextInput
+							placeholder="Start Date"
+							style={styles.nameInput}
+							onChangeText={(inpEvnStartTime) => setInpEvnStartDatetime (inpEvnStartTime)} />
+					<TextInput
+							placeholder="End Date"
+							style={styles.nameInput}
+							onChangeText={(inpEvnEndTime) => setInpEvnEndDatetime(inpEvnEndTime)} />
+					<TextInput
+							placeholder="Location"
+							style={styles.nameInput}
+							onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)} />
+					<Button title="Proceed" onPress={handleCreateEvent} /></>
 		)}
 		</>
-
-		<TextInput
-		  placeholder="Event Type"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnType) => setInpEvnType(inpEvnType)}
-		/>
-		<TextInput
-		  placeholder="Event Name"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
-		/>
-		
-		<TextInput
-		  placeholder="Event Date"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnDate) => setInpEvnDate(inpEvnDate)}
-		  keyboardType="numeric"
-		/>
-		<TextInput
-		  placeholder="Max Participants"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
-		  keyboardType="numeric"
-		/>
-
-		<TextInput
-		  placeholder="Start Time"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnStartTime) => setInpEvnStartTime(inpEvnStartTime)}
-		/>
-
-		<TextInput
-		  placeholder="End Time"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnEndTime) => setInpEvnEndTime(inpEvnEndTime)}
-		/>
-		<TextInput
-		  placeholder="Location"
-		  style={styles.nameInput}
-		  onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)}
-		/>
-		<Button title="Proceed" onPress={handleCreateEvent} />
 	  </View>
   );
 };
