@@ -50,6 +50,7 @@ import ProfileNavButton from "./src/components/ProfileNavButton";
 const Stack = createNativeStackNavigator();
 
 const App = () => {
+
 	const [authenticated, setAuthenticated] = React.useState(false);
 
 	useEffect(() => {
@@ -130,6 +131,7 @@ const App = () => {
 			</NavigationContainer>
 		</Provider>
 	);
+
 };
 
 const styles = StyleSheet.create({
