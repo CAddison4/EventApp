@@ -1,5 +1,5 @@
 // Main navigation file for the app. This file contains the navigation stack for the app.
-//Test
+
 // Imports
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
@@ -84,7 +84,9 @@ const Navigation = () => {
 					headerRight: () => <ProfileNavButton />,
 				}}>
 				{authenticated == false ? (
-					<Stack.Screen name="AuthForm">{() => <AuthForm />}</Stack.Screen>
+					<Stack.Screen name="AuthForm" options={{ headerRight: () => "" }}>
+						{() => <AuthForm />}
+					</Stack.Screen>
 				) : (
 					<>
 						{user && testUserStatus.membership_status_id === "None" ? (
