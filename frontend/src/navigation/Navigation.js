@@ -91,10 +91,11 @@ const Navigation = () => {
 					</Stack.Screen>
 				) : (
 					<>
-						{user && testUserStatus.membership_status_id === "None" ? (
+						{user && user.role_id !== "Host" && testUserStatus.membership_status_id === "None" ? (
 							<Stack.Screen
 								name="PendingMembership"
 								component={PendingMembership}
+								options={{ headerRight: () => "" }}
 							/>
 						) : (
 							<>
@@ -119,7 +120,7 @@ const Navigation = () => {
 								)}
 								{/* Attendee Screens */}
 								<Stack.Screen
-									name="MainProfile"
+									name="MainProfile"	
 									component={MainProfile}
 									options={{ headerRight: () => "" }}
 								/>

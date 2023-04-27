@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
-import { handleForgotPassword } from '../../../components/AuthComponents';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { handleForgotPassword } from "../../../components/AuthComponents";
+import { useNavigation } from "@react-navigation/native";
 
-const ForgotPasswordForm = ({ onFormTypeChange }) => {
-  const [username, setUsername] = useState('');
-    const [message, setMessage] = useState('');
+const ForgotPasswordForm = ({  }) => {
+  const navigation = useNavigation();
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
 
-    const handleSubmit = async () => {
-        try {
-          console.log(username)  
-          await handleForgotPassword(username);
-          onFormTypeChange('resetPassword', username);
-        } catch (error) {
-          console.log(error);
-          setMessage(error.message);
-        }
-      };
+  const handleSubmit = async () => {
+    try {
+      await handleForgotPassword(username);
+      navigation.navigate("ResetPasswordForm", { username: username });
+    } catch (error) {
+      console.log(error);
+      setMessage(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -29,15 +37,17 @@ const ForgotPasswordForm = ({ onFormTypeChange }) => {
         keyboardType="email-address"
       />
       <View style={styles.buttonContainer}>
-      <Pressable
-        onPress={() => onFormTypeChange('signIn')}
-        style={styles.secondaryButton}
-      >
-        <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
-      </Pressable>
-      <Button title="Reset Password" onPress={handleSubmit} 
-      style={styles.primaryButton}/>
-
+        <Pressable
+          onPress={() => navigation.navigate("SignInForm")}
+          style={styles.secondaryButton}
+        >
+          <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
+        </Pressable>
+        <Button
+          title="Reset Password"
+          onPress={handleSubmit}
+          style={styles.primaryButton}
+        />
       </View>
     </View>
   );
@@ -77,7 +87,6 @@ const styles = StyleSheet.create({
   primaryButton: {
     width: 150,
     fontSize: 16,
-    
   },
   secondaryButtonText: {
     fontSize: 16,

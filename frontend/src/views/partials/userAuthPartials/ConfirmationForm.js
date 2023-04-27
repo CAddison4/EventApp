@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, Button, SafeAreaView, View } from 'react-native';
 import { handleConfirmation } from '../../../components/AuthComponents';
+import { useNavigation } from '@react-navigation/native';
 
-const ConfirmationForm = ({ onFormTypeChange, message }) => {
+const ConfirmationForm = ({ message }) => {
 
+  const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [formMessage, setFormMessage] = useState(message ? message : '');
@@ -24,7 +26,7 @@ const ConfirmationForm = ({ onFormTypeChange, message }) => {
       <TextInput value={confirmationCode} onChangeText={setConfirmationCode} placeholder="Confirmation Code" style={styles.input} />
       <View style={styles.buttonContainer}>
       <Text
-          onPress={() => onFormTypeChange("signIn")}
+          onPress={() => navigation.navigate("SignInForm")}
           style={styles.secondaryButton}
         >
           Back to Sign In
