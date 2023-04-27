@@ -9,6 +9,8 @@ import { API_END_POINT } from '@env';
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
 import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
+import { setEvent } from "../../../components/store/eventSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 import EventListItem from "../../../components/EventListItem";
 
@@ -20,9 +22,11 @@ export default function EventsList({ route }) {
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
 	const [reRender, setReRender] = useState([false]);
+	const dispatch = useDispatch();
 
 	const navigation = useNavigation();
 	const today = new Date();
+	const contextEvent = useSelector((state) => state.event);
 
 	const getLoyaltyCount = async (userId) => {
 		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
@@ -30,7 +34,7 @@ export default function EventsList({ route }) {
 	}
 
 	useEffect(() => {
-
+		
 		const getEvents = async () => {
 			let loyaltyCount = 0;
 			if (type === "upcoming") {
@@ -47,7 +51,10 @@ export default function EventsList({ route }) {
 			
 			if (type === "myevents") {
 				filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
+		
 			}
+			await dispatch(setEvent(filteredEvents));
+			console.log("contextEvent", contextEvent);
 			setEvents(filteredEvents);
 		};
 		getEvents();
