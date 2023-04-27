@@ -8,10 +8,12 @@ import {
   View,
 } from "react-native";
 import { handleResetPassword } from '../../../components/AuthComponents';
+import { useNavigation } from "@react-navigation/native";
 
-const ResetPasswordForm = ({ onFormTypeChange, username, message }) => {
+const ResetPasswordForm = ({ username, message }) => {
+
+  const navigation = useNavigation();
   const [usernameInput, setUsernameInput] = useState(username? username : "");  
-  console.log(usernameInput)
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -21,7 +23,7 @@ const ResetPasswordForm = ({ onFormTypeChange, username, message }) => {
     try {
       const handleError = await handleResetPassword(usernameInput, code, password, passwordConfirmation)
       if (handleError == "SUCCESS") {
-        onFormTypeChange("signIn");
+        navigation.navigate("SignInForm");
         return
       }
       setFormMessage(handleError);
@@ -64,7 +66,7 @@ const ResetPasswordForm = ({ onFormTypeChange, username, message }) => {
       />
       <View style={styles.buttonContainer}>
       <Text
-          onPress={() => onFormTypeChange("signIn")}
+          onPress={() => navigation.navigate("SignInForm")}
           style={styles.secondaryButton}
         >
           Back to Sign In

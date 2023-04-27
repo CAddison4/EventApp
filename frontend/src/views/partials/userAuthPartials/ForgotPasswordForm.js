@@ -8,16 +8,17 @@ import {
   Pressable,
 } from "react-native";
 import { handleForgotPassword } from "../../../components/AuthComponents";
+import { useNavigation } from "@react-navigation/native";
 
-const ForgotPasswordForm = ({ onFormTypeChange }) => {
+const ForgotPasswordForm = ({  }) => {
+  const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
     try {
-      console.log(username);
       await handleForgotPassword(username);
-      onFormTypeChange("resetPassword", username);
+      navigation.navigate("ResetPasswordForm", { username: username });
     } catch (error) {
       console.log(error);
       setMessage(error.message);
@@ -37,7 +38,7 @@ const ForgotPasswordForm = ({ onFormTypeChange }) => {
       />
       <View style={styles.buttonContainer}>
         <Pressable
-          onPress={() => onFormTypeChange("signIn")}
+          onPress={() => navigation.navigate("SignInForm")}
           style={styles.secondaryButton}
         >
           <Text style={styles.secondaryButtonText}>Back to Sign In</Text>

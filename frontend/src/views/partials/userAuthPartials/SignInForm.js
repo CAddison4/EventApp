@@ -9,21 +9,28 @@ import {
 } from "react-native";
 import { handleSignIn } from "../../../components/AuthComponents";
 import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
-const SignInForm = ({ onFormTypeChange, message }) => {
+const SignInForm = ({ message }) => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formMessage, setFormMessage] = useState(message ? message : "" );
+  const [formMessage, setFormMessage] = useState(message ? message : "");
+
+  const navigation = useNavigation();
 
   const handleSubmit = async () => {
+    if(!username || !password) {
+      setFormMessage("Please enter a username and password");
+      return;
+    }
     try {
       const errorMessage = await handleSignIn(username, password, dispatch);
       if (errorMessage) {
         setFormMessage(errorMessage);
       }
     } catch (error) {
-      console.log("Error signing in:", error);r
+      console.log("Error signing in:", error);
     }
   };
 
@@ -46,12 +53,13 @@ const SignInForm = ({ onFormTypeChange, message }) => {
     }
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
 
-      {formMessage ? <Text style={styles.errorMessage}>{formMessage}</Text> : null}
+      {formMessage ? (
+        <Text style={styles.errorMessage}>{formMessage}</Text>
+      ) : null}
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -69,20 +77,18 @@ const SignInForm = ({ onFormTypeChange, message }) => {
           secureTextEntry
         />
         <Text
-          onPress={() => onFormTypeChange("forgotPassword")}
+          onPress={() => navigation.navigate("ForgotPasswordForm")}
           style={styles.secondaryButton}
         >
           Forgot Password{" "}
         </Text>
       </View>
-
       <View style={styles.buttonContainer}>
         <Button
           title="Sign Up"
-          onPress={() => onFormTypeChange("signUp")}
+          onPress={() => navigation.navigate("SignUpForm")}
           style={styles.primaryButton}
         />
-
         <Button
           title="Sign In"
           onPress={handleSubmit}
@@ -122,7 +128,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 40,
-
   },
 
   input: {
@@ -147,13 +152,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",
-
   },
   errorMessage: {
     color: "red",
     marginBottom: 20,
   },
-
 });
 
 export default SignInForm;

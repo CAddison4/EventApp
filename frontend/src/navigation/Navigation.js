@@ -91,10 +91,11 @@ const Navigation = () => {
 					</Stack.Screen>
 				) : (
 					<>
-						{user && user.role_id !== "Host" && user.membership_status_id === "None" ? (
+						{user && user.role_id !== "Host" && testUserStatus.membership_status_id === "None" ? (
 							<Stack.Screen
 								name="PendingMembership"
 								component={PendingMembership}
+								options={{ headerRight: () => "" }}
 							/>
 						) : (
 							<>
