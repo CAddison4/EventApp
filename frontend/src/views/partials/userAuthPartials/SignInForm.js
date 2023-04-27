@@ -26,8 +26,8 @@ const SignInForm = ({ onFormTypeChange }) => {
 
   const handleAttendeeSignIn = async () => {
     try {
-      const attendeeUserName = "scott.c19@live.com";
-      const attendeePassword = "td3j5FnhiLHRa$KA";
+      const attendeeUserName = "sholmes47@my.bcit.ca";
+      const attendeePassword = "P@ssw0rd!";
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
@@ -35,8 +35,8 @@ const SignInForm = ({ onFormTypeChange }) => {
   };
   const handleHostSignIn = async () => {
     try {
-      const hostUserName = "scroin@my.bcit.ca";
-      const hostPassword = "s&PrpDLBAG94rY3$";
+      const hostUserName = "shmglade@gmail.com";
+      const hostPassword = "P@ssw0rd!";
       await handleSignIn(hostUserName, hostPassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
