@@ -59,7 +59,7 @@ const AuthForm = ({}) => {
               
             <TouchableOpacity
               style={styles.tab}
-              onPress={() => navigation.navigate("ConfirmationForm")}
+              onPress={() => navigation.navigate("ConfirmationForm", { initialUsername: username })}
             >
               <Text
                 style={[
@@ -72,7 +72,7 @@ const AuthForm = ({}) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.tab, formType === "ResetPasswordForm" && styles.activeTab]}
-              onPress={() => navigation.navigate("ResetPasswordForm")}
+              onPress={() => navigation.navigate("ResetPasswordForm", { initialUsername: username })}
             >
               <Text
                 style={[
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 60,
     marginTop: 20,
+    
   },
   tab: {
     flex: 1,

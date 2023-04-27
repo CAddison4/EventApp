@@ -6,31 +6,36 @@ import {
   Button,
   SafeAreaView,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { handleSignIn } from "../../../components/AuthComponents";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
-const SignInForm = ({ message }) => {
+const SignInForm = ({}) => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formMessage, setFormMessage] = useState(message ? message : "");
+  const [formMessage, setFormMessage] = useState("");
 
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
-    if(!username || !password) {
+    if (!username || !password) {
       setFormMessage("Please enter a username and password");
       return;
     }
     try {
-      const errorMessage = await handleSignIn(username, password, dispatch);
-      if (errorMessage) {
-        setFormMessage(errorMessage);
+      const { success, message } = await handleSignIn(username, password, dispatch);
+      if (success === false) {
+        setFormMessage(message);
       }
     } catch (error) {
       console.log("Error signing in:", error);
+      setFormMessage("Error signing in. Please try again.");
     }
   };
 
@@ -54,60 +59,74 @@ const SignInForm = ({ message }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      enabled={true}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView>
+          <View>
+            <Text style={styles.title}>Sign In</Text>
 
-      {formMessage ? (
-        <Text style={styles.errorMessage}>{formMessage}</Text>
-      ) : null}
+            {formMessage ? (
+              <Text style={styles.errorMessage}>{formMessage}</Text>
+            ) : null}
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-          placeholder="Email"
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          secureTextEntry
-        />
-        <Text
-          onPress={() => navigation.navigate("ForgotPasswordForm")}
-          style={styles.secondaryButton}
-        >
-          Forgot Password{" "}
-        </Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Sign Up"
-          onPress={() => navigation.navigate("SignUpForm")}
-          style={styles.primaryButton}
-        />
-        <Button
-          title="Sign In"
-          onPress={handleSubmit}
-          style={styles.primaryButton}
-        />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Sign In as Attendee"
-          onPress={handleAttendeeSignIn}
-          style={styles.primaryButton}
-        />
-        <Button
-          title="Sign In as Host"
-          onPress={handleHostSignIn}
-          style={styles.primaryButton}
-        />
-      </View>
-    </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Email"
+                keyboardType="email-address"
+              />
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Password"
+                secureTextEntry
+              />
+              <Text
+                onPress={() =>
+                  navigation.navigate("ForgotPasswordForm", {
+                    initialUsername: username,
+                  })
+                }
+                style={styles.secondaryButton}
+              >
+                Forgot Password{" "}
+              </Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Sign Up"
+                onPress={() => navigation.navigate("SignUpForm")}
+                style={styles.primaryButton}
+              />
+              <Button
+                title="Sign In"
+                onPress={handleSubmit}
+                style={styles.primaryButton}
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Sign In as Attendee"
+                onPress={handleAttendeeSignIn}
+                style={styles.primaryButton}
+              />
+              <Button
+                title="Sign In as Host"
+                onPress={handleHostSignIn}
+                style={styles.primaryButton}
+              />
+            </View>
+          </View>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
