@@ -7,74 +7,140 @@ import { API_END_POINT } from '@env'
 
 
 export const handleSignUp = async (email, password, password_confirmation, firstName, lastName) => {
-
   String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();});
-   };
-
-    if(password === password_confirmation) {
-        try {
-        
-            await Auth.signUp({
-              username: email,
-              password: password,
-              attributes: {
-                email: email,
-              },
-            });
-
-            const cockroachEmail = email.toLowerCase();
-            const cockroachFirstName = firstName.toProperCase()
-            const cockroachLastName = lastName.toProperCase()
-
-            const apiEndpoint =  `${API_END_POINT}/user`;
-            const apiResponse = await fetch(apiEndpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                "email": cockroachEmail,
-                "firstName": cockroachFirstName,
-                "lastName": cockroachLastName,
-                "roleId": "Attendee",
-                "membershipStatusId": "None"
-              })
-            });
-            console.log('API response:', apiResponse);
-            console.log('Successfully signed up');
-          } catch (error) {
-            console.log('Error signing up:', error);
-          }
-    }
   };
+
+  if (password !== password_confirmation) {
+    return {
+      success: false,
+      message: "Passwords do not match",
+    };
+  }
+
+  try {
+    await Auth.signUp({
+      username: email,
+      password: password,
+      attributes: {
+        email: email,
+      },
+    });
+
+    const cockroachEmail = email.toLowerCase();
+    const cockroachFirstName = firstName.toProperCase()
+    const cockroachLastName = lastName.toProperCase()
+
+    const apiEndpoint = `${API_END_POINT}/user`;
+    const apiResponse = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "email": cockroachEmail,
+        "firstName": cockroachFirstName,
+        "lastName": cockroachLastName,
+        "roleId": "Attendee",
+        "membershipStatusId": "None"
+      })
+    });
+    return {
+      success: true,
+      message: "Successfully signed up",
+    };
+  } catch (error) {
+    console.log('Error signing up:', error);
+
+    let message = "Error signing up: " + error.message;
+
+    if (error.code === "UsernameExistsException") {
+      message = "This email address is already in use";
+    }
+
+    if (error.code === "InvalidPasswordException") {
+      message = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+    }
+    return {
+      success: false,
+      message: message,
+    };
+  }
+};
 
 
 export const handleSignIn = async (username, password, dispatch) => {
-  // console.log("API_END_POINT: ", API_END_POINT);
-    try {
-      username = username.toLowerCase();
-      const apiEndpoint = `${API_END_POINT}user/email/${username}`;
-      const apiResponse = await fetch(apiEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const apiResponseJson = await apiResponse.json();
-      await dispatch(setUser(apiResponseJson));
-      await Auth.signIn(username, password);
-    } catch (error) {
-      return('Error signing in:' + error);
+  try {
+    username = username.toLowerCase();
+    const apiEndpoint = `${API_END_POINT}user/email/${username}`;
+    const apiResponse = await fetch(apiEndpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!apiResponse.ok) {
+      throw new Error("Failed to retrieve user data");
     }
-  };
+
+    const apiResponseJson = await apiResponse.json();
+
+    if (!apiResponseJson) {
+      throw new Error("User data not found");
+    }
+
+    await dispatch(setUser(apiResponseJson));
+    await Auth.signIn(username, password);
+
+    return {
+      success: true,
+      message: "Successfully signed in",
+    };
+
+  } catch (error) {
+
+    let message = "Error signing in: " + error.message;
+
+    if (error.code === "UserNotFoundException") {
+      message = "The email address or password you entered is incorrect. Please try again.";
+    }
+
+    return {
+      success: false,
+      message: message,
+    };
+  }
+};
   
-  export const handleConfirmation = async (username, confirmationCode) => {
+  export const handleConfirmation = async (username, code) => {
     try {
-      await Auth.confirmSignUp(username, confirmationCode);
-      console.log('Successfully confirmed sign up');
+      await Auth.confirmSignUp(username, code);
+      return {
+        success: true,
+        message: "Successfully confirmed account",
+      };
     } catch (error) {
-      console.log('Error confirming sign up:', error);
+      console.log("Error confirming sign up:", error);
+  
+      let message = "Error confirming sign up: " + error.message;
+  
+      if (error.code === "CodeMismatchException") {
+        message = "Confirmation code does not match";
+      }
+  
+      if (error.code === "ExpiredCodeException") {
+        message = "Confirmation code has expired. Please request a new one.";
+      }
+  
+      if (error.code === "UserNotFoundException") {
+        message = "User not found. Please check your email and try again.";
+      }
+  
+      return {
+        success: false,
+        message: message,
+      };
     }
   };
   

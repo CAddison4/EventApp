@@ -6,32 +6,48 @@ import {
   Button,
   StyleSheet,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { handleForgotPassword } from "../../../components/AuthComponents";
 import { useNavigation } from "@react-navigation/native";
 
-const ForgotPasswordForm = ({  }) => {
+const ForgotPasswordForm = ({ route }) => {
+  const { initialUsername } = route.params;
   const navigation = useNavigation();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(
+    initialUsername ? initialUsername : ""
+  );
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
     try {
       await handleForgotPassword(username);
-      navigation.navigate("ResetPasswordForm", { username: username });
+      navigation.navigate("ResetPasswordForm", { initialUsername: username });
     } catch (error) {
-      console.log(error);
       setMessage(error.message);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={styles.container}
+    enabled={true}
+  >
+        <SafeAreaView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+    <View >
       <Text style={styles.title}>Forgot Password</Text>
       {message ? <Text>{message}</Text> : null}
       <TextInput
         style={styles.input}
-        value={username}
+        value={initialUsername ? initialUsername : username}
         onChangeText={setUsername}
         placeholder="Email"
         keyboardType="email-address"
@@ -50,6 +66,10 @@ const ForgotPasswordForm = ({  }) => {
         />
       </View>
     </View>
+   
+    </TouchableWithoutFeedback>
+    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -89,8 +109,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   secondaryButtonText: {
-    fontSize: 16,
+    alignSelf: "center",
+    fontSize: 13,
     textDecorationLine: "underline",
+    color: "#888",
   },
 });
 

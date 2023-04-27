@@ -59,7 +59,7 @@ const AuthForm = ({}) => {
               
             <TouchableOpacity
               style={styles.tab}
-              onPress={() => navigation.navigate("ConfirmationForm")}
+              onPress={() => navigation.navigate("ConfirmationForm", { initialUsername: username })}
             >
               <Text
                 style={[
@@ -72,7 +72,7 @@ const AuthForm = ({}) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.tab, formType === "ResetPasswordForm" && styles.activeTab]}
-              onPress={() => navigation.navigate("ResetPasswordForm")}
+              onPress={() => navigation.navigate("ResetPasswordForm", { initialUsername: username })}
             >
               <Text
                 style={[
@@ -86,32 +86,6 @@ const AuthForm = ({}) => {
 
           </HideWithKeyboard>
           </>
-    // <View style={styles.formView}>
-    //   {formType === "signIn" && (
-    //     <SignInForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "signUp" && (
-    //     <SignUpForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "confirmation" && (
-    //     <ConfirmationForm
-    //       onFormTypeChange={handleFormTypeChange}
-    //       username={username}
-    //     />
-    //   )}
-    //   {formType === "forgotPassword" && (
-    //     <ForgotPasswordForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "resetPassword" && (
-    //     <ResetPasswordForm
-    //       onFormTypeChange={handleFormTypeChange}
-    //       username={username}
-    //     />
-    //   )}
-
-    //   
-    // </View>
-    
   );
 };
 
@@ -133,6 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 60,
     marginTop: 20,
+    
   },
   tab: {
     flex: 1,
