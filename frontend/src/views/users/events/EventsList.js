@@ -54,7 +54,7 @@ export default function EventsList({ route }) {
 		
 			}
 			await dispatch(setEvent(filteredEvents));
-			console.log("contextEvent", contextEvent);
+			// console.log("contextEvent", contextEvent);
 			setEvents(filteredEvents);
 		};
 		getEvents();

@@ -30,8 +30,9 @@ export default function CreateEvent({ navigation }) {
 			// GET eligibility
 			const response = await axios.get(`${apiURL}eligibility`);
 			const data = response.data;
-			setEligibilityData(response.data);
+			setEligibilityData(data);
 			setIsPickerVisible(true);
+			console.log(data)
 		};
 		geteligibility();
 	}, []);
