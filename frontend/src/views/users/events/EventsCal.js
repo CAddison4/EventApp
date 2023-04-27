@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { API_END_POINT } from "@env";
-import { fetchEvents } from "../../../actions/FetchEvents";
 
-export default function EventsCal({ navigation }) {
+export default function EventsCal({ route }) {
+	const { type } = route.params;
+
 	const [selected, setSelected] = useState("");
-	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
 	const [selectedEvent, setSelectedEvent] = useState();
+	const [events,setEvents] = useState();
 
 	const customStyle = {
 		textDayFontSize: 20,
@@ -20,7 +21,6 @@ export default function EventsCal({ navigation }) {
 	  };
 	  
 	useEffect(() => {
-		fetchEvents
 		const getAllEvents = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}events`);
