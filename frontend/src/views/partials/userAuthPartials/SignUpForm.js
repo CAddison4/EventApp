@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, SafeAreaView } from 'react-native';
 import { handleSignUp } from '../../../components/AuthComponents';
+import { useNavigation } from '@react-navigation/native';
 
-const SignUpForm = ({onFormTypeChange}) => {
+const SignUpForm = ({}) => {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -61,7 +63,7 @@ const SignUpForm = ({onFormTypeChange}) => {
       <Text style={{textAlign: 'center'}}>Already have an account?</Text>
       <Button
         title="Back to Sign In"
-        onPress={() => onFormTypeChange('signIn')}
+        onPress={() => navigation.navigate('SignInForm')}
         style={styles.secondaryButton}
       />
       </View>
