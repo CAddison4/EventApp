@@ -4,13 +4,23 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { API_END_POINT } from "@env";
+import { fetchEvents } from "../../../actions/FetchEvents";
 
 export default function EventsCal({ navigation }) {
 	const [selected, setSelected] = useState("");
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
+	const [selectedEvent, setSelectedEvent] = useState();
 
+	const customStyle = {
+		textDayFontSize: 20,
+		textMonthFontSize: 24,
+		textYearFontSize: 30,
+
+	  };
+	  
 	useEffect(() => {
+		fetchEvents
 		const getAllEvents = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}events`);
@@ -27,7 +37,7 @@ export default function EventsCal({ navigation }) {
 					return {
 						[formattedDate]: {
 							selected: true,
-							selectedColor: "orange",
+							selectedColor:"",
 							eventId: event.event_id,
 						},
 					};
@@ -54,36 +64,35 @@ export default function EventsCal({ navigation }) {
 			});
 	}, []);
 
-	useEffect(() => {
-		// update the markedDates state when the selected date changes
-		//	  console.log("markedDates updated", markedDates);
-	}, [markedDates]);
+	// useEffect(() => {
+	// 	// update the markedDates state when the selected date changes
+	// 	//	  console.log("markedDates updated", markedDates);
+	// }, [markedDates]);
+
+	const handleDatePress = (day) => {
+		setSelected(day.dateString);
+		const { eventId } = markedDates[day.dateString];
+		if (eventId) {
+			// just fetch the data and show in bottom
+			const eventObj = events.find((event) => event.event_id === eventId);
+			// navigation.navigate("EventDetails", {
+			// 	eventObj: eventObj,
+			// });
+
+			setSelectedEvent(eventObj);
+			
+		}
+	};
 
 	return (
 		<View style={styles.container}>
-			<Text>EventsCal Screen</Text>
 			<Calendar
-				onDayPress={(day) => {
-					setSelected(day.dateString);
-					const { eventId } = markedDates[day.dateString];
-					if (eventId) {
-						//	console.log('eventId', eventId);
-						const eventObj = events.find((event) => event.event_id === eventId);
-						//	console.log('eventObj', eventObj)
-						// navigate to the event details screen
-						navigation.navigate("EventDetails", {
-							eventObj: eventObj,
-						});
-					}
-				}}
+				style={styles.calendar}
+				theme={{ ...customStyle }}
+				onDayPress={handleDatePress}
 				markingType={"multi-dot"}
 				markedDates={{
 					...markedDates,
-					// if you want to mark the selected date
-					//   [selected]: {
-					// 	dots: [{ key: 'selected', color: 'green' }],
-					// 	selected: true,
-					//   },
 				}}
 			/>
 		</View>
@@ -92,9 +101,13 @@ export default function EventsCal({ navigation }) {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flex: 0,
 		backgroundColor: "#fff",
 		alignItems: "center",
 		justifyContent: "center",
 	},
+	calendar: {
+		marginTop:20,
+		width: 400,
+	}
 });
