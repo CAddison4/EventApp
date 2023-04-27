@@ -8,23 +8,23 @@ export default function Confirmation({ route }) {
 	// const event = JSON.parse(eventObj);
 	return (
 		<View style={styles.container}>
-			<Text>{eventObj.name}</Text>
 			<Text>
 				{(() => {
 					switch (eventAttendeeStatus) {
 					case "Registered":
-						return `You are registered for ${eventObj.event_name}!`;
+						return "You are registered for";
 					case "Waitlisted":
-						return `You are waitlisted for ${eventObj.event_name}.`;
+						return "You are waitlisted for";
 					case "Withdrawn":
-						return `You have withdrawn from ${eventObj.event_name}.`;
+						return "You have withdrawn from";
 					case "Removed":
-						return `You have been removed from the waitlist for ${eventObj.event_name}.`;
+						return "You have been removed from the waitlist for";
 					default:
 						return "";
 					}
 				})()}
 			</Text>
+			<Text style={styles.boldText}>{eventObj.event_name}</Text>
 		</View>
 	);
 }
@@ -35,5 +35,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		alignItems: "center",
 		justifyContent: "center",
+		width: "100%",
+		paddingLeft: 10,
+		paddingRight: 10,
+	},
+	boldText: {
+		fontWeight: "bold",
+		fontSize: 16,
 	},
 });

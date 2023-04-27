@@ -51,6 +51,7 @@ export const handleSignUp = async (email, password, password_confirmation, first
 
 
 export const handleSignIn = async (username, password, dispatch) => {
+  console.log("API_END_POINT: ", API_END_POINT);
     try {
       username = username.toLowerCase();
       const apiEndpoint = `${API_END_POINT}user/email/${username}`;

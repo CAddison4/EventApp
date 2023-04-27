@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 import { useEffect, useState } from "react";
 export default function CreateEvent({ navigation }) {
-	const eventId = 1;
+	// const eventId = 1;
 	const defaultValue = "Guest List";
 
 	const [selectedEventType, setSelectedEventType] = useState(defaultValue);
@@ -32,7 +32,6 @@ export default function CreateEvent({ navigation }) {
 			const data = response.data;
 			setEligibilityData(response.data);
 			setIsPickerVisible(true);
-			console.log("Eligibility", data.eligibilityTypes);
 		};
 		geteligibility();
 	}, []);
@@ -42,20 +41,30 @@ export default function CreateEvent({ navigation }) {
 		const apiURL = API_END_POINT;
 		// POST
 		try {
-			const response = await axios.post(`${apiURL}event`, {
-				eligibilityType: selectedEventType,
-				eventName: inpEvnName,
-				capacity: inpEvnMax,
-				eventDate: "2021-10-10",
-				eventStart: "2016-01-25 10:10:10",
-				eventEnd: "2016-01-25 10:10:10",
-				eventLocation: inpEvnLocation,
-				loyaltyMax: 0,
-			});
+		  const response = await axios.post(`${apiURL}/event`, {
+			eligibilityType: selectedEventType,
+			eventName: inpEvnName,
+			capacity: inpEvnMax,
+			eventDate: "2023-09-21",
+			eventStart:  '2023-09-21 10:10:10',
+			eventEnd:  '2023-09-23 10:10:10',
+			eventLocation: inpEvnLocation,
+			loyaltyMax: 0,
+		  });
+		  console.log("Event created successfully!", response.data.event.event_id);
+		  
+		if(selectedEventType == "Guest List")
+		{
+		  // Navigate to InviteList screen
+		  navigation.navigate("InviteList", {
+			eventObj: response.data.event})
+		}else{
+			navigation.navigate("EventDetails", {
+			eventObj: response.data.event})
+		}
 
-			console.log("Event created successfully!", response.data);
 		} catch (error) {
-			console.error("Error creating event:", error);
+		  console.error("Error creating event:", error);
 		}
 	};
 
@@ -108,17 +117,15 @@ export default function CreateEvent({ navigation }) {
 						<TextInput
 							placeholder="Location"
 							style={styles.nameInput}
-							onChangeText={(inpEvnLocation) =>
-								setInpEvnLocation(inpEvnLocation)
-							}
-						/>
-						<Button title="Proceed" onPress={handleCreateEvent} />
+							onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)} />
+						<Button title="Create" onPress={handleCreateEvent} />
 					</>
 				)}
 			</>
-		</View>
-	);
-}
+	  </View>
+ 	);
+};
+
 
 const styles = StyleSheet.create({
 	container: {
