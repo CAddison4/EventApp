@@ -9,92 +9,187 @@ export default function EventsCal({ navigation }) {
 	const [selected, setSelected] = useState("");
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
+	const [filter, setFilter] = useState('All');
+	const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
+	
+	const getAllEvents = async () => {
+			const apiURL = API_END_POINT;
+			const response = await axios.get(`${apiURL}/events`);
+			const data = response.data;
+			return data;
+		
+	};
+
+	const getRegisteredUserEvents = async () => {
+		const apiURL = API_END_POINT;
+		const response = await axios.get(`${apiURL}/attendee/events/${userId}`);
+		const data = response.data;
+		return data;
+	};
+
+	const getWaitlistedUserEvents = async () => {
+		const apiURL = API_END_POINT;
+		const response = await axios.get(`${apiURL}/waitlist/events/${userId}`);
+		const data = response.data;
+		return data;
+	};
+
+
+	// const getEligibleUserEvents = async () => {
+	// 	console.log("getEligibleUserEvents");
+	// 	// check the user tier and loyalty 
+	// 	// fetch all the events and filter
+	// 	const allEvents = await getAllEvents();
+	// 	const eligibleEvents = allEvents.filter(event => event.type_id === 'Gold Tier');
+
+	// 	// check this user's registered events
+	// 	const registeredEvents = await getRegisteredUserEvents();
+		
+	// 	// check this user's waitisted events
+	// 	const waitlistedEvents = await getWaitlistedUserEvents();
+
+	// 	// combine the registered and waitlisted events
+	// 	const combinedEvents = registeredEvents.concat(waitlistedEvents);
+
+	// 	// map the registered events and remove the event if the event is in combinedEvents array and return the ones only not in the combinedEvents array
+	// 	const notInCombined = eligibleEvents.filter((eligibleEvent) => {
+	// 		return !combinedEvents.some(
+	// 		  (combinedEvent) => combinedEvent.event_id === eligibleEvent.event_id
+	// 		);
+	// 	  });
+	// 	  return notInCombined;
+	// };
+
 
 	useEffect(() => {
-		const getAllEvents = async () => {
-			const apiURL = API_END_POINT;
-			const response = await axios.get(`${apiURL}events`);
-			const data = response.data;
-			setEvents(data);
-			//console.log(data);
-			// create an array for the event dates to use in the calendar
-			const eventDatesArray = data.map((event) => {
-				// console.log(event.event_date);
-				// check the date is valid
-				if (event.event_date && Date.parse(event.event_date)) {
-					const originalDate = new Date(event.event_date);
-					const formattedDate = originalDate.toISOString().slice(0, 10);
-					return {
-						[formattedDate]: {
-							selected: true,
-							selectedColor: "orange",
-							eventId: event.event_id,
-						},
-					};
-				} else {
-					return null; // invalid date
-				}
-			});
+		const fetchData = async () => {
+			const eligibleEvents = await getEligibleUserEvents();
+			console.log("notInCombined",eligibleEvents);
+		  };
+		  fetchData();
 
-			//	console.log(eventDatesArray);
-			const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
-			// use eventDatesArray to create a new object
-			//	console.log(mergedMarkedDates);
-			setMarkedDates(mergedMarkedDates);
+	  const getAllEvents = async () => {
+		const apiURL = API_END_POINT;
+		const response = await axios.get(`${apiURL}/events`);
+		const data = response.data;
+		setEvents(data);
 
-			return eventDatesArray;
-		};
+		// console.log("full-list",data);
+  
+		// check the filter state and filter the events array accordingly
 
-		getAllEvents()
-			.then((eventDatesArray) => {
-				//   console.log("eventdate", eventDatesArray);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		// create an array for the event dates to use in the calendar
+		const eventDatesArray = data.map(event => {
+			if (filter === 'All') {
+				return event;
+			} else if (filter === 'Registered') {
+				return events.find(event => event.userId === eventId);
+			} else if (filter === 'Eligible') {
+				return event.invited;
+			} else if (filter === 'Waitlisted') {
+				return event.waitlisted;
+			}
+
+		  // console.log(event.event_date);
+		  // check the date is valid
+		  if (event.event_date && Date.parse(event.event_date)) {
+			const originalDate = new Date(event.event_date);
+			const formattedDate = originalDate.toISOString().slice(0, 10);
+			return { [formattedDate]: { selected: true, selectedColor: 'orange', eventId: event.event_id } };
+		  } else {
+			return null; // invalid date
+		  }
+	    } );
+
+		// console.log(eventDatesArray);
+		const mergedMarkedDates = Object.assign({}, ...eventDatesArray); 
+		// use eventDatesArray to create a new object
+	    // console.log(mergedMarkedDates);
+		setMarkedDates(mergedMarkedDates); 
+		return eventDatesArray; 
+	  };
+  
+	  getAllEvents()
+		.then(eventDatesArray => {
+		  // console.log("eventdate", eventDatesArray);
+		})
+		.catch(error => {
+		  console.error(error);
+		});
 	}, []);
 
 	useEffect(() => {
-		// update the markedDates state when the selected date changes
-		//	  console.log("markedDates updated", markedDates);
+	  // update the markedDates state when the selected date changes
+	  console.log("markedDates updated", markedDates);
 	}, [markedDates]);
 
 	return (
 		<View style={styles.container}>
-			<Text>EventsCal Screen</Text>
-			<Calendar
-				onDayPress={(day) => {
-					setSelected(day.dateString);
-					const { eventId } = markedDates[day.dateString];
-					if (eventId) {
-						//	console.log('eventId', eventId);
-						const eventObj = events.find((event) => event.event_id === eventId);
-						//	console.log('eventObj', eventObj)
-						// navigate to the event details screen
-						navigation.navigate("EventDetails", {
-							eventObj: eventObj,
-						});
-					}
-				}}
-				markingType={"multi-dot"}
-				markedDates={{
-					...markedDates,
-					// if you want to mark the selected date
-					//   [selected]: {
-					// 	dots: [{ key: 'selected', color: 'green' }],
-					// 	selected: true,
-					//   },
-				}}
-			/>
+		
+		  <Text>EventsCal Screen</Text>
+		  <Calendar
+		   style={[styles.calendar, {height: 700}]}
+		   calendarStyle={styles.customCalendarStyle}
+			onDayPress={day => {
+				// filter the events array to find the event that matches the selected date
+				setSelected(day.dateString);
+				
+
+				const {eventId} = markedDates[day.dateString];
+				console.log('eventId', eventId);
+				if (eventId) {
+					// console.log('eventId', eventId);
+					const eventObj = events.find(event => event.event_id === eventId);
+					// console.log('eventObj', eventObj)
+										// navigate to the event details screen
+					navigation.navigate("EventDetails", {
+						eventObj: eventObj,
+					})
+				}
+			}}
+			markingType={'multi-dot'}
+			markedDates={{
+			  ...markedDates,
+			// if you want to mark the selected date
+			//   [selected]: {
+			// 	dots: [{ key: 'selected', color: 'green' }],
+			// 	selected: true,
+			//   },
+			}}
+		  />
 		</View>
 	);
 }
 
+  
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
+	  flex: 1,
+	  backgroundColor: "#fff",
+	  alignItems: "center",
+	  justifyContent: "center",
 	},
-});
+	calendar: {
+	  marginTop: 50,
+	  padding: 10,
+	  width: 400,
+	},
+	customCalendarStyle: {
+	  dayTextAtIndex0: {
+		color: 'red',
+		fontSize: 16, // customize the font size for days
+	  },
+	  dayTextAtIndex6: {
+		color: 'blue',
+		fontSize: 16, // customize the font size for days
+	  },
+	  textMonth: {
+		fontWeight: 'bold',
+		fontSize: 16, // customize the font size for month text
+	  },
+	  textDayHeader: {
+		fontWeight: '300',
+		fontSize: 16, // customize the font size for day header
+	  },
+	},
+  });
