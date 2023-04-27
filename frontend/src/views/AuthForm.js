@@ -86,32 +86,6 @@ const AuthForm = ({}) => {
 
           </HideWithKeyboard>
           </>
-    // <View style={styles.formView}>
-    //   {formType === "signIn" && (
-    //     <SignInForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "signUp" && (
-    //     <SignUpForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "confirmation" && (
-    //     <ConfirmationForm
-    //       onFormTypeChange={handleFormTypeChange}
-    //       username={username}
-    //     />
-    //   )}
-    //   {formType === "forgotPassword" && (
-    //     <ForgotPasswordForm onFormTypeChange={handleFormTypeChange} />
-    //   )}
-    //   {formType === "resetPassword" && (
-    //     <ResetPasswordForm
-    //       onFormTypeChange={handleFormTypeChange}
-    //       username={username}
-    //     />
-    //   )}
-
-    //   
-    // </View>
-    
   );
 };
 
