@@ -95,13 +95,11 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			<Text>{type === 'upcoming' ? 'Upcoming Events' : 'My Events'}</Text>
 			<FlatList
-				style={styles.row}
 				data={events}
 				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 				renderItem={({ item }) => (
-					<View>
+					<View style={styles.row}>
 						<TouchableOpacity
 							onPress={() =>
 								navigation.navigate("EventDetails", {
@@ -109,13 +107,14 @@ export default function EventsList({ route }) {
 								})
 							}
 						>
-							<EventListItem eventObj={item} />
+							<EventListItem
+								eventObj={item} />
 						</TouchableOpacity>
 						{/* If eligible and in the waitlist,
 						button should say "Remove" */}
 						{item.isEligible && item.isInWaitlist && (
 							<Button
-								title="Remove from Waitlist"
+								title="Remove from W/List"
 								onPress={() => {
 									setReRender(true);
 									removeFromEventWaitlist(item, userId);
@@ -184,10 +183,14 @@ const styles = StyleSheet.create({
     	maxWidth: 400,
 		backgroundColor: "#fff",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "space-between",
 	},
 	row: {
-		width: "100%",
 		paddingTop: 20,
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		columnGap: 30,
 	},
 });
