@@ -31,7 +31,7 @@ export function API({ stack }) {
       "PUT /event/{eventId}": "packages/functions/src/events/putEvent.main",
       // Routes for creating an attendee, getting attendees for an event, getting events for a specific attendee, getting a specific attendee, deleting an attendee
       "POST /attendee/{eventId}/{userId}": "packages/functions/src/attendees/postAttendee.main",
-      "DELETE /attendee/{eventId}/{userId}": "packages/functions/src/waitlist/deleteAttendee.main",
+      "DELETE /attendee/{eventId}/{userId}": "packages/functions/src/attendees/deleteAttendee.main",
       "GET /attendee/events/{userId}": "packages/functions/src/attendees/getAttendeeEvents.main",
       "GET /attendee/users/{eventId}": "packages/functions/src/attendees/getAttendeeUsers.main",
       "GET /attendee/{userId}/{eventId}": "packages/functions/src/attendees/getAttendee.main",

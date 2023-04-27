@@ -2,11 +2,11 @@ import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import {Calendar, LocaleConfig} from 'react-native-calendars';
-import { API_END_POINT } from '@env'
+import { Calendar, LocaleConfig } from "react-native-calendars";
+import { API_END_POINT } from "@env";
 
-export default function EventsCal({navigation}) {
-	const [selected, setSelected] = useState('');
+export default function EventsCal({ navigation }) {
+	const [selected, setSelected] = useState("");
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
 	const [filter, setFilter] = useState('All');
@@ -117,12 +117,12 @@ export default function EventsCal({navigation}) {
 		  console.error(error);
 		});
 	}, []);
-  
+
 	useEffect(() => {
 	  // update the markedDates state when the selected date changes
 	  console.log("markedDates updated", markedDates);
 	}, [markedDates]);
-  
+
 	return (
 		<View style={styles.container}>
 		
@@ -158,8 +158,10 @@ export default function EventsCal({navigation}) {
 			}}
 		  />
 		</View>
-	  );
+	);
 }
+
+  
 const styles = StyleSheet.create({
 	container: {
 	  flex: 1,

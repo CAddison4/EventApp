@@ -4,10 +4,17 @@ import { setUser } from "./store/userSlice";
 // import { API_URL } from '@env';
 import { API_END_POINT } from '@env'
 
+
+
 export const handleSignUp = async (email, password, password_confirmation, firstName, lastName) => {
+
+  String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();});
+   };
 
     if(password === password_confirmation) {
         try {
+        
             await Auth.signUp({
               username: email,
               password: password,
@@ -15,6 +22,11 @@ export const handleSignUp = async (email, password, password_confirmation, first
                 email: email,
               },
             });
+
+            const cockroachEmail = email.toLowerCase();
+            const cockroachFirstName = firstName.toProperCase()
+            const cockroachLastName = lastName.toProperCase()
+
             const apiEndpoint =  `${API_END_POINT}/user`;
             const apiResponse = await fetch(apiEndpoint, {
               method: 'POST',
@@ -22,9 +34,9 @@ export const handleSignUp = async (email, password, password_confirmation, first
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                "email": email,
-                "firstName": firstName,
-                "lastName": lastName,
+                "email": cockroachEmail,
+                "firstName": cockroachFirstName,
+                "lastName": cockroachLastName,
                 "roleId": "Attendee",
                 "membershipStatusId": "None"
               })
@@ -38,10 +50,11 @@ export const handleSignUp = async (email, password, password_confirmation, first
   };
 
 
-
 export const handleSignIn = async (username, password, dispatch) => {
+  console.log("API_END_POINT: ", API_END_POINT);
     try {
-      const apiEndpoint = `${API_END_POINT}/${username}`;
+      username = username.toLowerCase();
+      const apiEndpoint = `${API_END_POINT}user/email/${username}`;
       const apiResponse = await fetch(apiEndpoint, {
         method: 'GET',
         headers: {
@@ -49,7 +62,8 @@ export const handleSignIn = async (username, password, dispatch) => {
         },
       });
       const apiResponseJson = await apiResponse.json();
-      dispatch(setUser(apiResponseJson));
+      await dispatch(setUser(apiResponseJson));
+      console.log()
       console.log('API response:', apiResponseJson);
       await Auth.signIn(username, password);
       console.log('Successfully signed in');
