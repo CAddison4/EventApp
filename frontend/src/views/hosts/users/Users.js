@@ -16,7 +16,7 @@ export default function Users({ navigation }) {
 		};
 		//This page should default to users whose Membership Status is "None" so they are flagged to update their membership status.
 		getUsers();
-	}, []);
+	}, [users]);
 	return (
 		<View>
 			<Text>All Users</Text>
@@ -25,7 +25,7 @@ export default function Users({ navigation }) {
 				renderItem={({ item }) => (
 					<Text
 						onPress={() => navigation.navigate("UserDetails", { user: item })}>
-						{item.first_name} {item.last_name}
+						{item.first_name} {item.last_name} {item.membership_status_id}
 					</Text>
 				)}
 			/>
