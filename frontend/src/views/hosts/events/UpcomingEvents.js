@@ -11,7 +11,9 @@ import EventsListHost from "../../partials/hostPartials/EventsListHost";
 // import _ from "lodash";
 
 export default function UpcomingEvents({ navigation }) {
+
 	return <EventsListHost eventView={"upcoming"} />;
+
 }
 // 	const [eventObjs, setEventObjs] = useState([]);
 
