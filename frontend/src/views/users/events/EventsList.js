@@ -51,6 +51,7 @@ export default function EventsList({ route }) {
 				filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
 		
 			}
+			
 			await dispatch(setEvent(filteredEvents));
 			// console.log("contextEvent", contextEvent);
 			setEvents(filteredEvents);
