@@ -5,6 +5,7 @@ import store from "./src/components/store/index";
 import Navigation from "./src/navigation/Navigation";
 import { Amplify} from "aws-amplify";
 import config from "./src/aws-exports";
+
 Amplify.configure(config);
 
 

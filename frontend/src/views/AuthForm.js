@@ -7,96 +7,88 @@ import ConfirmationForm from "./partials/userAuthPartials/ConfirmationForm";
 import ResetPasswordForm from "./partials/userAuthPartials/ResetPasswordForm";
 import { HideWithKeyboard } from "react-native-hide-with-keyboard";
 import { SafeAreaView } from "react-navigation";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-const Tab = createBottomTabNavigator();
-
-const AuthForm = () => {
+const AuthForm = ({}) => {
 	const [formType, setFormType] = useState("signIn");
 	const [username, setUsername] = useState("");
 
-	const handleFormTypeChange = (newFormType, username) => {
-		setFormType(newFormType);
+	const navigation = useNavigation();
+
+	const Stack = createNativeStackNavigator();
+
+	const handleFormTypeChange = (username) => {
 		setUsername(username);
 	};
 
 	return (
-		<View style={styles.formView}>
-			{formType === "signIn" && (
-				<SignInForm onFormTypeChange={handleFormTypeChange} />
-			)}
-			{formType === "signUp" && (
-				<SignUpForm onFormTypeChange={handleFormTypeChange} />
-			)}
-			{formType === "confirmation" && (
-				<ConfirmationForm
-					onFormTypeChange={handleFormTypeChange}
-					username={username}
+		<>
+			<Stack.Navigator>
+				<Stack.Screen
+					name="SignInForm"
+					component={SignInForm}
+					options={{
+						headerShown: false,
+					}}
 				/>
-			)}
-			{formType === "forgotPassword" && (
-				<ForgotPasswordForm onFormTypeChange={handleFormTypeChange} />
-			)}
-			{formType === "resetPassword" && (
-				<ResetPasswordForm
-					onFormTypeChange={handleFormTypeChange}
-					username={username}
+				<Stack.Screen
+					name="SignUpForm"
+					component={SignUpForm}
+					options={{ headerShown: false }}
 				/>
-			)}
-
+				<Stack.Screen
+					name="ForgotPasswordForm"
+					component={ForgotPasswordForm}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="ConfirmationForm"
+					component={ConfirmationForm}
+					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="ResetPasswordForm"
+					component={ResetPasswordForm}
+					options={{ headerShown: false }}
+				/>
+			</Stack.Navigator>
 			<HideWithKeyboard style={styles.tabBar}>
-				<Tab.Navigator
-					screenOptions={({ route }) => ({
-						// tabBarIcon: ({ focused, color, size }) => {
-						// 	let iconName;
-
-						// 	if (route.name === "List") {
-						// 		iconName = focused ? "ios-list" : "ios-list-outline";
-						// 	}
-
-						// 	if (route.name === "Calendar") {
-						// 		iconName = focused ? "calendar" : "calendar-outline";
-						// 	}
-						// 	// You can return any component that you like here!
-						// 	return <Ionicons name={iconName} size={size} color={color} />;
-						// },
-						tabBarActiveTintColor: "tomato",
-						tabBarInactiveTintColor: "gray",
-						// tabBarShowLabel: false,
-						// headerShown: false,
-					})}>
-					<Tab.Screen name="ConfirmationForm" component={ConfirmationForm} />
-					<Tab.Screen name="ResetPasswordForm" component={ResetPasswordForm} />
-				</Tab.Navigator>
-				{/* <TouchableOpacity
-          style={styles.tab}
-          onPress={() => handleFormTypeChange("confirmation", username)}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              formType === "confirmation" && styles.activeTabText,
-            ]}
-          >
-            Confirmation
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, formType === "resetPassword" && styles.activeTab]}
-          onPress={() => handleFormTypeChange("resetPassword", username)}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              formType === "resetPassword" && styles.activeTabText,
-            ]}
-          >
-            Reset Password
-          </Text>
-        </TouchableOpacity> */}
+				<TouchableOpacity
+					style={styles.tab}
+					onPress={() =>
+						navigation.navigate("ConfirmationForm", {
+							initialUsername: username,
+						})
+					}>
+					<Text
+						style={[
+							styles.tabText,
+							formType === "confirmation" && styles.activeTabText,
+						]}>
+						Confirmation
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[
+						styles.tab,
+						formType === "ResetPasswordForm" && styles.activeTab,
+					]}
+					onPress={() =>
+						navigation.navigate("ResetPasswordForm", {
+							initialUsername: username,
+						})
+					}>
+					<Text
+						style={[
+							styles.tabText,
+							formType === "resetPassword" && styles.activeTabText,
+						]}>
+						Reset Password
+					</Text>
+				</TouchableOpacity>
 			</HideWithKeyboard>
-		</View>
+		</>
 	);
 };
 

@@ -30,8 +30,9 @@ export default function CreateEvent({ navigation }) {
 			// GET eligibility
 			const response = await axios.get(`${apiURL}eligibility`);
 			const data = response.data;
-			setEligibilityData(response.data);
+			setEligibilityData(data);
 			setIsPickerVisible(true);
+			console.log(data)
 		};
 		geteligibility();
 	}, []);
@@ -73,7 +74,10 @@ export default function CreateEvent({ navigation }) {
 			<>
 				{isPickerVisible && ( // check if the eligibility data is fetched
 					<>
+					<Text>Event Type</Text>
 						<Picker
+							mode="dropdown"
+							style={styles.picker}
 							selectedValue={selectedEventType}
 							onValueChange={handleEventTypeChange}>
 							{eligibilityData.eligibilityTypes.map(
@@ -89,33 +93,33 @@ export default function CreateEvent({ navigation }) {
 								)
 							)}
 						</Picker>
+						<Text>Event Name</Text>
 						<TextInput
-							placeholder="Event Name"
 							style={styles.nameInput}
 							onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 						/>
+						<Text>Max Participants</Text>
 						<TextInput
-							placeholder="Max Participants"
 							style={styles.nameInput}
 							onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
 							keyboardType="numeric"
 						/>
+						<Text>Start Date</Text>
 						<TextInput
-							placeholder="Start Date"
 							style={styles.nameInput}
 							onChangeText={(inpEvnStartTime) =>
 								setInpEvnStartDatetime(inpEvnStartTime)
 							}
 						/>
+						<Text>End Date</Text>
 						<TextInput
-							placeholder="End Date"
 							style={styles.nameInput}
 							onChangeText={(inpEvnEndTime) =>
 								setInpEvnEndDatetime(inpEvnEndTime)
 							}
 						/>
+						<Text>Location</Text>
 						<TextInput
-							placeholder="Location"
 							style={styles.nameInput}
 							onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)} />
 						<Button title="Create" onPress={handleCreateEvent} />
@@ -139,4 +143,10 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: "#000",
 	},
+	picker: {
+		backgroundColor: '#fafafa',
+		width: 180, 
+		height: 50, 
+		marginBottom: 20 , 
+	}
 });

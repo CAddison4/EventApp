@@ -1,45 +1,75 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
-import { handleForgotPassword } from '../../../components/AuthComponents';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import { handleForgotPassword } from "../../../components/AuthComponents";
+import { useNavigation } from "@react-navigation/native";
 
-const ForgotPasswordForm = ({ onFormTypeChange }) => {
-  const [username, setUsername] = useState('');
-    const [message, setMessage] = useState('');
+const ForgotPasswordForm = ({ route }) => {
+  const { initialUsername } = route.params;
+  const navigation = useNavigation();
+  const [username, setUsername] = useState(
+    initialUsername ? initialUsername : ""
+  );
+  const [message, setMessage] = useState("");
 
-    const handleSubmit = async () => {
-        try {
-          console.log(username)  
-          await handleForgotPassword(username);
-          onFormTypeChange('resetPassword', username);
-        } catch (error) {
-          console.log(error);
-          setMessage(error.message);
-        }
-      };
+  const handleSubmit = async () => {
+    try {
+      await handleForgotPassword(username);
+      navigation.navigate("ResetPasswordForm", { initialUsername: username });
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={styles.container}
+    enabled={true}
+  >
+        <SafeAreaView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+    <View >
       <Text style={styles.title}>Forgot Password</Text>
       {message ? <Text>{message}</Text> : null}
       <TextInput
         style={styles.input}
-        value={username}
+        value={initialUsername ? initialUsername : username}
         onChangeText={setUsername}
         placeholder="Email"
         keyboardType="email-address"
       />
       <View style={styles.buttonContainer}>
-      <Pressable
-        onPress={() => onFormTypeChange('signIn')}
-        style={styles.secondaryButton}
-      >
-        <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
-      </Pressable>
-      <Button title="Reset Password" onPress={handleSubmit} 
-      style={styles.primaryButton}/>
-
+        <Pressable
+          onPress={() => navigation.navigate("SignInForm")}
+          style={styles.secondaryButton}
+        >
+          <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
+        </Pressable>
+        <Button
+          title="Reset Password"
+          onPress={handleSubmit}
+          style={styles.primaryButton}
+        />
       </View>
     </View>
+   
+    </TouchableWithoutFeedback>
+    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -77,11 +107,12 @@ const styles = StyleSheet.create({
   primaryButton: {
     width: 150,
     fontSize: 16,
-    
   },
   secondaryButtonText: {
-    fontSize: 16,
+    alignSelf: "center",
+    fontSize: 13,
     textDecorationLine: "underline",
+    color: "#888",
   },
 });
 
