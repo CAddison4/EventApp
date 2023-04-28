@@ -28,13 +28,16 @@ export default function EventsCal({ navigation, route }) {
 	};
 
 	useEffect(() => {
-		setEvents(contextEvent);
-		if (type === "myevents") {
-		  const filteredEvents = contextEvent.filter(
-			  (eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist)
-		  );
-		  setEvents(filteredEvents);
-		}
+		if(contextEvent){
+
+			setEvents(contextEvent);
+			if (type === "myevents") {
+			const filteredEvents = contextEvent.filter(
+				(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist)
+			);
+			setEvents(filteredEvents);
+			}
+	   }
 	  }, [navigation, type, contextEvent, filter]);
 	  
 	  
