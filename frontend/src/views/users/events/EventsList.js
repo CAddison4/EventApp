@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
+import { useDispatch, useSelector } from "react-redux";
+import { setEvent } from "../../../components/store/eventSlice";
 
 import { API_END_POINT } from '@env';
 
@@ -26,12 +28,14 @@ export default function EventsList({ route }) {
 	const navigation = useNavigation();
 	const today = new Date();
 	let filteredEvents = [];
-//	const contextEvent = useSelector((state) => state.event);
+	const contextEvent = useSelector((state) => state.event);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		async function fetchData() {
 			await getEvents(true);
 			applyFilters(type, "All");
+			await dispatch(setEvent(filteredEvents));
 			setEvents(filteredEvents);
 		}
 		fetchData();
@@ -108,6 +112,7 @@ export default function EventsList({ route }) {
 		async function filterData() {
 			await getEvents(false);
 			applyFilters(type, itemValue);
+			await dispatch(setEvent(filteredEvents));
 			setEvents(filteredEvents);
 		}
 		filterData();		
@@ -118,6 +123,7 @@ export default function EventsList({ route }) {
 		async function filterData() {
 			await getEvents(false);
 			applyFilters(type, itemValue);
+			await dispatch(setEvent(filteredEvents));
 			setEvents(filteredEvents);
 		}
 		filterData();
