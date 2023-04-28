@@ -68,45 +68,46 @@ export default function EventsCal({ navigation, route }) {
 		setMarkedDates(mergedMarkedDates);
 	  }, [events]);
 	  
-
-	return (
+	  return (
 		<View>
-			<Text>Events Calendar</Text>
+		  <Text>Events Calendar</Text>
+		  {contextEvent ? (
 			<Calendar
-				
-				onDayPress={(day) => {
-					setSelected(day.dateString);
-					const { eventId } = markedDates[day.dateString];
-					const selectedEvent = events.find((event) => event.event_id === eventId);1
-						navigation.navigate("EventDetails", {
-							eventObj: selectedEvent,})
-
-				  }}
-				  
-				  
-				markedDates={markedDates}
-				markingType={"multi-dot"}
-				theme={{
-					calendarBackground: "#ffffff",
-					textSectionTitleColor: "#b6c1cd",
-					dayTextColor: "#2d4150",
-					todayTextColor: "#fe7013",
-					selectedDayTextColor: "#ffffff",
-					monthTextColor: "#2d4150",
-					selectedDayBackgroundColor: "#fe7013",
-					arrowColor: "#fe7013",
-					"stylesheet.calendar.header": {
-						week: {
-							marginTop: 5,
-							flexDirection: "row",
-							justifyContent: "space-between",
-						},
-					},
-				}}
-				style={{ borderWidth: 1, borderColor: "gray" }}
-				customStyle={customStyle}
+			  onDayPress={(day) => {
+				setSelected(day.dateString);
+				const { eventId } = markedDates[day.dateString];
+				const selectedEvent = events.find((event) => event.event_id === eventId);
+				navigation.navigate("EventDetails", {
+				  eventObj: selectedEvent,
+				});
+			  }}
+			  markedDates={markedDates}
+			  markingType={"multi-dot"}
+			  theme={{
+				calendarBackground: "#ffffff",
+				textSectionTitleColor: "#b6c1cd",
+				dayTextColor: "#2d4150",
+				todayTextColor: "#fe7013",
+				selectedDayTextColor: "#ffffff",
+				monthTextColor: "#2d4150",
+				selectedDayBackgroundColor: "#fe7013",
+				arrowColor: "#fe7013",
+				"stylesheet.calendar.header": {
+				  week: {
+					marginTop: 5,
+					flexDirection: "row",
+					justifyContent: "space-between",
+				  },
+				},
+			  }}
+			  style={{ borderWidth: 1, borderColor: "gray" }}
+			  customStyle={customStyle}
 			/>
-
+		  ) : (
+			<Text>Loading Events...</Text>
+		  )}
 		</View>
-	);
+	  );
+	  
+	
 }
