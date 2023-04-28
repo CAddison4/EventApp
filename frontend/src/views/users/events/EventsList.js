@@ -6,11 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
 
-import { API_END_POINT } from '@env';
 
+import { API_END_POINT } from '@env';
+import { useDispatch, useSelector } from "react-redux";
+import { setEvent } from "../../../components/store/eventSlice";
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
@@ -20,6 +23,7 @@ export default function EventsList({ route }) {
 
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
+
 	const [dbEvents, setDBEvents] = useState([]);
 
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
@@ -27,9 +31,11 @@ export default function EventsList({ route }) {
 
 	const navigation = useNavigation();
 	const today = new Date();
+
 	let filteredEvents = [];
 	const contextEvent = useSelector((state) => state.event);
 	const dispatch = useDispatch();
+
 
 	useEffect(() => {
 		async function fetchData() {
@@ -50,6 +56,7 @@ export default function EventsList({ route }) {
 		if (fetchFromDB) {
 			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
 			const data = response.data;
+
 			filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
 			setDBEvents(filteredEvents);
 		}
@@ -60,6 +67,7 @@ export default function EventsList({ route }) {
 			await determineEventFlags(eventObj, loyaltyCount);
 		}));
 	};
+
 
 	const getLoyaltyCount = async (userId) => {
 		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);

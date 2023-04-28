@@ -12,6 +12,7 @@ export default function ProfileNavButton() {
 	return (
 		<View>
 			<Ionicons
+				style={styles.profileIcon}
 				name="person"
 				size={24}
 				color="white"
@@ -20,3 +21,10 @@ export default function ProfileNavButton() {
 		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	profileIcon: {
+		marginRight: 10,
+	},
+});
+
