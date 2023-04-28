@@ -17,14 +17,21 @@ import { useNavigation } from "@react-navigation/native";
 
 const SignInForm = ({ route }) => {
   
-  const { initialUsername, initialMessage } = route.params;
+  const { initialUsername, initialMessage } = route?.params ?? {};
+
+  const [password, setPassword] = useState("");
+  
+  const [username, setUsername] = useState(initialUsername ?? "");
+  const [formMessage, setFormMessage] = useState(initialMessage ?? "");
+
+  // const { initialUsername, initialMessage } = route.params;
   
   const dispatch = useDispatch();
   
-  const [password, setPassword] = useState("");
+  // const [password, setPassword] = useState("");
 
-  const [username, setUsername] = useState(initialUsername ? initialUsername : "");
-  const [formMessage, setFormMessage] = useState(initialMessage ? initialMessage : "");
+  // const [username, setUsername] = useState(initialUsername ? initialUsername : "");
+  // const [formMessage, setFormMessage] = useState(initialMessage ? initialMessage : "");
 
   const navigation = useNavigation();
 
