@@ -133,6 +133,15 @@ export async function getEvents() {
   return res.rows
 }
 
+// Get event with date
+export async function getEventWithDate(date) {
+  const res = await getPool().query(`
+  SELECT * FROM events
+  WHERE DATE_TRUNC('day', event_date) = $1
+  ORDER BY event_date`, [date]);
+  return res.rows;
+}
+
 // Create an attendee record for a particular event and user
 export async function createAttendee(eventId, userId, attendeeStatusId) {
   const res = await getPool().query(`
