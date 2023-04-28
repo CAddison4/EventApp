@@ -1,5 +1,6 @@
 import { View, Text, Button, FlatList, LogBox } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
@@ -11,6 +12,7 @@ LogBox.ignoreLogs([
 ]);
 
 export default function Users({ navigation }) {
+	const [open, setOpen] = useState(false);
 	const [users, setUsers] = useState([]);
 	const [editedMemberships, setEditedMemberships] = useState([]);
 	const [selectedMembershipStatus, setSelectedMembershipStatus] =
@@ -96,7 +98,19 @@ export default function Users({ navigation }) {
 				{isPickerVisible && (
 					<>
 						<Text>Membership Status</Text>
-						<Picker
+
+						<DropDownPicker
+							open={open}
+							value={selectedMembershipStatus}
+							items={editedMemberships.map((item) => ({
+								label: item.membership_status_id,
+								value: item.membership_status_id,
+							}))}
+							setOpen={setOpen}
+							setValue={handleMembershipFilterChange}
+							// setItems={setItems}
+						/>
+						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipFilterChange}>
 							{editedMemberships.map((item, index) => (
@@ -106,7 +120,7 @@ export default function Users({ navigation }) {
 									label={item.membership_status_id}
 								/>
 							))}
-						</Picker>
+						</Picker> */}
 						<Text>{selectedMembershipStatus} Users</Text>
 						<FlatList
 							data={filteredUsers}
