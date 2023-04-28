@@ -1,16 +1,14 @@
+// random comment at the top
 import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity } from "react-native";
 
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Picker } from "@react-native-picker/picker";
 
 import { API_END_POINT } from '@env';
-
-import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
-import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
-import { setEvent } from "../../../components/store/eventSlice";
-import { useDispatch, useSelector } from "react-redux";
 
 import EventListItem from "../../../components/EventListItem";
 
@@ -21,34 +19,33 @@ export default function EventsList({ route }) {
 
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
-	const [reRender, setReRender] = useState([false]);
-	const dispatch = useDispatch();
+
+
+	const [selectedFilterU, setSelectedFilterU] = useState("All");
+	const [selectedFilterM, setSelectedFilterM] = useState("All");
+
 
 	const navigation = useNavigation();
 	const today = new Date();
 	const contextEvent = useSelector((state) => state.event);
 
-	const getLoyaltyCount = async (userId) => {
-		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
-		return response.data.eventCount;
-	}
-
 	useEffect(() => {
-		
 		const getEvents = async () => {
+		
 			let loyaltyCount = 0;
 			if (type === "upcoming") {
 				loyaltyCount = await getLoyaltyCount(userId);
 			}
+	
 			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
-
+	
 			const data = response.data;
 			let filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
 			
 			await Promise.all(filteredEvents.map(async (eventObj) => {
 				await determineEventFlags(eventObj, loyaltyCount);
 			}));
-			
+	
 			if (type === "myevents") {
 				filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
 		
@@ -58,9 +55,13 @@ export default function EventsList({ route }) {
 			setEvents(filteredEvents);
 		};
 		getEvents();
-		setReRender(false);
-	}, [reRender, navigation]);
+	}, [type]);
 
+	const getLoyaltyCount = async (userId) => {
+		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
+		return response.data.eventCount;
+	}
+	
 	const determineEventFlags = async (eventObj, loyaltyCount) => {
 
 		const eligibility = [];
@@ -98,11 +99,44 @@ export default function EventsList({ route }) {
 		// Check if the user is already in the waitlist for this event
 		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${userId}`);
 		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
+
+		eventObj.isInWaitlist ? eventObj.color = "red" : (eventObj.isAttending ? eventObj.color = "green" : eventObj.color = "black");
 	};
+
+	/* const handleFilterChangeU = (itemValue) => {
+			
+	};
+
+	const handleFilterChangeM = (itemValue) => {
+			
+	}; */
 
 	return (
 		<View style={styles.container}>
-			<FlatList
+			{type && type === "upcoming" ? (
+				<Picker
+					selectedValue={selectedFilterU}
+					style={styles.picker}
+				//	onValueChange={handleFilterChangeU}
+					mode={"dropdown"}
+				>
+					<Picker.Item label="All" value="All" />
+					<Picker.Item label="Eligible" value="Eligible" />
+				</Picker>
+			) : (
+				<Picker
+					selectedValue={selectedFilterM}
+					style={styles.picker}
+				//	onValueChange={handleFilterChangeM}
+					mode={"dropdown"}
+				>
+					<Picker.Item label="All" value="All" />
+					<Picker.Item label="Registered" value="Registered" />
+					<Picker.Item label="Waitlisted" value="Waitlisted" />
+				</Picker>
+			)}
+			
+			<FlatList style={styles.list}
 				data={events}
 				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 				renderItem={({ item }) => (
@@ -111,72 +145,19 @@ export default function EventsList({ route }) {
 							onPress={() =>
 								navigation.navigate("EventDetails", {
 									eventObj: item,
+									userId: userId
 								})
-							}
-						>
-							<EventListItem
-								eventObj={item} />
-						</TouchableOpacity>
-						{/* If eligible and in the waitlist,
-						button should say "Remove" */}
-						{item.isEligible && item.isInWaitlist && (
-							<Button
-								title="Remove from W/List"
-								onPress={() => {
-									setReRender(true);
-									removeFromEventWaitlist(item, userId);
-									navigation.navigate("Confirmation", {
-										eventObj: item,
-										status: "Removed" 
-									});
-								}}
-							/>
-						)}
-						{/* If eligible and already attending and not in waitlist,
-						button should say "Withdraw" */}
-						{item.isEligible && item.isAttending && !item.isInWaitlist && (
-							<Button
-								title="Withdraw"
-								onPress={() => {
-									setReRender(true);
-									withdrawFromEvent(item, userId);
-									navigation.navigate("Confirmation", {
-										eventObj: item,
-										status: "Withdrawn" 
-									});
-								}}
-							/>
-						)}
-						{/* If eligible and not already attending and event has room,
-						button should say "Register" */}
-						{item.isEligible && !item.isAttending && item.hasRoom && (
-							<Button
-								title="Register"
-								onPress={() => {
-									setReRender(true);
-									registerForEvent(item, userId);
-									navigation.navigate("Confirmation", {
-										eventObj: item,
-										status: "Registered" 
-									});
-								}}
-							/>
-						)}
-						{/* If eligible and not already attending and event has no room,
-						button should say "Waitlist" */}
-						{item.isEligible && !item.isAttending && !item.hasRoom && !item.isInWaitlist && (
-							<Button
-								title="Waitlist"
-								onPress={() => {
-									setReRender(true);
-									waitlistForEvent(item, userId);
-									navigation.navigate("Confirmation", {
-										eventObj: item, 
-										status: "Waitlisted"
-									});
-								}}
-							/>
-						)}
+							}>
+							<View style={styles.rowContent}>
+								<EventListItem
+									eventObj={item}/>
+								<Ionicons
+									name="chevron-forward-outline"
+									size={16}
+									color="grey"
+								/>
+							</View>
+						</TouchableOpacity>						
 					</View>
 				)}
 			/>
@@ -189,15 +170,30 @@ const styles = StyleSheet.create({
 		width: "100%",
     	maxWidth: 400,
 		backgroundColor: "#fff",
-		alignItems: "center",
+		paddingLeft: 30,
 		justifyContent: "space-between",
 	},
+	picker: {
+    	alignItems: "center",
+		width: 180,
+	},
+	list: {
+		paddingTop: 10,
+	},
 	row: {
-		paddingTop: 20,
+		paddingBottom: 20,
+		width: "100%",
 		flex: 1,
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
+	},
+	rowContent: {
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "flex-end",
+		alignItems: "center",
 		columnGap: 30,
+		marginRight: 10,
 	},
 });

@@ -25,50 +25,49 @@ const ForgotPasswordForm = ({ route }) => {
   const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
-    try {
-      await handleForgotPassword(username);
-      navigation.navigate("ResetPasswordForm", { initialUsername: username });
-    } catch (error) {
-      setMessage(error.message);
-    }
+ 
+      const { success, message } = await handleForgotPassword(username);
+      if (success === false) {
+        console.log("Error sending reset password email:", message);
+        setMessage(message);
+        return;
+      }
+      navigation.navigate("ResetPasswordForm", { initialUsername: username });  
   };
 
   return (
     <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style={styles.container}
-    enabled={true}
-  >
-        <SafeAreaView>
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-
-    <View >
-      <Text style={styles.title}>Forgot Password</Text>
-      {message ? <Text>{message}</Text> : null}
-      <TextInput
-        style={styles.input}
-        value={initialUsername ? initialUsername : username}
-        onChangeText={setUsername}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <View style={styles.buttonContainer}>
-        <Pressable
-          onPress={() => navigation.navigate("SignInForm")}
-          style={styles.secondaryButton}
-        >
-          <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
-        </Pressable>
-        <Button
-          title="Reset Password"
-          onPress={handleSubmit}
-          style={styles.primaryButton}
-        />
-      </View>
-    </View>
-   
-    </TouchableWithoutFeedback>
-    </SafeAreaView>
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      enabled={true}
+      onPress={Keyboard.dismiss}
+    >
+      <SafeAreaView>
+        <View>
+          <Text style={styles.title}>Forgot Password</Text>
+          {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
+          <TextInput
+            style={styles.input}
+            defaultValue={initialUsername ? initialUsername : ""}
+            onChangeText={setUsername}
+            placeholder="Email"
+            keyboardType="email-address"
+          />
+          <View style={styles.buttonContainer}>
+            <Pressable
+              onPress={() => navigation.navigate("SignInForm")}
+              style={styles.secondaryButton}
+            >
+              <Text style={styles.secondaryButtonText}>Back to Sign In</Text>
+            </Pressable>
+            <Button
+              title="Send Reset Code"
+              onPress={handleSubmit}
+              style={styles.primaryButton}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
@@ -103,17 +102,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   primaryButton: {
     width: 150,
     fontSize: 16,
   },
   secondaryButtonText: {
-    alignSelf: "center",
+    width: "100%",
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",
+    alignSelf: "center",
   },
+  errorMessage: {
+    color: "red",
+    marginBottom: 20,
+  },
+  
 });
 
 export default ForgotPasswordForm;
