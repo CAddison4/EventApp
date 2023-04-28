@@ -4,11 +4,11 @@ import {
   View,
   Button,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { handleSignOut } from "../../../components/AuthComponents";
+import {showLoyaltyCalculation} from "../../../components/alerts/LoyaltyAlert"
 
 const MainProfile = () => {
   const user = useSelector((state) => state.user);
@@ -17,14 +17,11 @@ const MainProfile = () => {
     handleSignOut();
   };
 
-  const showLoyaltyCalculation = () => {
-    console.log("showLoyaltyCalculation");
-    Alert.alert(
-      "Loyalty Calculation",
-      "Your loyalty level is calculated based on the number of events you have attended. Any event you attend will increase your loyalty level by 1. Events that are cancelled or that you do not attend will not affect your loyalty level.",
-      [{ text: "OK" }]
-    );
+  const handleLoyalty = () => {
+    showLoyaltyCalculation();
   };
+
+ 
 
   if (!user) {
     return <Text>Loading...</Text>;
@@ -52,16 +49,14 @@ const MainProfile = () => {
           <Text style={styles.label}>Membership Status:</Text>
           <Text style={styles.value}>{userData.membership_status_id}</Text>
         </View>
-
         <View style={styles.userInfoItem}>
-          <TouchableOpacity onPress={showLoyaltyCalculation}>
+          <TouchableOpacity onPress={handleLoyalty}>
             <Text style={[styles.label, styles.underline]}>Loyalty:</Text>
           </TouchableOpacity>
           <Text style={styles.value}>
             {userData.eventCount}
           </Text>
         </View>
-
         <Button title="Sign Out" onPress={handleSubmit} />
       </View>
     </View>
