@@ -41,7 +41,33 @@ export default function EventDetailsHost({ navigation, route }) {
     }
 
   };
-  
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.put(`${API_END_POINT}/event/${eventId}`, {
+        eventName: eventObj.event_name,
+        eventDate: eventObj.event_date,
+        eventStart: eventObj.event_start,
+        eventEnd: eventObj.event_end,
+        eventLocation: eventObj.event_location,
+        capacity: eventObj.capacity,
+        eligibilityType: eventObj.type_id,
+        loyaltyMax: eventObj.loyalty_max,
+        cancelled: true,
+      });
+      // check if the request was successful
+      if (response.status === 200) {
+        console.log("Event successfully cancelled");
+        // go back to event list
+        navigation.navigate("EventsHost");
+      } else {
+        console.log("Error cancelling event");
+      }
+    } catch (error) {
+      console.log("Error cancelling event:", error.message);
+    }
+    
+  };
   return (
     <View style={styles.container}>
       {isEdit ? (
@@ -96,6 +122,7 @@ export default function EventDetailsHost({ navigation, route }) {
               />
             )}
             <Button title="Edit" onPress={() => setIsEdit(true)} style={styles.button}></Button>
+            <Button title="Delete" onPress={() => handleDelete()} style={styles.button}></Button>
           </>
         )
       )}
