@@ -1,9 +1,53 @@
 import * as React from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
-import { formatDate, formatDateTime } from "../../../utilities/dates"
+import { useDispatch, useSelector } from "react-redux";
+import { formatDate, formatDateTime } from "../../../utilities/dates";
+
+import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
+import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { API_END_POINT } from '@env';
 
 export default function EventDetails({ navigation, route }) {
-	const eventObj = route.params.eventObj;
+	const { eventObj, userId } = route.params;
+
+	/* const contextEvent = useSelector((state) => state.event);
+	console.log("contextEvent", conextEvent); */
+
+	const [waitlistPosition, setWaitlistPosition] = useState(0);
+
+	useEffect(() => {
+		const getWaitlistPosition = async () => {
+			const response = await axios.get(`${API_END_POINT}waitlistposition/${eventObj.event_id}/${userId}`);
+			return response.data.waitlistPosition;
+		};
+		const fetchData = async () => {
+			const position = await getWaitlistPosition();
+			setWaitlistPosition(position);
+		  };
+		fetchData();	
+	}, []);
+
+	function updateEventFlag(type) {
+		switch (type) {
+			case "Waitlist":
+				updatedEvent = { ...eventObj, isInWaitlist: true };
+				break;
+			case "Remove":
+				updatedEvent = { ...eventObj, isInWaitlist: false };
+				break;	
+			case "Register":
+				updatedEvent = { ...eventObj, isAttending: true };
+				break;
+			case "Withdraw":
+				updatedEvent = { ...eventObj, isAttending: false };
+				break;
+			default:
+				break;
+		}
+	}
 
 	return (
 		<View style={styles.container}>
@@ -14,12 +58,14 @@ export default function EventDetails({ navigation, route }) {
 					<Text>Event start:</Text>
 					<Text>Location:</Text>
 					<Text>Your status:</Text>
+					{eventObj.isInWaitlist ? <Text>Current position:</Text> : null}
 				</View>
 				<View style={styles.textColumn}>
 					<Text>{formatDate(eventObj.event_date)}</Text>
 					<Text>{formatDateTime(eventObj.event_start)}</Text>
 					<Text>{eventObj.event_location}</Text>
 					<Text>{eventObj.isInWaitlist ? "Waitlisted" : eventObj.attendee_status_id}</Text>
+					{eventObj.isInWaitlist ? <Text>{waitlistPosition}</Text> : null}
 				</View>
 			</View>
 			<View style={styles.actionButton}>
@@ -30,7 +76,7 @@ export default function EventDetails({ navigation, route }) {
 						title="Remove from Waitlist"
 						onPress={() => {
 							removeFromEventWaitlist(eventObj, userId);
-							setReRender(true);
+							updateEventFlag("Remove");
 							navigation.navigate("Confirmation", {
 								eventObj: eventObj,
 								status: "Removed" 
@@ -45,7 +91,7 @@ export default function EventDetails({ navigation, route }) {
 						title="Withdraw"
 						onPress={() => {
 							withdrawFromEvent(eventObj, userId);
-							setReRender(true);
+							updateEventFlag("Withdraw");
 							navigation.navigate("Confirmation", {
 								eventObj: eventObj,
 								status: "Withdrawn" 
@@ -60,7 +106,7 @@ export default function EventDetails({ navigation, route }) {
 						title="Register"
 						onPress={() => {
 							registerForEvent(eventObj, userId);
-							setReRender(true);
+							updateEventFlag("Register");
 							navigation.navigate("Confirmation", {
 								eventObj: eventObj,
 								status: "Registered" 
@@ -75,7 +121,7 @@ export default function EventDetails({ navigation, route }) {
 						title="Waitlist"
 						onPress={() => {
 							waitlistForEvent(eventObj, userId);
-							setReRender(true);
+							updateEventFlag("Waitlist");
 							navigation.navigate("Confirmation", {
 								eventObj: eventObj,
 								status: "Waitlisted"
@@ -112,6 +158,7 @@ const styles = StyleSheet.create({
 	textColumn: {
 		flexDirection: "column",
 		justifyContent: "space-between",
+		rowGap: 20,
 	},
 	actionButton: {
 		marginTop: 20,
