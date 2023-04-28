@@ -62,17 +62,20 @@ export default function UserDetails({ navigation, route }) {
 				{isPickerVisible && ( // check if the eligibility data is fetched
 					<>
 						<Text>Membership Status</Text>
-						<DropDownPicker
-							open={open}
-							value={selectedMembershipStatus}
-							items={memberships.membershipStatuses.map((item) => ({
-								label: item.membership_status_id,
-								value: item.membership_status_id,
-							}))}
-							setOpen={setOpen}
-							setValue={handleMembershipStatusChange}
-							// setItems={setItems}
-						/>
+						<View style={{ zIndex: 2000 }}>
+							<DropDownPicker
+								open={open}
+								value={selectedMembershipStatus}
+								items={memberships.membershipStatuses.map((item) => ({
+									label: item.membership_status_id,
+									value: item.membership_status_id,
+								}))}
+								setOpen={setOpen}
+								setValue={handleMembershipStatusChange}
+								// setItems={setItems}
+							/>
+						</View>
+
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipStatusChange}>

@@ -98,18 +98,21 @@ export default function Users({ navigation }) {
 				{isPickerVisible && (
 					<>
 						<Text>Membership Status</Text>
+						<View style={{ zIndex: 2000 }}>
+							<DropDownPicker
+								open={open}
+								value={selectedMembershipStatus}
+								items={editedMemberships.map((item) => ({
+									label: item.membership_status_id,
+									value: item.membership_status_id,
+								}))}
+								setOpen={setOpen}
+								setValue={handleMembershipFilterChange}
+								zIndex={5000}
+								// setItems={setItems}
+							/>
+						</View>
 
-						<DropDownPicker
-							open={open}
-							value={selectedMembershipStatus}
-							items={editedMemberships.map((item) => ({
-								label: item.membership_status_id,
-								value: item.membership_status_id,
-							}))}
-							setOpen={setOpen}
-							setValue={handleMembershipFilterChange}
-							// setItems={setItems}
-						/>
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipFilterChange}>
