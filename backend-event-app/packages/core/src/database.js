@@ -142,7 +142,7 @@ export async function createAttendee(eventId, userId, attendeeStatusId) {
   return res.rows[0]
 }
 
-// Delete a waitlist record for a specific event and user
+// Delete attendee record for a specific event and user
 export async function deleteAttendee(eventId, userId) {
   const res = await getPool().query(`
   DELETE FROM eventattendees
