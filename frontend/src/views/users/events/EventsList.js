@@ -7,9 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
-
+// import { useSelector } from "react-redux";
 import { API_END_POINT } from '@env';
-
+import { useDispatch, useSelector } from "react-redux";
+import { setEvent } from "../../../components/store/eventSlice";
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
@@ -19,7 +20,7 @@ export default function EventsList({ route }) {
 
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
-
+	const dispatch = useDispatch();
 
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
@@ -27,7 +28,7 @@ export default function EventsList({ route }) {
 
 	const navigation = useNavigation();
 	const today = new Date();
-	const contextEvent = useSelector((state) => state.event);
+	// const contextEvent = useSelector((state) => state.event);
 
 	useEffect(() => {
 		const getEvents = async () => {
