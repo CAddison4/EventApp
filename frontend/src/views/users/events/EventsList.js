@@ -9,11 +9,7 @@ import { Picker } from "@react-native-picker/picker";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
-
-
 import { API_END_POINT } from '@env';
-import { useDispatch, useSelector } from "react-redux";
-import { setEvent } from "../../../components/store/eventSlice";
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
