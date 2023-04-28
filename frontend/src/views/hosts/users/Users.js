@@ -1,4 +1,4 @@
-import { View, Text, Button, FlatList } from "react-native";
+import { View, Text, Button, FlatList, LogBox } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -6,113 +6,125 @@ import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
 
+LogBox.ignoreLogs([
+	"Non-serializable values were found in the navigation state",
+]);
+
 export default function Users({ navigation }) {
 	const [users, setUsers] = useState([]);
-	const [memberships, setMemberships] = useState([]);
-	//const [updatedUser, setUpdatedUser] = useState(user); // This is the user object that will be updated with the new membership status
-	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState("");
+	const [editedMemberships, setEditedMemberships] = useState([]);
+	const [selectedMembershipStatus, setSelectedMembershipStatus] =
+		useState("All");
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
-	const [testMemberships, setTestMemberships] = useState([]);
-	const [filteredUsers, setFilteredUsers] = useState(users); // This is the user object that will be updated with the new membership status
+	const [filteredUsers, setFilteredUsers] = useState([]);
+	const [updateFilter, setUpdateFilter] = useState(false);
 
-	const handleMembershipFilterChange = (itemValue, itemIndex) => {
-		setSelectedMembershipStatus(itemValue); // Update the state with the selected membership status value
-	};
-
-	const handleGetMemberships = async () => {
-		const apiURL = API_END_POINT;
-		const response = await axios.get(`${apiURL}membership`);
-		const data = response.data;
-		setMemberships(data);
-		setIsPickerVisible(true);
-	};
-
-	const handleUpdateMembershipFilter = async () => {
-		setFilteredUsers(
-			users.filter(
-				(user) => user.membership_status_id == selectedMembershipStatus
-			)
-		);
+	const handlePageRefresh = async () => {
+		const newUsers = await getUsers();
+		setUsers(newUsers);
+		setSelectedMembershipStatus("All");
 	};
 
 	const getUsers = async () => {
 		const apiURL = API_END_POINT;
-		const response = await axios.get(`${apiURL}users`);
-		const data = response.data;
-		setUsers(data);
+		const usersResponse = await axios.get(`${apiURL}users`);
+		return usersResponse.data;
+	};
+
+	const getFilteredMemberships = async () => {
+		const apiURL = API_END_POINT;
+		const membershipsResponse = await axios.get(`${apiURL}membership`);
+		const membershipStatuses = membershipsResponse.data.membershipStatuses;
+		const edited = [{ membership_status_id: "All" }, ...membershipStatuses];
+		return edited;
+	};
+
+	const handleGetEditedMemberships = async () => {
+		const [edited, users] = await Promise.all([
+			getFilteredMemberships(),
+			getUsers(),
+		]);
+		setEditedMemberships(edited);
+		setUsers(users);
+		setUpdateFilter(true); // set the flag to trigger the useEffect
+	};
+
+	const handleMembershipFilterChange = (itemValue, itemIndex) => {
+		setSelectedMembershipStatus(itemValue);
+		if (itemValue === "All") {
+			setFilteredUsers(users);
+			return;
+		}
+		setFilteredUsers(
+			users.filter((user) => user.membership_status_id === itemValue)
+		);
 	};
 
 	useEffect(() => {
-		//This page should default to users whose Membership Status is "None" so they are flagged to update their membership status.
-		getUsers();
-		// filterUsers();
-		handleGetMemberships();
-	}, [users, navigation]);
+		const fetchData = async () => {
+			await handleGetEditedMemberships();
+			setIsPickerVisible(true);
+		};
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const filterUsers = () => {
+			if (selectedMembershipStatus === "All") {
+				setFilteredUsers(users);
+			} else {
+				setFilteredUsers(
+					users.filter(
+						(user) => user.membership_status_id === selectedMembershipStatus
+					)
+				);
+			}
+		};
+		filterUsers();
+	}, [selectedMembershipStatus, users]);
+
+	useEffect(() => {
+		if (updateFilter) {
+			handleMembershipFilterChange(selectedMembershipStatus);
+			setUpdateFilter(false);
+		}
+	}, [updateFilter]);
+
 	return (
 		<View>
 			<>
-				{isPickerVisible && ( // check if the eligibility data is fetched
+				{isPickerVisible && (
 					<>
 						<Text>Membership Status</Text>
 						<Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipFilterChange}>
-							{memberships.membershipStatuses.map(
-								(
-									item,
-									index // map the eligibility types
-								) => (
-									<Picker.Item
-										value={item.membership_status_id}
-										key={index}
-										label={item.membership_status_id}
-									/>
-								)
-							)}
+							{editedMemberships.map((item, index) => (
+								<Picker.Item
+									value={item.membership_status_id}
+									key={index}
+									label={item.membership_status_id}
+								/>
+							))}
 						</Picker>
-						<Button
-							title="Filter Users"
-							onPress={handleUpdateMembershipFilter}
+						<Text>{selectedMembershipStatus} Users</Text>
+						<FlatList
+							data={filteredUsers}
+							renderItem={({ item }) => (
+								<Text
+									onPress={() =>
+										navigation.navigate("UserDetails", {
+											user: item,
+											handleRefresh: handlePageRefresh,
+										})
+									}>
+									{item.first_name} {item.last_name} {item.membership_status_id}{" "}
+									{item.email}
+								</Text>
+							)}
 						/>
 					</>
 				)}
-				<Text>All Users</Text>
-				{!selectedMembershipStatus ? (
-					<FlatList
-						data={users}
-						renderItem={({ item }) => (
-							<Text
-								onPress={() =>
-									navigation.navigate("UserDetails", { user: item })
-								}>
-								{item.first_name} {item.last_name} {item.membership_status_id}
-							</Text>
-						)}
-					/>
-				) : (
-					<FlatList
-						data={filteredUsers}
-						renderItem={({ item }) => (
-							<Text
-								onPress={() =>
-									navigation.navigate("UserDetails", { user: item })
-								}>
-								{item.first_name} {item.last_name} {item.membership_status_id}
-							</Text>
-						)}
-					/>
-				)}
-				{/* <FlatList
-					data={filteredUsers}
-					renderItem={({ item }) => (
-						<Text
-							onPress={() =>
-								navigation.navigate("UserDetails", { user: item })
-							}>
-							{item.first_name} {item.last_name} {item.membership_status_id}
-						</Text>
-					)}
-				/> */}
 			</>
 		</View>
 	);

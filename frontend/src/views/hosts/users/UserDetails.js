@@ -6,7 +6,12 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 export default function UserDetails({ navigation, route }) {
-	const { user } = route.params;
+	const user = route.params.user;
+	const handleRefresh = route.params.handleRefresh;
+	// if(route.params.handleRefresh) {
+	// 	const handleRefresh = route.params.handleRefresh;
+	// }
+	// const { user, handleRefresh } = route.params;
 	const [memberships, setMemberships] = useState([]);
 	//const [updatedUser, setUpdatedUser] = useState(user); // This is the user object that will be updated with the new membership status
 	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState(
@@ -35,6 +40,11 @@ export default function UserDetails({ navigation, route }) {
 		});
 		const data = response.data;
 		Alert.alert("Membership Status Updated");
+		try {
+			handleRefresh();
+		} catch (error) {
+			console.log(error);
+		}
 
 		navigation.goBack();
 	};
@@ -47,7 +57,7 @@ export default function UserDetails({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			<Text>
-				{user.first_name} {user.last_name}
+				{user.first_name} {user.last_name} {user.email}
 			</Text>
 			<>
 				{isPickerVisible && ( // check if the eligibility data is fetched
