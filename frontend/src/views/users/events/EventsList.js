@@ -12,7 +12,6 @@ import { setEvent } from "../../../components/store/eventSlice";
 
 
 import { API_END_POINT } from '@env';
-import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
 import EventListItem from "../../../components/EventListItem";
 
