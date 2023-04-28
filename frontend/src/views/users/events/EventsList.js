@@ -9,11 +9,14 @@ import { Picker } from "@react-native-picker/picker";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
+
 import { API_END_POINT } from '@env';
+
+
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
-const membership_status = "Silver";
+const membership_status = "Gold";
 
 export default function EventsList({ route }) {
 
@@ -139,7 +142,7 @@ export default function EventsList({ route }) {
 				case "All":
 					break;
 				case "Eligible":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.isEligible); 
+					filteredEvents = filteredEvents.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
 					break;
 				default:
 					break;
