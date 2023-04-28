@@ -20,11 +20,14 @@ export default function EventsList({ route }) {
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
 
+
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 
+
 	const navigation = useNavigation();
 	const today = new Date();
+	const contextEvent = useSelector((state) => state.event);
 
 	useEffect(() => {
 		const getEvents = async () => {
@@ -45,7 +48,10 @@ export default function EventsList({ route }) {
 	
 			if (type === "myevents") {
 				filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
+		
 			}
+			await dispatch(setEvent(filteredEvents));
+			// console.log("contextEvent", contextEvent);
 			setEvents(filteredEvents);
 		};
 		getEvents();
