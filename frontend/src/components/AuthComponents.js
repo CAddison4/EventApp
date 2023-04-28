@@ -87,20 +87,13 @@ export const handleSignIn = async (username, password, dispatch) => {
     });
 
     if (!apiResponse.ok) {
-      throw new Error(
-        "Failed to retrieve user data, Check your email and try again"
-      );
-    }
-
-    const apiResponseJson = await apiResponse.json();
-
-    if (!apiResponseJson) {
       return {
         success: false,
         message: "Failed to retrieve user data, Check your email and try again",
       };
     }
 
+    const apiResponseJson = await apiResponse.json();
     await dispatch(setUser(apiResponseJson));
     await Auth.signIn(username, password);
 
