@@ -57,7 +57,7 @@ const SignUpForm = ({}) => {
     if (success === true) {
       console.log("Successfully signed up");
       // Handle successful sign-up here
-      navigation.navigate("ConfirmationForm", { initialUsername: email });
+      navigation.navigate("ConfirmationForm", { initialUsername: email , initialMessage: "Account created. Please enter confirmation code found in your email."});
     } else
      {
       console.log(`Error signing up: ${message}`);
@@ -71,8 +71,8 @@ const SignUpForm = ({}) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       enabled={true}
+      onPress={Keyboard.dismiss}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView>
         <ScrollView style={styles.scrollView}>
           <View style={styles.inner}>
@@ -137,7 +137,6 @@ const SignUpForm = ({}) => {
           </View>
         </ScrollView>
         </SafeAreaView>
-      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

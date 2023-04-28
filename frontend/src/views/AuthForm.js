@@ -31,6 +31,10 @@ const AuthForm = ({}) => {
         options={{ 
           headerShown: false,
         }}
+        initialParams={
+          {initialUsername: "",
+        initialMessage: ""}
+        }
       />
       <Stack.Screen
         name="SignUpForm"

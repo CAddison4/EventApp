@@ -27,73 +27,68 @@ const ResetPasswordForm = ({ route }) => {
   const [message, setMessage] = useState(initialMessage ? initialMessage : "");
 
   const handleSubmit = async () => {
-    try {
-      const handleError = await handleResetPassword(
-        username,
-        code,
-        password,
-        passwordConfirmation
-      );
-      if (handleError == "SUCCESS") {
-        navigation.navigate("SignInForm", {
-          initialUsername: username,
-          initialMessage: {
-            status: "SUCCESS",
-            message: "Password reset successfully. Please sign in.",
-          },
-        });
-        return;
-      }
-      setMessage(handleError);
-    } catch (error) {
-      console.log("Error signing in:", error);
+    const { success, message } = await handleResetPassword(
+      username,
+      code,
+      password,
+      passwordConfirmation
+    );
+    if (success === false) {
+      console.log("Error resetting password:", message);
+      setMessage(message);
+      return;
     }
+    navigation.navigate("SignInForm", { initialUsername: username , initialMessage: message});
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
-      {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
-      <TextInput
-        style={styles.input}
-        value={initialUsername ? initialUsername : username}
-        onChangeText={setUsername}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        value={code}
-        onChangeText={setCode}
-        placeholder="Verification Code"
-      />
-      <TextInput
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        placeholder="New Password"
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        value={passwordConfirmation}
-        onChangeText={setPasswordConfirmation}
-        placeholder="Confirm Password"
-        secureTextEntry
-      />
-      <View style={styles.buttonContainer}>
-        <Text
-          onPress={() => navigation.navigate("SignInForm")}
-          style={styles.secondaryButton}
-        >
-          Back to Sign In
-        </Text>
-        <Button title="Reset Password" onPress={handleSubmit} />
-      </View>
-    </SafeAreaView>
-    </TouchableWithoutFeedback>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      enabled={true}
+      onPress={Keyboard.dismiss}
+    >
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Reset Password</Text>
+        {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
+        <TextInput
+          style={styles.input}
+          defaultValue={initialUsername ? initialUsername : username}
+          onChangeText={setUsername}
+          placeholder="Email"
+          keyboardType="email-address"
+        />
+        <TextInput
+          style={styles.input}
+          value={code}
+          onChangeText={setCode}
+          placeholder="Verification Code"
+        />
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="New Password"
+          secureTextEntry
+        />
+        <TextInput
+          style={styles.input}
+          value={passwordConfirmation}
+          onChangeText={setPasswordConfirmation}
+          placeholder="Confirm Password"
+          secureTextEntry
+        />
+        <View style={styles.buttonContainer}>
+          <Text
+            onPress={() => navigation.navigate("SignInForm")}
+            style={styles.secondaryButton}
+          >
+            Back to Sign In
+          </Text>
+          <Button title="Reset Password" onPress={handleSubmit} />
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
