@@ -62,6 +62,7 @@ export default function UserDetails({ navigation, route }) {
 				{isPickerVisible && ( // check if the eligibility data is fetched
 					<>
 						<Text>Membership Status</Text>
+						<View style={{ zIndex: 2000 }}>
 						<DropDownPicker
 							open={open}
 							value={selectedMembershipStatus}
@@ -73,6 +74,7 @@ export default function UserDetails({ navigation, route }) {
 							setValue={handleMembershipStatusChange}
 							// setItems={setItems}
 						/>
+						</View>
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipStatusChange}>
