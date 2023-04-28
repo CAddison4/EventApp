@@ -46,8 +46,8 @@ const SignInForm = ({ route }) => {
 
   const handleAttendeeSignIn = async () => {
     try {
-      const attendeeUserName = "sholmes47@my.bcit.ca";
-      const attendeePassword = "P@ssw0rd!";
+      const attendeeUserName = "scott.c19@live.com";
+      const attendeePassword = "td3j5FnhiLHRa$KA";
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
@@ -55,8 +55,8 @@ const SignInForm = ({ route }) => {
   };
   const handleHostSignIn = async () => {
     try {
-      const hostUserName = "shmglade@gmail.com";
-      const hostPassword = "P@ssw0rd!";
+      const hostUserName = "scroin@my.bcit.ca";
+      const hostPassword = "s&PrpDLBAG94rY3$";
       await handleSignIn(hostUserName, hostPassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
