@@ -1,12 +1,13 @@
-import { StyleSheet, Text, View, Button } from "react-native";
-import { formatDate } from "../utilities/dates"
-export default function EventListItem({ eventObj, navigation }) {
+import { StyleSheet, Text, View } from "react-native";
+import { formatDate } from "../utilities/dates";
+
+export default function EventListItem({ eventObj }) {
 
 	return (
 		<View 
 			key={`${eventObj.event_id}${eventObj.user_id}`}
 			style={styles.eventItem}>
-			<Text style={styles.boldText}>{eventObj.event_name}</Text>
+			<Text style={[styles.boldText, {color: eventObj.color}]}>{eventObj.event_name}</Text>
 			<Text>{formatDate(eventObj.event_date)}  {eventObj.type_id}</Text>
 		</View>
 	);
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
 	},
 	eventItem: {
 		width: "100%",
-		paddingLeft: 10,
+		paddingLeft: 45,
 		paddingRight: 10,
 	},
 	boldText: {
