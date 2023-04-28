@@ -31,6 +31,7 @@ const AuthForm = ({}) => {
 					options={{
 						headerShown: false,
 					}}
+					initialParams={{ initialUsername: "", initialMessage: "" }}
 				/>
 				<Stack.Screen
 					name="SignUpForm"
@@ -90,7 +91,6 @@ const AuthForm = ({}) => {
 			</HideWithKeyboard>
 		</>
 	);
-
 };
 
 const styles = StyleSheet.create({
