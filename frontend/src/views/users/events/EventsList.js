@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, View, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
@@ -27,6 +28,7 @@ export default function EventsList({ route }) {
 
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
+	const [isLoading, setIsLoading] = useState(true);
 
 	const navigation = useNavigation();
 	const today = new Date();
@@ -37,11 +39,13 @@ export default function EventsList({ route }) {
 
 
 	useEffect(() => {
+		setIsLoading(true);
 		async function fetchData() {
 			await getEvents(true);
 			applyFilters(type, "All");
 			await dispatch(setEvent(filteredEvents));
 			setEvents(filteredEvents);
+			setIsLoading(false);
 		}
 		fetchData();
 	}, []);
@@ -66,7 +70,6 @@ export default function EventsList({ route }) {
 			await determineEventFlags(eventObj, loyaltyCount);
 		}));
 	};
-
 
 	const getLoyaltyCount = async (userId) => {
 		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
@@ -167,54 +170,65 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{type && type === "upcoming" ? (
-				<Picker
-					selectedValue={selectedFilterU}
-					style={styles.picker}
-					onValueChange={handleFilterChangeU}
-					mode={"dropdown"}
-				>
-					<Picker.Item label="All" value="All" />
-					<Picker.Item label="Eligible" value="Eligible" />
-				</Picker>
+			{console.log("loading", isLoading)}
+			{isLoading ? (
+				<ActivityIndicator
+					size="large"
+					color="#0000ff"
+					animating = {true}
+               		style = {styles.activityIndicator} />
 			) : (
-				<Picker
-					selectedValue={selectedFilterM}
-					style={styles.picker}
-					onValueChange={handleFilterChangeM}
-					mode={"dropdown"}
-				>
-					<Picker.Item label="All" value="All" />
-					<Picker.Item label="Registered" value="Registered" />
-					<Picker.Item label="Waitlisted" value="Waitlisted" />
-				</Picker>
-			)}
-			
-			<FlatList style={styles.list}
-				data={events}
-				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
-				renderItem={({ item }) => (
-					<View style={styles.row}>
-						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate("EventDetails", {
-									eventObj: item,
-									userId: userId
-								})
-							}>
-							<View style={styles.rowContent}>
-								<EventListItem
-									eventObj={item}/>
-								<Ionicons
-									name="chevron-forward-outline"
-									size={16}
-									color="grey"
-								/>
-							</View>
-						</TouchableOpacity>						
-					</View>
+				<>
+				{type && type === "upcoming" ? (
+					<Picker
+						selectedValue={selectedFilterU}
+						style={styles.picker}
+						onValueChange={handleFilterChangeU}
+						mode={"dropdown"}
+					>
+						<Picker.Item label="All" value="All" />
+						<Picker.Item label="Eligible" value="Eligible" />
+					</Picker>
+				) : (
+					<Picker
+						selectedValue={selectedFilterM}
+						style={styles.picker}
+						onValueChange={handleFilterChangeM}
+						mode={"dropdown"}
+					>
+						<Picker.Item label="All" value="All" />
+						<Picker.Item label="Registered" value="Registered" />
+						<Picker.Item label="Waitlisted" value="Waitlisted" />
+					</Picker>
 				)}
-			/>
+				
+				<FlatList style={styles.list}
+					data={events}
+					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
+					renderItem={({ item }) => (
+						<View style={styles.row}>
+							<TouchableOpacity
+								onPress={() =>
+									navigation.navigate("EventDetails", {
+										eventObj: item,
+										userId: userId
+									})
+								}>
+								<View style={styles.rowContent}>
+									<EventListItem
+										eventObj={item}/>
+									<Ionicons
+										name="chevron-forward-outline"
+										size={16}
+										color="grey"
+									/>
+								</View>
+							</TouchableOpacity>						
+						</View>
+					)}
+				/>
+				</>
+			)}
 		</View>
 	);
 }
@@ -226,6 +240,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		paddingLeft: 30,
 		justifyContent: "space-between",
+	},
+	activityIndicator: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		height: 80
 	},
 	picker: {
     	alignItems: "center",

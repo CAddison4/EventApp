@@ -85,19 +85,30 @@ export default function EventDetails({ navigation, route }) {
 					/>
 				)}
 				{/* If eligible and already attending and not in waitlist,
-				button should say "Withdraw" */}
+				button should say "Withdraw", also show QR code button */}
 				{eventObj.isEligible && eventObj.isAttending && !eventObj.isInWaitlist && (
-					<Button
-						title="Withdraw"
-						onPress={() => {
-							withdrawFromEvent(eventObj, userId);
-							updateEventFlag("Withdraw");
-							navigation.navigate("Confirmation", {
-								eventObj: eventObj,
-								status: "Withdrawn" 
-							});
-						}}
-					/>
+					<View style={styles.buttonBar}>
+						<Button
+							title="Withdraw"
+							onPress={() => {
+								withdrawFromEvent(eventObj, userId);
+								updateEventFlag("Withdraw");
+								navigation.navigate("Confirmation", {
+									eventObj: eventObj,
+									status: "Withdrawn" 
+								});
+							}}
+						/>
+						<Button
+							title="QR Code"
+							onPress={() =>
+								//Will also need to pass the user information through to this screen.
+								navigation.navigate("QRCode", {
+									eventObj: eventObj,
+								})
+							}
+						/>
+					</View>
 				)}
 				{/* If eligible and not already attending and event has room,
 				button should say "Register" */}
@@ -162,5 +173,10 @@ const styles = StyleSheet.create({
 	},
 	actionButton: {
 		marginTop: 20,
+	},
+	buttonBar: {
+		flexDirection: "row",
+		justifyContent: "center",
+		columnGap: 20,
 	},
 });
