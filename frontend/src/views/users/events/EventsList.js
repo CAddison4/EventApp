@@ -1,5 +1,4 @@
-// random comment at the top
-import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -7,10 +6,13 @@ import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
-// import { useSelector } from "react-redux";
-import { API_END_POINT } from '@env';
+
 import { useDispatch, useSelector } from "react-redux";
 import { setEvent } from "../../../components/store/eventSlice";
+
+import { API_END_POINT } from '@env';
+
+
 import EventListItem from "../../../components/EventListItem";
 
 const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
@@ -20,44 +22,51 @@ export default function EventsList({ route }) {
 
 	const { type } = route.params;
 	const [events, setEvents] = useState([]);
-	const dispatch = useDispatch();
+
+	const [dbEvents, setDBEvents] = useState([]);
 
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 
-
 	const navigation = useNavigation();
 	const today = new Date();
-	// const contextEvent = useSelector((state) => state.event);
+
+	let filteredEvents = [];
+	const contextEvent = useSelector((state) => state.event);
+	const dispatch = useDispatch();
+
 
 	useEffect(() => {
-		const getEvents = async () => {
-		
-			let loyaltyCount = 0;
-			if (type === "upcoming") {
-				loyaltyCount = await getLoyaltyCount(userId);
-			}
-	
-			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
-	
-			const data = response.data;
-			let filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
-			
-			await Promise.all(filteredEvents.map(async (eventObj) => {
-				await determineEventFlags(eventObj, loyaltyCount);
-			}));
-	
-			if (type === "myevents") {
-				filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
-		
-			}
-			
+		async function fetchData() {
+			await getEvents(true);
+			applyFilters(type, "All");
 			await dispatch(setEvent(filteredEvents));
-			// console.log("contextEvent", contextEvent);
 			setEvents(filteredEvents);
-		};
-		getEvents();
-	}, [type]);
+		}
+		fetchData();
+	}, []);
+
+	const getEvents = async (fetchFromDB) => {
+		
+		let loyaltyCount = 0;
+		if (type === "upcoming") {
+			loyaltyCount = await getLoyaltyCount(userId);
+		}
+		if (fetchFromDB) {
+			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
+			const data = response.data;
+
+			filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
+			setDBEvents(filteredEvents);
+		}
+		else {
+			filteredEvents = [...dbEvents];
+		}
+		await Promise.all(filteredEvents.map(async (eventObj) => {
+			await determineEventFlags(eventObj, loyaltyCount);
+		}));
+	};
+
 
 	const getLoyaltyCount = async (userId) => {
 		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
@@ -105,13 +114,56 @@ export default function EventsList({ route }) {
 		eventObj.isInWaitlist ? eventObj.color = "red" : (eventObj.isAttending ? eventObj.color = "green" : eventObj.color = "black");
 	};
 
-	/* const handleFilterChangeU = (itemValue) => {
-			
+	const handleFilterChangeU = (itemValue) => {
+		setSelectedFilterU(itemValue);
+		async function filterData() {
+			await getEvents(false);
+			applyFilters(type, itemValue);
+			await dispatch(setEvent(filteredEvents));
+			setEvents(filteredEvents);
+		}
+		filterData();		
 	};
 
 	const handleFilterChangeM = (itemValue) => {
-			
-	}; */
+		setSelectedFilterM(itemValue);
+		async function filterData() {
+			await getEvents(false);
+			applyFilters(type, itemValue);
+			await dispatch(setEvent(filteredEvents));
+			setEvents(filteredEvents);
+		}
+		filterData();
+	};
+
+	const applyFilters = (type, filterValue) => {
+		if (type === "upcoming") {
+			switch (filterValue) {
+				case "All":
+					break;
+				case "Eligible":
+					filteredEvents = filteredEvents.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
+					break;
+				default:
+					break;
+			}
+		}
+		else {
+			switch (filterValue) {
+				case "All":
+					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
+					break;
+				case "Registered":
+					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered");
+					break;
+				case "Waitlisted":
+					filteredEvents = filteredEvents.filter(eventObj => eventObj.isInWaitlist);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	return (
 		<View style={styles.container}>
@@ -119,7 +171,7 @@ export default function EventsList({ route }) {
 				<Picker
 					selectedValue={selectedFilterU}
 					style={styles.picker}
-				//	onValueChange={handleFilterChangeU}
+					onValueChange={handleFilterChangeU}
 					mode={"dropdown"}
 				>
 					<Picker.Item label="All" value="All" />
@@ -129,7 +181,7 @@ export default function EventsList({ route }) {
 				<Picker
 					selectedValue={selectedFilterM}
 					style={styles.picker}
-				//	onValueChange={handleFilterChangeM}
+					onValueChange={handleFilterChangeM}
 					mode={"dropdown"}
 				>
 					<Picker.Item label="All" value="All" />

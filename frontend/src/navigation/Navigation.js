@@ -29,11 +29,11 @@ import EventsHost from "../../src/views/hosts/events/EventsHost";
 import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
 import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
 import PastEvents from "../../src/views/hosts/events/PastEvents";
-import AttendeeList from "../../src/views/hosts/events/AttendeeList";
+import AttendeeList from "../views/hosts/events/AttendeeList";
 
 import InviteList from "../../src/views/hosts/events/InviteList";
-import Users from "../../src/views/hosts/events/Users";
-import UserDetails from "../../src/views/hosts/events/UserDetails";
+import Users from "../views/hosts/users/Users";
+import UserDetails from "../views/hosts/users/UserDetails";
 
 // Component imports
 import store from "../../src/components/store/index";
@@ -49,7 +49,6 @@ Amplify.configure(config);
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
-
 	const [authenticated, setAuthenticated] = React.useState(false);
 	const user = useSelector((state) => state.user);
 

@@ -129,8 +129,28 @@ export async function getEvent(eventId) {
 export async function getEvents() {
   const res = await getPool().query(`
   SELECT * FROM events
+  WHERE cancelled = false
   ORDER BY event_date`)
   return res.rows
+}
+
+// Get all cancelled events
+export async function getCancelledEvents() {
+  const res = await getPool().query(`
+  SELECT * FROM events
+  WHERE cancelled = true
+  ORDER BY event_date`)
+  return res.rows
+}
+
+// Get event with date
+export async function getEventWithDate(date) {
+  const res = await getPool().query(`
+  SELECT * FROM events
+  WHERE DATE_TRUNC('day', event_date) = $1
+  AND cancelled = false
+  ORDER BY event_date`, [date]);
+  return res.rows;
 }
 
 // Create an attendee record for a particular event and user
@@ -159,6 +179,7 @@ export async function getAttendeesByUser(userId) {
   SELECT ea.*, e.* FROM events e
   LEFT JOIN eventattendees ea ON e.event_id = ea.event_id
   AND ea.user_id = $1
+  WHERE cancelled = false
   ORDER BY e.event_date
   `, [userId])
   return res.rows
@@ -170,7 +191,7 @@ export async function getAttendeesByEvent(eventId) {
   SELECT ea.*, e.*, u.* FROM eventattendees ea
   JOIN events e ON ea.event_id = e.event_id
   JOIN users u ON ea.user_id = u.user_id
-  WHERE ea.event_id = $1
+  WHERE ea.event_id = $1 AND e.cancelled = false
   ORDER BY u.last_name
   `, [eventId])
   return res.rows

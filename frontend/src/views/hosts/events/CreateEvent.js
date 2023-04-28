@@ -32,7 +32,6 @@ export default function CreateEvent({ navigation }) {
 			const data = response.data;
 			setEligibilityData(data);
 			setIsPickerVisible(true);
-			console.log(data)
 		};
 		geteligibility();
 	}, []);
@@ -40,6 +39,24 @@ export default function CreateEvent({ navigation }) {
 	const handleCreateEvent = async () => {
 		// API
 		const apiURL = API_END_POINT;
+		
+		// formart setInpEvnStartDatetime with just date
+		//const eventDate = inpEvnStartDateTime.slice(0, 10);
+
+		// test with dummy date
+		const eventDate = "2023-09-21";
+
+		try {
+			const response = await axios.get(`${apiURL}event/date/${eventDate}`);
+			const data = response.data;
+			// record exists
+			if(response.status == 200){
+				return alert("An event already exists on this date");
+			}
+		  } catch (error) {
+			console.error("Error retrieving events:", error);
+		  }
+		
 		// POST
 		try {
 		  const response = await axios.post(`${apiURL}/event`, {
