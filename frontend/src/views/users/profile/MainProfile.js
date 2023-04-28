@@ -1,7 +1,14 @@
-import { StyleSheet, Text, View, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { handleSignOut } from "../../../components/AuthComponents";
+import {showLoyaltyCalculation} from "../../../components/alerts/LoyaltyAlert"
 
 const MainProfile = () => {
   const user = useSelector((state) => state.user);
@@ -9,6 +16,12 @@ const MainProfile = () => {
   const handleSubmit = () => {
     handleSignOut();
   };
+
+  const handleLoyalty = () => {
+    showLoyaltyCalculation();
+  };
+
+ 
 
   if (!user) {
     return <Text>Loading...</Text>;
@@ -37,8 +50,12 @@ const MainProfile = () => {
           <Text style={styles.value}>{userData.membership_status_id}</Text>
         </View>
         <View style={styles.userInfoItem}>
-          <Text style={styles.label}>Loyalty Level:</Text>
-          <Text style={styles.value}>{userData.eventCount}</Text>
+          <TouchableOpacity onPress={handleLoyalty}>
+            <Text style={[styles.label, styles.underline]}>Loyalty:</Text>
+          </TouchableOpacity>
+          <Text style={styles.value}>
+            {userData.eventCount}
+          </Text>
         </View>
         <Button title="Sign Out" onPress={handleSubmit} />
       </View>
@@ -66,7 +83,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
     borderRadius: 10,
     padding: 20,
-   
   },
   userInfoItem: {
     flexDirection: "row",
@@ -77,4 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   value: {},
+  underline: {
+    textDecorationLine: "underline",
+  },
 });
