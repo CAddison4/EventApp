@@ -18,10 +18,6 @@ const AuthForm = ({}) => {
 
   const Stack = createNativeStackNavigator();
 
-  const handleFormTypeChange = (username) => {
-    setUsername(username);
-  };
-
   return (
     <>
     <Stack.Navigator>
@@ -56,11 +52,8 @@ const AuthForm = ({}) => {
         component={ResetPasswordForm}
         options={{ headerShown: false }}
       />
-
-
       </Stack.Navigator>
             <HideWithKeyboard style={styles.tabBar}>
-              
             <TouchableOpacity
               style={styles.tab}
               onPress={() => navigation.navigate("ConfirmationForm", { initialUsername: username })}
