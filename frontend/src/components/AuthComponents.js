@@ -92,9 +92,22 @@ export const handleSignIn = async (username, password, dispatch) => {
         message: "Failed to retrieve user data, Check your email and try again",
       };
     }
-
     const apiResponseJson = await apiResponse.json();
-    await dispatch(setUser(apiResponseJson));
+    console.log("API RESPONSE JSON", apiResponseJson);
+    const loyalty = await fetch(`${API_END_POINT}loyalty/${apiResponseJson.user_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const loyaltyJson = await loyalty.json();
+    
+    const mergedUserData = {
+      ...apiResponseJson,
+      ...loyaltyJson,
+    };
+    console.log("MERGED USER DATA", mergedUserData);
+    await dispatch(setUser(mergedUserData));
     await Auth.signIn(username, password);
 
     return {
@@ -108,7 +121,6 @@ export const handleSignIn = async (username, password, dispatch) => {
       message =
         "The email address or password you entered is incorrect. Please try again.";
     }
-
     return {
       success: false,
       message: message,
@@ -180,7 +192,7 @@ export const handleResetPassword = async (
     return {
       success: false,
       message: "Passwords do not match",
-    }
+    };
   }
   try {
     await Auth.forgotPasswordSubmit(username, code, newPassword);
@@ -188,17 +200,19 @@ export const handleResetPassword = async (
     return {
       success: true,
       message: "Password reset successfully",
-    }
+    };
   } catch (error) {
     console.log("Error resetting password:", error);
     let message = "Error resetting password: " + error.message;
 
     if (error.code === "CodeMismatchException") {
-      message = "The confirmation code you entered is incorrect. Please try again.";
+      message =
+        "The confirmation code you entered is incorrect. Please try again.";
     }
 
     if (error.code === "ExpiredCodeException") {
-      message = "The confirmation code you entered has expired. Please request a new one.";
+      message =
+        "The confirmation code you entered has expired. Please request a new one.";
     }
 
     if (error.code === "UserNotFoundException") {
@@ -208,10 +222,9 @@ export const handleResetPassword = async (
     return {
       success: false,
       message: message,
-    }
+    };
   }
 };
-
 
 export const handleSignOut = async () => {
   try {
