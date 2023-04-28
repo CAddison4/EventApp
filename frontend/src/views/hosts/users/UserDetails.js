@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text, Button, TextInput, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 import { useState, useEffect } from "react";
 // import SelectDropdown from "react-native-select-dropdown";
 import axios from "axios";
@@ -8,16 +9,14 @@ import { API_END_POINT } from "@env";
 export default function UserDetails({ navigation, route }) {
 	const user = route.params.user;
 	const handleRefresh = route.params.handleRefresh;
-	// if(route.params.handleRefresh) {
-	// 	const handleRefresh = route.params.handleRefresh;
-	// }
-	// const { user, handleRefresh } = route.params;
+
 	const [memberships, setMemberships] = useState([]);
-	//const [updatedUser, setUpdatedUser] = useState(user); // This is the user object that will be updated with the new membership status
+
 	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState(
 		user.membership_status_id
 	);
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
+	const [open, setOpen] = useState(false);
 
 	const handleMembershipStatusChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue); // Update the state with the selected membership status value
@@ -63,7 +62,18 @@ export default function UserDetails({ navigation, route }) {
 				{isPickerVisible && ( // check if the eligibility data is fetched
 					<>
 						<Text>Membership Status</Text>
-						<Picker
+						<DropDownPicker
+							open={open}
+							value={selectedMembershipStatus}
+							items={memberships.membershipStatuses.map((item) => ({
+								label: item.membership_status_id,
+								value: item.membership_status_id,
+							}))}
+							setOpen={setOpen}
+							setValue={handleMembershipStatusChange}
+							// setItems={setItems}
+						/>
+						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipStatusChange}>
 							{memberships.membershipStatuses.map(
@@ -78,7 +88,7 @@ export default function UserDetails({ navigation, route }) {
 									/>
 								)
 							)}
-						</Picker>
+						</Picker> */}
 						<Button
 							title="Update Member Status"
 							onPress={handleUpdateUserMembershipStatus}
