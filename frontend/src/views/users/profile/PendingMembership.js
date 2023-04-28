@@ -1,34 +1,39 @@
-
 import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import { useSelector } from "react-redux";
-import { Auth } from "aws-amplify/lib-esm";
-import {handleSignOut} from '../../../components/AuthComponents'
+import { handleSignOut } from "../../../components/AuthComponents";
 
 const PendingMembership = () => {
-    
-    const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
 
-    const handleSubmit = () => {
-        console.warn("Sign out In Pending Membership")
-        handleSignOut();
-    };
-    
-    if (!user) {
-        return <Text>Loading...</Text>;
-    }
+  const handleSubmit = () => {
+    handleSignOut();
+  };
+
+  if (user.membership_status_id === "None") {
     return (
-        <View>
-        {Object.keys(user).map((key) => (
-            <View key={key}>
-            <Text>
-                {key}: {user[key]}
-            </Text>
-            </View>
-        ))}
+      <View style={styles.container}>
+        <Text style={styles.message}>Your membership is pending.</Text>
         <Button title="Sign Out" onPress={handleSubmit} />
-        </View>
+      </View>
     );
+  }
+
+  return null;
 };
 
 export default PendingMembership;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  message: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+});

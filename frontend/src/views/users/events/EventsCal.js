@@ -33,7 +33,6 @@ export default function EventsCal({ navigation, route }) {
 		  const filteredEvents = contextEvent.filter(
 			  (eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist)
 		  );
-		  
 		  setEvents(filteredEvents);
 		}
 	  }, [navigation, type, contextEvent, filter]);

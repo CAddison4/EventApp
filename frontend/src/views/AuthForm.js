@@ -90,6 +90,7 @@ const AuthForm = ({}) => {
 			</HideWithKeyboard>
 		</>
 	);
+
 };
 
 const styles = StyleSheet.create({
