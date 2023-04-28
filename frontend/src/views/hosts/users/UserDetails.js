@@ -16,20 +16,11 @@ export default function UserDetails({ navigation, route }) {
 
 	const handleMembershipStatusChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue); // Update the state with the selected membership status value
-		// handleGetUpdatedUser();
 	};
-
-	// const handleGetUpdatedUser = async () => {
-	// 	const apiURL = API_END_POINT;
-	// 	const response = await axios.get(`${apiURL}/user/${user.user_id}`);
-	// 	const data = response.data;
-	// 	console.log("data", data);
-	// 	setUpdatedUser(data);
-	// };
 
 	const handleGetMemberships = async () => {
 		const apiURL = API_END_POINT;
-		const response = await axios.get(`${apiURL}/membership`);
+		const response = await axios.get(`${apiURL}membership`);
 		const data = response.data;
 		setMemberships(data);
 		setIsPickerVisible(true);
@@ -44,7 +35,8 @@ export default function UserDetails({ navigation, route }) {
 		});
 		const data = response.data;
 		Alert.alert("Membership Status Updated");
-		navigation.navigate("Users");
+
+		navigation.goBack();
 	};
 
 	useEffect(() => {
