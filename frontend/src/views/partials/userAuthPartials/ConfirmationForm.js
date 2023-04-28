@@ -15,18 +15,25 @@ import {
 import { handleConfirmation } from "../../../components/AuthComponents";
 import { useNavigation } from "@react-navigation/native";
 
-const ConfirmationForm = ({ message }) => {
+const ConfirmationForm = ({ route }) => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState("");
+  const { initialUsername, initialMessage } = route.params;
+  const [username, setUsername] = useState(initialUsername ? initialUsername : "");
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [formMessage, setFormMessage] = useState(message ? message : "");
+  const [formMessage, setFormMessage] = useState(initialMessage ? initialMessage : "");
 
   const handleSubmit = async () => {
-    try {
-      await handleConfirmation(username, confirmationCode);
-    } catch (error) {
-      console.log("Error confirming sign up:", error);
-    }
+      const { success, message } = await handleConfirmation(username, confirmationCode);
+      if (success === true) {
+        console.log("Successfully confirmed user");
+        // Handle successful confirmation here
+        navigation.navigate("SignInForm", {
+          initialUsername: username,
+          initialMessage: "Account confirmed. Please sign in."
+        });
+        return;
+      }
+      setFormMessage(message);
   };
 
   return (
@@ -34,15 +41,15 @@ const ConfirmationForm = ({ message }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       enabled={true}
+      onPress={Keyboard.dismiss}
     >
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView>
           <Text style={styles.title}>Confirmation Code</Text>
           {formMessage ? (
             <Text style={styles.errorMessage}>{formMessage}</Text>
           ) : null}
           <TextInput
-            value={username}
+            defaultValue={username}
             onChangeText={setUsername}
             placeholder="Email"
             keyboardType="email-address"
@@ -68,7 +75,6 @@ const ConfirmationForm = ({ message }) => {
             />
           </View>
       </SafeAreaView>
-      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
