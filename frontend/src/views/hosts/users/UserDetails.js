@@ -75,7 +75,6 @@ export default function UserDetails({ navigation, route }) {
 								// setItems={setItems}
 							/>
 						</View>
-
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipStatusChange}>

@@ -98,6 +98,7 @@ export default function Users({ navigation }) {
 				{isPickerVisible && (
 					<>
 						<Text>Membership Status</Text>
+
 						<View style={{ zIndex: 2000 }}>
 							<DropDownPicker
 								open={open}
@@ -112,7 +113,6 @@ export default function Users({ navigation }) {
 								// setItems={setItems}
 							/>
 						</View>
-
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
 							onValueChange={handleMembershipFilterChange}>
