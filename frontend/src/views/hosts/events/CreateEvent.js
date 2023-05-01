@@ -144,7 +144,6 @@ export default function CreateEvent({ navigation }) {
  	);
 };
 
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
