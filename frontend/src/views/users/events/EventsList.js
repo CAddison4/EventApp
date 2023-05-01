@@ -68,8 +68,11 @@ export default function EventsList({ route }) {
 	}, [selectedFilterU, selectedFilterM]);
 
 	useEffect(() => {
+		if (contextEvents) {
+            events = [...contextEvents];
+        }
 		applyFilters(type, "All");
-        setFilteredEvents(contextEvents);
+		setFilteredEvents(events);
     }, [contextEvents]);
 
 	const getEvents = async (fetchFromDB) => {
