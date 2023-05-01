@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -13,73 +12,96 @@ import { setEvent } from "../../../components/store/eventSlice";
 
 import { API_END_POINT } from '@env';
 
-
 import EventListItem from "../../../components/EventListItem";
-
-const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
-const membership_status = "Gold";
 
 export default function EventsList({ route }) {
 
+	const user = useSelector((state) => state.user);
+	const { user_id, ...userData } = user;
+	const membership_status = userData.membership_status_id;
+
 	const { type } = route.params;
-	const [events, setEvents] = useState([]);
+
+	const [filteredEvents, setFilteredEvents] = useState([]);
 
 	const [dbEvents, setDBEvents] = useState([]);
 
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 	const [isLoading, setIsLoading] = useState(true);
+	const [open, setOpen] = useState(false);
 
 	const navigation = useNavigation();
 	const today = new Date();
 
-	let filteredEvents = [];
-	const contextEvent = useSelector((state) => state.event);
+	let events = [];
+	const contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
 
+	const [filterItemsM, setFilterItemsM] = useState([
+		{label: 'All', value: 'All'},
+		{label: 'Registered', value: 'Registered'},
+		{label: 'Waitlisted', value: 'Waitlisted'}]);
+	const [filterItemsU, setFilterItemsU] = useState([
+		{label: 'All', value: 'All'},
+		{label: 'Eligible', value: 'Eligible'}]);
 
 	useEffect(() => {
 		setIsLoading(true);
 		async function fetchData() {
 			await getEvents(true);
 			applyFilters(type, "All");
-			await dispatch(setEvent(filteredEvents));
-			setEvents(filteredEvents);
+			await dispatch(setEvent(events));
+			setFilteredEvents(events);
 			setIsLoading(false);
 		}
 		fetchData();
 	}, []);
 
-	const getEvents = async (fetchFromDB) => {
-		
-		let loyaltyCount = 0;
+	useEffect(() => {
 		if (type === "upcoming") {
-			loyaltyCount = await getLoyaltyCount(userId);
-		}
-		if (fetchFromDB) {
-			const response = await axios.get(`${API_END_POINT}attendee/events/${userId}`);
-			const data = response.data;
-
-			filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
-			setDBEvents(filteredEvents);
+			handleFilterChange(selectedFilterU);
 		}
 		else {
-			filteredEvents = [...dbEvents];
+			handleFilterChange(selectedFilterM);
 		}
-		await Promise.all(filteredEvents.map(async (eventObj) => {
+	}, [selectedFilterU, selectedFilterM]);
+
+	// page refresh - needs to put contextEvents into dbEvents,
+	// then getEvents(false)
+
+	/* const handlePageRefresh = () => {
+		setFilteredEvents(contextEvents);
+		console.log("handlePageRefresh contextEvents", contextEvents);
+	}; */
+
+	const getEvents = async (fetchFromDB) => {
+		let loyaltyCount = 0;
+		if (type === "upcoming") {
+			loyaltyCount = await getLoyaltyCount(user_id);
+		}
+		if (fetchFromDB) {
+			const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
+			const data = response.data;
+
+			events = data.filter(eventObj => new Date(eventObj.event_date) > today);
+			setDBEvents(events);
+		}
+		else {
+			events = [...dbEvents];
+		}
+		await Promise.all(events.map(async (eventObj) => {
 			await determineEventFlags(eventObj, loyaltyCount);
 		}));
 	};
 
-	const getLoyaltyCount = async (userId) => {
-		const response = await axios.get(`${API_END_POINT}loyalty/${userId}`);
+	const getLoyaltyCount = async (user_id) => {
+		const response = await axios.get(`${API_END_POINT}loyalty/${user_id}`);
 		return response.data.eventCount;
 	}
 	
 	const determineEventFlags = async (eventObj, loyaltyCount) => {
-
 		const eligibility = [];
-
 		switch (eventObj.type_id) {
 			case ("Bronze Tier"):
 				eligibility.push("Bronze");
@@ -102,6 +124,7 @@ export default function EventsList({ route }) {
 		// count required for this event.
 		// If none of these conditions are met, the user is eligible if their membership
 		// status qualifies for this tier.
+		eventObj.loyaltyCount = loyaltyCount;
 		if (eventObj.attendee_status_id === "Invited" ||
 		   (eventObj.type_id === "Guest List" && eventObj.attendee_status_id === "Registered") || (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)) {
 			eventObj.isEligible = true;		
@@ -111,32 +134,34 @@ export default function EventsList({ route }) {
 		}
 
 		// Check if the user is already in the waitlist for this event
-		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${userId}`);
+		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`);
 		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
 
-		eventObj.isInWaitlist ? eventObj.color = "red" : (eventObj.isAttending ? eventObj.color = "green" : eventObj.color = "black");
+		if (eventObj.isInWaitlist) {
+			eventObj.color = "orange";
+		  } else if (eventObj.isAttending) {
+			eventObj.color = "green";
+		  } else if (eventObj.isEligible) {
+			eventObj.color = "black";
+		  } else {
+			eventObj.color = "red";
+		  }
 	};
 
-	const handleFilterChangeU = (itemValue) => {
-		setSelectedFilterU(itemValue);
+	const handleFilterChange = (itemValue) => {
+		if (type === "upcoming") {
+			setSelectedFilterU(itemValue);
+		}
+		else {
+			setSelectedFilterM(itemValue);
+		}
 		async function filterData() {
 			await getEvents(false);
 			applyFilters(type, itemValue);
-			await dispatch(setEvent(filteredEvents));
-			setEvents(filteredEvents);
+			await dispatch(setEvent(events));
+			setFilteredEvents(events);
 		}
 		filterData();		
-	};
-
-	const handleFilterChangeM = (itemValue) => {
-		setSelectedFilterM(itemValue);
-		async function filterData() {
-			await getEvents(false);
-			applyFilters(type, itemValue);
-			await dispatch(setEvent(filteredEvents));
-			setEvents(filteredEvents);
-		}
-		filterData();
 	};
 
 	const applyFilters = (type, filterValue) => {
@@ -145,7 +170,7 @@ export default function EventsList({ route }) {
 				case "All":
 					break;
 				case "Eligible":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
+					events = events.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
 					break;
 				default:
 					break;
@@ -154,13 +179,13 @@ export default function EventsList({ route }) {
 		else {
 			switch (filterValue) {
 				case "All":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
+					events = events.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
 					break;
 				case "Registered":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered");
+					events = events.filter(eventObj => eventObj.attendee_status_id === "Registered");
 					break;
 				case "Waitlisted":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.isInWaitlist);
+					events = events.filter(eventObj => eventObj.isInWaitlist);
 					break;
 				default:
 					break;
@@ -170,7 +195,6 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{console.log("loading", isLoading)}
 			{isLoading ? (
 				<ActivityIndicator
 					size="large"
@@ -180,30 +204,28 @@ export default function EventsList({ route }) {
 			) : (
 				<>
 				{type && type === "upcoming" ? (
-					<Picker
-						selectedValue={selectedFilterU}
-						style={styles.picker}
-						onValueChange={handleFilterChangeU}
-						mode={"dropdown"}
-					>
-						<Picker.Item label="All" value="All" />
-						<Picker.Item label="Eligible" value="Eligible" />
-					</Picker>
+					<View style={styles.picker}>
+						<DropDownPicker 
+							open={open}
+							value={selectedFilterU}
+							items={filterItemsU}
+							setOpen={setOpen}
+							setValue={setSelectedFilterU}
+						/> 
+					</View>
 				) : (
-					<Picker
-						selectedValue={selectedFilterM}
-						style={styles.picker}
-						onValueChange={handleFilterChangeM}
-						mode={"dropdown"}
-					>
-						<Picker.Item label="All" value="All" />
-						<Picker.Item label="Registered" value="Registered" />
-						<Picker.Item label="Waitlisted" value="Waitlisted" />
-					</Picker>
+					<View style={styles.picker}>
+						<DropDownPicker 
+							open={open}
+							value={selectedFilterM}
+							items={filterItemsM}
+							setOpen={setOpen}
+							setValue={setSelectedFilterM}
+						/> 
+					</View>
 				)}
-				
 				<FlatList style={styles.list}
-					data={events}
+					data={filteredEvents}
 					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 					renderItem={({ item }) => (
 						<View style={styles.row}>
@@ -211,7 +233,10 @@ export default function EventsList({ route }) {
 								onPress={() =>
 									navigation.navigate("EventDetails", {
 										eventObj: item,
-										userId: userId
+										userId: user_id,
+										type: type,
+										navigation: navigation,
+										// handleRefresh: handlePageRefresh,
 									})
 								}>
 								<View style={styles.rowContent}>
@@ -219,7 +244,7 @@ export default function EventsList({ route }) {
 										eventObj={item}/>
 									<Ionicons
 										name="chevron-forward-outline"
-										size={16}
+										size={18}
 										color="grey"
 									/>
 								</View>
@@ -250,6 +275,10 @@ const styles = StyleSheet.create({
 	picker: {
     	alignItems: "center",
 		width: 180,
+		top: 10,
+		height: 50,
+		marginBottom: 10,
+		zIndex: 2000,
 	},
 	list: {
 		paddingTop: 10,
@@ -267,7 +296,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "flex-end",
 		alignItems: "center",
-		columnGap: 30,
+		columnGap: 25,
 		marginRight: 10,
 	},
 });

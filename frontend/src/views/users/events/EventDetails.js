@@ -1,20 +1,25 @@
 import * as React from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { formatDate, formatDateTime } from "../../../utilities/dates";
+import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
 import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
+import { setEvent } from "../../../components/store/eventSlice";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_END_POINT } from '@env';
 
 export default function EventDetails({ navigation, route }) {
-	const { eventObj, userId } = route.params;
+	const { eventObj, userId, type } = route.params;
+	//const handleRefresh = route.params.handleRefresh;
 
-	/* const contextEvent = useSelector((state) => state.event);
-	console.log("contextEvent", conextEvent); */
+	var contextEvents = useSelector((state) => state.event);
+	const dispatch = useDispatch();
+
+	console.log("contextEvents", contextEvents);
+	console.log("eventObj", eventObj);
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 
@@ -30,116 +35,187 @@ export default function EventDetails({ navigation, route }) {
 		fetchData();	
 	}, []);
 
-	function updateEventFlag(type) {
+	async function updateEventFlag(type) {
+		let updatedEvents = contextEvents.map(event => {
+			if (event.event_id === eventObj.event_id && event.user_id === userId) {
+			  switch (type) {
+				case "Waitlist":
+					return { ...event, isInWaitlist: true, color: "orange" };
+				case "Remove":
+				  	return { ...event, isInWaitlist: false, color: "black" };
+				case "Register":
+				  	return { ...event, isAttending: true, color: "green" };
+				case "Withdraw":
+				  	return { ...event, isAttending: false, color: "black" };
+				default:
+				  	return event;
+			  }
+			} else {
+			  return event;
+			}
+		});
+		
+		console.log("updatedEvents", updatedEvents);
+
+		// Save the contextEvents array back in state
+		await dispatch(setEvent(updatedEvents));
+	}
+
+	async function displayAlert(type, eventObj) {
 		switch (type) {
 			case "Waitlist":
-				updatedEvent = { ...eventObj, isInWaitlist: true };
+				Alert.alert(`You are waitlisted for {eventObj.event_name}`);
 				break;
 			case "Remove":
-				updatedEvent = { ...eventObj, isInWaitlist: false };
-				break;	
+				Alert.alert(`You have been removed from the waitlist for ${eventObj.event_name}`);
+				break;
 			case "Register":
-				updatedEvent = { ...eventObj, isAttending: true };
+				Alert.alert(`You are registered for ${eventObj.event_name}`);
 				break;
 			case "Withdraw":
-				updatedEvent = { ...eventObj, isAttending: false };
+				Alert.alert(`You have withdrawn from ${eventObj.event_name}`);
 				break;
 			default:
 				break;
 		}
+		/* try {
+			handleRefresh();
+		} catch (error) {
+			console.log(error);
+		} */
+
+		navigation.goBack({ 
+			screen: 'EventsList', 
+			params: { type: type } 
+		});
 	}
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.heading}>{eventObj.event_name}</Text>
-			<View style={styles.textRows} key={`${eventObj.event_id}${eventObj.user_id}`}>	
-				<View style={styles.textColumn}>
-					<Text>Event date:</Text>
-					<Text>Event start:</Text>
-					<Text>Location:</Text>
-					<Text>Your status:</Text>
-					{eventObj.isInWaitlist ? <Text>Current position:</Text> : null}
+			<Text style={styles.title}>{eventObj.event_name}</Text>
+			<View style={styles.eventInfoContainer}>
+				<View style={styles.eventInfoItem}>
+					<Text style={styles.label}>Event date:</Text>
+					<Text style={styles.value}>{formatLongDate(eventObj.event_date, true)}</Text>
 				</View>
-				<View style={styles.textColumn}>
-					<Text>{formatDate(eventObj.event_date)}</Text>
-					<Text>{formatDateTime(eventObj.event_start)}</Text>
-					<Text>{eventObj.event_location}</Text>
-					<Text>{eventObj.isInWaitlist ? "Waitlisted" : eventObj.attendee_status_id}</Text>
-					{eventObj.isInWaitlist ? <Text>{waitlistPosition}</Text> : null}
+				<View style={styles.eventInfoItem}>
+					<Text style={styles.label}>Event start:</Text>
+					<Text style={styles.value}>{formatTime(eventObj.event_start)}</Text>
 				</View>
-			</View>
-			<View style={styles.actionButton}>
-				{/* If eligible and in the waitlist,
-				button should say "Remove" */}
-				{eventObj.isEligible && eventObj.isInWaitlist && (
-					<Button
-						title="Remove from Waitlist"
-						onPress={() => {
-							removeFromEventWaitlist(eventObj, userId);
-							updateEventFlag("Remove");
-							navigation.navigate("Confirmation", {
-								eventObj: eventObj,
-								status: "Removed" 
-							});
-						}}
-					/>
-				)}
-				{/* If eligible and already attending and not in waitlist,
-				button should say "Withdraw", also show QR code button */}
-				{eventObj.isEligible && eventObj.isAttending && !eventObj.isInWaitlist && (
-					<View style={styles.buttonBar}>
+				<View style={styles.eventInfoItem}>
+					<Text style={styles.label}>Location:</Text>
+					<Text style={styles.value}>{eventObj.event_location}</Text>
+				</View>
+				<View style={styles.eventInfoItem}>
+					<Text style={styles.label}>Your status:</Text>
+					<Text style={styles.value}>
+						{eventObj.isInWaitlist
+							? "Waitlisted"
+							: eventObj.isEligible && eventObj.attendee_status_id === null
+								? "Eligible"
+								: !eventObj.isEligible
+									? "Ineligible"
+									: eventObj.attendee_status_id
+						}
+						</Text>
+				</View>
+				{eventObj.isInWaitlist &&
+					<View style={styles.eventInfoItem}>
+						<Text style={styles.label}>Waitlist position:</Text>
+						<Text style={styles.value}>{waitlistPosition}</Text>
+					</View>
+				}
+				{eventObj.type_id === "Loyalty" &&
+					<View style={styles.eventInfoItem}>
+						<Text style={styles.label}>Loyalty count:</Text>
+						<Text style={styles.value}>{eventObj.loyaltyCount}</Text>
+					</View>
+				}
+				<View style={styles.actionButtons}>
+					{/* If eligible and in the waitlist,
+					button should say "Remove" */}
+					{eventObj.isEligible && eventObj.isInWaitlist && (
 						<Button
-							title="Withdraw"
+							title="Remove from Waitlist"
 							onPress={() => {
-								withdrawFromEvent(eventObj, userId);
-								updateEventFlag("Withdraw");
-								navigation.navigate("Confirmation", {
+								removeFromEventWaitlist(eventObj, userId);
+								updateEventFlag("Remove");
+								displayAlert("Remove", eventObj);
+
+								/* navigation.navigate("Confirmation", {
 									eventObj: eventObj,
-									status: "Withdrawn" 
-								});
+									status: "Removed",
+									type: type 
+								}); */
 							}}
 						/>
+					)}
+					{/* If eligible and already attending and not in waitlist,
+					button should say "Withdraw", also show QR code button */}
+					{eventObj.isEligible && eventObj.isAttending && !eventObj.isInWaitlist && (
+						<>
+							<Button
+								title="Withdraw"
+								onPress={() => {
+									withdrawFromEvent(eventObj, userId);
+									updateEventFlag("Withdraw");
+									displayAlert("Withdraw", eventObj);
+
+									/* navigation.navigate("Confirmation", {
+										eventObj: eventObj,
+										status: "Withdrawn",
+										type: type  
+									}); */
+								}}
+							/>
+							<Button
+								title="QR Code"
+								onPress={() =>
+									//Will also need to pass the user information through to this screen.
+									navigation.navigate("QRCode", {
+										eventObj: eventObj,
+									})
+								}
+							/>
+						</>
+					)}
+					{/* If eligible and not already attending and event has room,
+					button should say "Register" */}
+					{eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
 						<Button
-							title="QR Code"
-							onPress={() =>
-								//Will also need to pass the user information through to this screen.
-								navigation.navigate("QRCode", {
+							title="Register"
+							onPress={() => {
+								registerForEvent(eventObj, userId);
+								updateEventFlag("Register");
+								displayAlert("Register", eventObj);
+
+								/* navigation.navigate("Confirmation", {
 									eventObj: eventObj,
-								})
-							}
+									status: "Registered",
+									type: type  
+								}); */
+							}}
 						/>
-					</View>
-				)}
-				{/* If eligible and not already attending and event has room,
-				button should say "Register" */}
-				{eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
-					<Button
-						title="Register"
-						onPress={() => {
-							registerForEvent(eventObj, userId);
-							updateEventFlag("Register");
-							navigation.navigate("Confirmation", {
-								eventObj: eventObj,
-								status: "Registered" 
-							});
-						}}
-					/>
-				)}
-				{/* If eligible and not already attending and event has no room,
-				button should say "Waitlist" */}
-				{eventObj.isEligible && !eventObj.isAttending && !eventObj.hasRoom && !eventObj.isInWaitlist && (
-					<Button
-						title="Waitlist"
-						onPress={() => {
-							waitlistForEvent(eventObj, userId);
-							updateEventFlag("Waitlist");
-							navigation.navigate("Confirmation", {
-								eventObj: eventObj,
-								status: "Waitlisted"
-							});
-						}}
-					/>
-				)}
+					)}
+					{/* If eligible and not already attending and event has no room,
+					button should say "Waitlist" */}
+					{eventObj.isEligible && !eventObj.isAttending && !eventObj.hasRoom && !eventObj.isInWaitlist && (
+						<Button
+							title="Waitlist"
+							onPress={() => {
+								waitlistForEvent(eventObj, userId);
+								updateEventFlag("Waitlist");
+								displayAlert("Waitlist", eventObj);
+
+								/* navigation.navigate("Confirmation", {
+									eventObj: eventObj,
+									status: "Waitlisted",
+									type: type 
+								}); */
+							}}
+						/>
+					)}
+				</View>
 			</View>
 		</View>
 	);
@@ -154,29 +230,32 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		paddingHorizontal: 20,
 	},
-	heading: {
+	title: {
+		fontSize: 24,
 		fontWeight: "bold",
-		fontSize: 18,
 		textAlign: "center",
 		marginBottom: 20,
 	},
-	textRows: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginVertical: 5,
-		columnGap: 20,
+	eventInfoContainer: {
+		width: "100%",
+		backgroundColor: "#eee",
+		borderRadius: 10,
+		padding: 20,
 	},
-	textColumn: {
+	actionButtons: {
+		marginTop: 5,
 		flexDirection: "column",
-		justifyContent: "space-between",
-		rowGap: 20,
-	},
-	actionButton: {
-		marginTop: 20,
-	},
-	buttonBar: {
-		flexDirection: "row",
 		justifyContent: "center",
-		columnGap: 20,
+		rowGap: 10,
+		width: "100%",
 	},
+	eventInfoItem: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginVertical: 10,
+	},
+	label: {
+		fontWeight: "bold",
+	},
+	value: {},
 });
