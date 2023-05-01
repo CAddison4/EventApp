@@ -79,6 +79,8 @@ export default function InviteList({ navigation, route }) {
 			});
 		}
 		// navigate back to the event details page?
+		  navigation.navigate("EventDetailsHost", {
+			upcomingEvent: eventObj})
 	};
 
 	return (
