@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { formatDate } from "../utilities/dates";
+import { formatLongDate } from "../utilities/dates";
 
 export default function EventListItem({ eventObj }) {
 
@@ -8,7 +8,12 @@ export default function EventListItem({ eventObj }) {
 			key={`${eventObj.event_id}${eventObj.user_id}`}
 			style={styles.eventItem}>
 			<Text style={[styles.boldText, {color: eventObj.color}]}>{eventObj.event_name}</Text>
-			<Text>{formatDate(eventObj.event_date)}  {eventObj.type_id}</Text>
+			<Text>
+				{`${formatLongDate(eventObj.event_date, false)}, `} 
+				{eventObj.type_id}, 
+				{eventObj.type_id === "Loyalty" ? ` ${eventObj.loyalty_max}` : ""}
+			</Text>
+
 		</View>
 	);
 }
@@ -29,6 +34,7 @@ const styles = StyleSheet.create({
 	},
 	boldText: {
 		fontWeight: "bold",
+		fontSize: 16,
 	},
 });
 
