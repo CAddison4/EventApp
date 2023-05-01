@@ -99,7 +99,7 @@ export default function Users({ navigation }) {
 					<>
 						<Text>Membership Status</Text>
 
-						<View style={{ zIndex: 2000 }}>
+						<View style={{ zIndex: 500 }}>
                             <DropDownPicker
                                 open={open}
                                 value={selectedMembershipStatus}
