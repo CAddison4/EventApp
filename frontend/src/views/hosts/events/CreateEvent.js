@@ -110,7 +110,6 @@ export default function CreateEvent({ navigation }) {
     setIsStartDateSelected(false);
   };
 
-<<<<<<< HEAD
   const showStartDatepicker = () => {
     setMode("date");
     setShow(true);
@@ -227,8 +226,6 @@ export default function CreateEvent({ navigation }) {
     </View>
   );
 }
-=======
->>>>>>> origin/main
 const styles = StyleSheet.create({
   container: {
     flex: 1,
