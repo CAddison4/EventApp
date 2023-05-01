@@ -13,13 +13,9 @@ import { API_END_POINT } from '@env';
 
 export default function EventDetails({ navigation, route }) {
 	const { eventObj, userId, type } = route.params;
-	//const handleRefresh = route.params.handleRefresh;
 
 	var contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
-
-	console.log("contextEvents", contextEvents);
-	console.log("eventObj", eventObj);
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 
@@ -54,8 +50,6 @@ export default function EventDetails({ navigation, route }) {
 			  return event;
 			}
 		});
-		
-		console.log("updatedEvents", updatedEvents);
 
 		// Save the contextEvents array back in state
 		await dispatch(setEvent(updatedEvents));
@@ -78,16 +72,7 @@ export default function EventDetails({ navigation, route }) {
 			default:
 				break;
 		}
-		/* try {
-			handleRefresh();
-		} catch (error) {
-			console.log(error);
-		} */
-
-		navigation.goBack({ 
-			screen: 'EventsList', 
-			params: { type: type } 
-		});
+		navigation.goBack();
 	}
 
 	return (
@@ -141,12 +126,6 @@ export default function EventDetails({ navigation, route }) {
 								removeFromEventWaitlist(eventObj, userId);
 								updateEventFlag("Remove");
 								displayAlert("Remove", eventObj);
-
-								/* navigation.navigate("Confirmation", {
-									eventObj: eventObj,
-									status: "Removed",
-									type: type 
-								}); */
 							}}
 						/>
 					)}
@@ -160,12 +139,6 @@ export default function EventDetails({ navigation, route }) {
 									withdrawFromEvent(eventObj, userId);
 									updateEventFlag("Withdraw");
 									displayAlert("Withdraw", eventObj);
-
-									/* navigation.navigate("Confirmation", {
-										eventObj: eventObj,
-										status: "Withdrawn",
-										type: type  
-									}); */
 								}}
 							/>
 							<Button
@@ -188,12 +161,6 @@ export default function EventDetails({ navigation, route }) {
 								registerForEvent(eventObj, userId);
 								updateEventFlag("Register");
 								displayAlert("Register", eventObj);
-
-								/* navigation.navigate("Confirmation", {
-									eventObj: eventObj,
-									status: "Registered",
-									type: type  
-								}); */
 							}}
 						/>
 					)}
@@ -206,12 +173,6 @@ export default function EventDetails({ navigation, route }) {
 								waitlistForEvent(eventObj, userId);
 								updateEventFlag("Waitlist");
 								displayAlert("Waitlist", eventObj);
-
-								/* navigation.navigate("Confirmation", {
-									eventObj: eventObj,
-									status: "Waitlisted",
-									type: type 
-								}); */
 							}}
 						/>
 					)}
