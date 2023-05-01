@@ -21,7 +21,8 @@ export default function EventsList({ route }) {
 	const membership_status = userData.membership_status_id;
 
 	const { type } = route.params;
-	const [events, setEvents] = useState([]);
+
+	const [filteredEvents, setFilteredEvents] = useState([]);
 
 	const [dbEvents, setDBEvents] = useState([]);
 
@@ -33,8 +34,8 @@ export default function EventsList({ route }) {
 	const navigation = useNavigation();
 	const today = new Date();
 
-	let filteredEvents = [];
-	const contextEvent = useSelector((state) => state.event);
+	let events = [];
+	const contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
 
 	const [filterItemsM, setFilterItemsM] = useState([
@@ -50,8 +51,8 @@ export default function EventsList({ route }) {
 		async function fetchData() {
 			await getEvents(true);
 			applyFilters(type, "All");
-			await dispatch(setEvent(filteredEvents));
-			setEvents(filteredEvents);
+			await dispatch(setEvent(events));
+			setFilteredEvents(events);
 			setIsLoading(false);
 		}
 		fetchData();
@@ -66,8 +67,15 @@ export default function EventsList({ route }) {
 		}
 	}, [selectedFilterU, selectedFilterM]);
 
+	// page refresh - needs to put contextEvents into dbEvents,
+	// then getEvents(false)
+
+	/* const handlePageRefresh = () => {
+		setFilteredEvents(contextEvents);
+		console.log("handlePageRefresh contextEvents", contextEvents);
+	}; */
+
 	const getEvents = async (fetchFromDB) => {
-		
 		let loyaltyCount = 0;
 		if (type === "upcoming") {
 			loyaltyCount = await getLoyaltyCount(user_id);
@@ -76,13 +84,13 @@ export default function EventsList({ route }) {
 			const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
 			const data = response.data;
 
-			filteredEvents = data.filter(eventObj => new Date(eventObj.event_date) > today);
-			setDBEvents(filteredEvents);
+			events = data.filter(eventObj => new Date(eventObj.event_date) > today);
+			setDBEvents(events);
 		}
 		else {
-			filteredEvents = [...dbEvents];
+			events = [...dbEvents];
 		}
-		await Promise.all(filteredEvents.map(async (eventObj) => {
+		await Promise.all(events.map(async (eventObj) => {
 			await determineEventFlags(eventObj, loyaltyCount);
 		}));
 	};
@@ -93,9 +101,7 @@ export default function EventsList({ route }) {
 	}
 	
 	const determineEventFlags = async (eventObj, loyaltyCount) => {
-
 		const eligibility = [];
-
 		switch (eventObj.type_id) {
 			case ("Bronze Tier"):
 				eligibility.push("Bronze");
@@ -118,6 +124,7 @@ export default function EventsList({ route }) {
 		// count required for this event.
 		// If none of these conditions are met, the user is eligible if their membership
 		// status qualifies for this tier.
+		eventObj.loyaltyCount = loyaltyCount;
 		if (eventObj.attendee_status_id === "Invited" ||
 		   (eventObj.type_id === "Guest List" && eventObj.attendee_status_id === "Registered") || (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)) {
 			eventObj.isEligible = true;		
@@ -130,7 +137,15 @@ export default function EventsList({ route }) {
 		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`);
 		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
 
-		eventObj.isInWaitlist ? eventObj.color = "red" : (eventObj.isAttending ? eventObj.color = "green" : eventObj.color = "black");
+		if (eventObj.isInWaitlist) {
+			eventObj.color = "orange";
+		  } else if (eventObj.isAttending) {
+			eventObj.color = "green";
+		  } else if (eventObj.isEligible) {
+			eventObj.color = "black";
+		  } else {
+			eventObj.color = "red";
+		  }
 	};
 
 	const handleFilterChange = (itemValue) => {
@@ -143,8 +158,8 @@ export default function EventsList({ route }) {
 		async function filterData() {
 			await getEvents(false);
 			applyFilters(type, itemValue);
-			await dispatch(setEvent(filteredEvents));
-			setEvents(filteredEvents);
+			await dispatch(setEvent(events));
+			setFilteredEvents(events);
 		}
 		filterData();		
 	};
@@ -155,7 +170,7 @@ export default function EventsList({ route }) {
 				case "All":
 					break;
 				case "Eligible":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
+					events = events.filter(eventObj => eventObj.isEligible  || eventObj.isInWaitlist); 
 					break;
 				default:
 					break;
@@ -164,13 +179,13 @@ export default function EventsList({ route }) {
 		else {
 			switch (filterValue) {
 				case "All":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
+					events = events.filter(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist);
 					break;
 				case "Registered":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.attendee_status_id === "Registered");
+					events = events.filter(eventObj => eventObj.attendee_status_id === "Registered");
 					break;
 				case "Waitlisted":
-					filteredEvents = filteredEvents.filter(eventObj => eventObj.isInWaitlist);
+					events = events.filter(eventObj => eventObj.isInWaitlist);
 					break;
 				default:
 					break;
@@ -210,7 +225,7 @@ export default function EventsList({ route }) {
 					</View>
 				)}
 				<FlatList style={styles.list}
-					data={events}
+					data={filteredEvents}
 					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 					renderItem={({ item }) => (
 						<View style={styles.row}>
@@ -218,7 +233,10 @@ export default function EventsList({ route }) {
 								onPress={() =>
 									navigation.navigate("EventDetails", {
 										eventObj: item,
-										userId: user_id
+										userId: user_id,
+										type: type,
+										navigation: navigation,
+										// handleRefresh: handlePageRefresh,
 									})
 								}>
 								<View style={styles.rowContent}>
@@ -226,7 +244,7 @@ export default function EventsList({ route }) {
 										eventObj={item}/>
 									<Ionicons
 										name="chevron-forward-outline"
-										size={16}
+										size={18}
 										color="grey"
 									/>
 								</View>
@@ -278,7 +296,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "flex-end",
 		alignItems: "center",
-		columnGap: 30,
+		columnGap: 25,
 		marginRight: 10,
 	},
 });

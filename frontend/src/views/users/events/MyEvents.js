@@ -32,10 +32,12 @@ export default function MyEvents() {
 				tabBarShowLabel: false,
 				headerShown: false,
 			})}>
-			<Tab.Screen name="List"
-				component={EventsList}
-				initialParams={{ type: "myevents" }} />
-			<Tab.Screen name="Calendar"
+			<Tab.Screen
+			   name="List" 
+			   component={EventsList}
+			   initialParams={{	type: "myevents" }} />
+			<Tab.Screen
+			    name="Calendar"
 				component={EventsCal}
 				initialParams={{ type: "myevents" }} />
 		</Tab.Navigator>

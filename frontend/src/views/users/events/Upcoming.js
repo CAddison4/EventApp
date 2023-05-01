@@ -36,10 +36,12 @@ export default function Upcoming() {
 				tabBarShowLabel: false,
 				headerShown: false,
 			})}>
-			<Tab.Screen name="List" 
+			<Tab.Screen
+			   name="List" 
 			   component={EventsList}
 			   initialParams={{ type: "upcoming" }} />
-			<Tab.Screen name="Calendar"
+			<Tab.Screen
+		       name="Calendar"
 			   component={EventsCal}
 			   initialParams={{ type: "upcoming" }} />
 		</Tab.Navigator>

@@ -1,11 +1,11 @@
 import * as React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Button } from "react-native";
 
 export default function Confirmation({ route }) {
 	const eventObj = route.params.eventObj;
 	const eventAttendeeStatus = route.params.status;
+	const type = route.params.type;
 
-	// const event = JSON.parse(eventObj);
 	return (
 		<View style={styles.container}>
 			<Text>
@@ -25,6 +25,14 @@ export default function Confirmation({ route }) {
 				})()}
 			</Text>
 			<Text style={styles.boldText}>{eventObj.event_name}</Text>
+			<Button
+				title="Back to Events List"
+				onPress={() => {
+					
+
+
+				}}
+			/>
 		</View>
 	);
 }
