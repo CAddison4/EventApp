@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Button, TextInput } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 import InviteList from "./InviteList";
 import axios from "axios";
 import { API_END_POINT } from "@env";
@@ -18,6 +18,8 @@ export default function CreateEvent({ navigation }) {
 
 	const [eligibilityData, setEligibilityData] = useState([]);
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
+
+	const [open, setOpen] = useState(false);
 
 	const handleEventTypeChange = (itemValue, itemIndex) => {
 		setSelectedEventType(itemValue); // Update the state with the selected event type value
@@ -92,24 +94,19 @@ export default function CreateEvent({ navigation }) {
 				{isPickerVisible && ( // check if the eligibility data is fetched
 					<>
 					<Text>Event Type</Text>
-						<Picker
-							mode="dropdown"
-							style={styles.picker}
-							selectedValue={selectedEventType}
-							onValueChange={handleEventTypeChange}>
-							{eligibilityData.eligibilityTypes.map(
-								(
-									item,
-									index // map the eligibility types
-								) => (
-									<Picker.Item
-										value={item.type_id}
-										key={index}
-										label={item.type_id}
-									/>
-								)
-							)}
-						</Picker>
+					<View style={{ zIndex: 2000 }}>
+					<DropDownPicker 
+						open={open}
+						value={selectedEventType}
+						items={eligibilityData.eligibilityTypes.map((item) => ({
+							label: item.type_id,
+							value: item.type_id,
+						}))}
+						setOpen={setOpen}
+						setValue={handleEventTypeChange}
+						/> 
+
+					</View>
 						<Text>Event Name</Text>
 						<TextInput
 							style={styles.nameInput}
