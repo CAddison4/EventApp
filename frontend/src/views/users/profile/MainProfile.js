@@ -1,14 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import { handleSignOut } from "../../../components/AuthComponents";
-import {showLoyaltyCalculation} from "../../../components/alerts/LoyaltyAlert"
+import { showLoyaltyCalculation } from "../../../components/alerts/LoyaltyAlert";
 
 const MainProfile = () => {
   const user = useSelector((state) => state.user);
@@ -20,8 +14,6 @@ const MainProfile = () => {
   const handleLoyalty = () => {
     showLoyaltyCalculation();
   };
-
- 
 
   if (!user) {
     return <Text>Loading...</Text>;
@@ -53,11 +45,26 @@ const MainProfile = () => {
           <TouchableOpacity onPress={handleLoyalty}>
             <Text style={[styles.label, styles.underline]}>Loyalty:</Text>
           </TouchableOpacity>
-          <Text style={styles.value}>
-            {userData.eventCount}
-          </Text>
+          <Text style={styles.value}>{userData.eventCount}</Text>
         </View>
-        <Button title="Sign Out" onPress={handleSubmit} />
+        <View
+          style={{
+            borderBottomColor: "black",
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            marginVertical: 10,
+          }}
+        />
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ChangePassword")}
+        >
+          <Text style={[styles.label, styles.button]}>Change Password</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={handleSubmit}
+        >
+          <Text style={[ styles.signOut, styles.label,]}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -95,5 +102,21 @@ const styles = StyleSheet.create({
   value: {},
   underline: {
     textDecorationLine: "underline",
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: "#607D8B",
+    padding: 10,
+    borderRadius: 10,
+    textAlign: "center",
+    color: "white",
+  },
+  signOut: {
+    marginTop: 20,
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 10,
+    textAlign: "center",
+    color: "white",
   },
 });
