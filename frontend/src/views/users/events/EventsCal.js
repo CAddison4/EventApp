@@ -1,11 +1,12 @@
 import * as React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Calendar, LocaleConfig } from "react-native-calendars";
+import { StyleSheet, Text, View, Alert } from "react-native";
+import { Calendar, LocaleConfig, CalendarList } from "react-native-calendars";
 import { API_END_POINT } from "@env";
 import { useDispatch, useSelector } from "react-redux";
 import EventsFetch from "../../../actions/EventFetch";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function EventsCal({ navigation, route }) {
 	const [selected, setSelected] = useState("");
@@ -16,22 +17,14 @@ export default function EventsCal({ navigation, route }) {
 	const contextEvent = useSelector((state) => state.event);
 	const dispatch = useDispatch();
 	const { type } = route.params;
-	const [selectedEvent, setSelectedEvent] = useState(null);
-	const [ dateColor, setDateColor] = useState("green");
-
-	
-	const customStyle = {
-		textDayFontSize: 20,
-		textMonthFontSize: 24,
-		textYearFontSize: 30,
-
-	};
+	let dateColor = "blue";
 
 	useEffect(() => {
 		if(contextEvent){
 
 			setEvents(contextEvent);
 			if (type === "myevents") {
+				console.log("filtering my events");
 			const filteredEvents = contextEvent.filter(
 				(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist)
 			);
@@ -42,20 +35,27 @@ export default function EventsCal({ navigation, route }) {
 	  
 	  
 	  useEffect(() => {
-		if(type=="myevents")
-		{
-			setDateColor("orange")
-		}
 		const eventDatesArray = events.map((event) => {
-		  // console.log(event.event_date);
 		  // check the date is valid
 		  if (event.event_date && Date.parse(event.event_date)) {
 			const originalDate = new Date(event.event_date);
+			// format the date to YYYY-MM-DD
 			const formattedDate = originalDate.toISOString().slice(0, 10);
+			// return the formatted date as a key to the markedDates object
+			if (event.isInWaitlist) {
+				dateColor = "orange";
+			  } else if (event.isAttending) {
+				dateColor = "green";
+			  } else if (event.isEligible) {
+				dateColor = "blue";
+			  } else {
+				dateColor = "red";
+			  }
 			return {
 			  [formattedDate]: {
 				selected: true,
 				selectedColor: dateColor,
+				disabled: false,
 				eventId: event.event_id,
 			  },
 			};
@@ -64,50 +64,109 @@ export default function EventsCal({ navigation, route }) {
 		  }
 		});
 	  
+		// merge all the markedDates objects into one
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
 		setMarkedDates(mergedMarkedDates);
 	  }, [events]);
-	  
-	  return (
-		<View>
-		  <Text>Events Calendar</Text>
-		  {contextEvent ? (
-			<Calendar
-			  onDayPress={(day) => {
-				setSelected(day.dateString);
-				const { eventId } = markedDates[day.dateString];
-				const selectedEvent = events.find((event) => event.event_id === eventId);
-				navigation.navigate("EventDetails", {
-				  eventObj: selectedEvent,
-				});
-			  }}
-			  markedDates={markedDates}
-			  markingType={"multi-dot"}
-			  theme={{
-				calendarBackground: "#ffffff",
-				textSectionTitleColor: "#b6c1cd",
-				dayTextColor: "#2d4150",
-				todayTextColor: "#fe7013",
-				selectedDayTextColor: "#ffffff",
-				monthTextColor: "#2d4150",
-				selectedDayBackgroundColor: "#fe7013",
-				arrowColor: "#fe7013",
-				"stylesheet.calendar.header": {
-				  week: {
-					marginTop: 5,
-					flexDirection: "row",
-					justifyContent: "space-between",
-				  },
+
+	  // when a day is pressed, navigate to the event details screen
+	  const dayPressed = (day) => {
+		setSelected(day.dateString);
+		const { eventId } = markedDates[day.dateString];
+		if(eventId){
+			const selectedEvent = events.find((event) => event.event_id === eventId);
+			navigation.navigate("EventDetails", {
+			  eventObj: selectedEvent,
+			});
+		}
+	};
+
+	const infoPressed = () => {
+		// show alert that has descriptions of the different colors
+		Alert.alert(
+			"Event Calendar",
+			"Blue: Eligible to register\nGreen: Registered\nOrange: In Waitlist\nRed: Not Eligible",
+			[
+				{
+					text: "OK",
+					onPress: () => console.log("OK Pressed"),
 				},
-			  }}
-			  style={{ borderWidth: 1, borderColor: "gray" }}
-			  customStyle={customStyle}
-			/>
-		  ) : (
-			<Text>Loading Events...</Text>
-		  )}
-		</View>
+			],
+			{ cancelable: false }
+		);
+	};
+
+				  
+	  return (
+			<><View style={styles.titleContainer}>
+			  <Text style={styles.title}>Event Calendar   				  
+			  <Ionicons
+					  name="information-circle-outline"
+					  style={styles.informationIcon}
+					  // use infoPressed function to show alert
+					  onPress={ () => {infoPressed();} }/></Text>
+		 	 </View>
+			 <View style={styles.calendarContainer}>
+
+				  {contextEvent ? (
+					  <CalendarList
+						  current={selected}
+						  pastScrollRange={0}
+						  futureScrollRange={12}
+						  scrollEnabled={true}
+						  showScrollIndicator={true}
+						  markedDates={markedDates}
+						  disabledByDefault={true}
+						  disableAllTouchEventsForDisabledDays={true}
+						  disabledOpacity={0.4}
+						  markingType={"multi-dot"}
+						  onDayPress={(day) => {
+							  dayPressed(day);
+						  } }
+						  theme={{
+							  textDayFontSize: 18,
+							  textMonthFontSize: 16,
+							  textDayHeaderFontSize: 16,
+							  monthTextColor: "black",
+							  arrowColor: "black",
+							  textMonthFontWeight: "bold",
+							  todayTextColor: "lightblue",
+							  dotColor: "#7EC8E3",
+							  textDayStyle: { fontWeight: "bold" },
+							  // Add the following style to increase row height
+							  calendar: { height: "auto" },
+						  }} />
+				  ) : (
+					  <Text>Loading Events...</Text>
+				  )}
+			  </View></>
 	  );
-	  
-	
 }
+
+const styles = StyleSheet.create({
+	calendarContainer: {
+	  marginTop: 10,
+	  width: "100%",
+	  height: "100%",
+	},
+	titleContainer: {
+	  flexDirection: "row",
+	  alignItems: "center",
+	  justifyContent: "center",
+	  marginTop: 10,
+	},
+	title: {
+	  textAlign: "center",
+	  flex: 1,
+	  fontSize: 20,
+	  fontWeight: "bold",
+	},
+	iconContainer: {
+	  marginRight: 10,
+	},
+	informationIcon: {
+	  fontSize: 18,
+	  color: "grey",
+	},
+  });
+  
