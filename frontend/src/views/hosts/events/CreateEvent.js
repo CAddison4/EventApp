@@ -62,11 +62,32 @@ export default function CreateEvent({ navigation }) {
       // record exists
       console.log(response);
       if (response.status == 200) {
-        return alert("Event already exists on that date!");
+        return alert("Another event already starts on that date! Please choose another date and try again.");
       }
     } catch (error) {
       console.log("No events on this date:", error);
     }
+
+	if (!inpEvnName || !inpEvnMax || !inpEvnLocation) {
+		return alert("Please fill in all fields!");
+	}
+	if (inpEvnMax < 1) {
+		return alert("Please enter a valid capacity!");
+	}
+	if (selectedEventType == "Loyalty" && loyaltyMinimum < 1) {
+		return alert("Please enter a valid loyalty minimum!");
+	}
+	if(startDateTime > endDateTime) {
+		return alert("Please enter a valid start and end date!");
+	}
+	if (startDateTime < new Date() || endDateTime < new Date()) {
+		return alert("The start and end dates cannot be in the past!");
+	}
+	if (startDateTime == endDateTime) {
+		if (startDateTime.getHours() > endDateTime.getHours()) {
+			return alert("The start and end times cannot be in the past!");
+		}
+	}
 
     // POST
     try {
@@ -93,7 +114,7 @@ export default function CreateEvent({ navigation }) {
         });
       }
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.log("Error creating event:", error);
     }
   };
 
@@ -175,7 +196,6 @@ export default function CreateEvent({ navigation }) {
                 onChangeText={(loyaltyMinimum) =>
                   setLoyaltyMinimum(parseInt(loyaltyMinimum))
                 }
-				defaultValue="0"
                 keyboardType="numeric"
               />
             </>
