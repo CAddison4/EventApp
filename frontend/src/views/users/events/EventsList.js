@@ -20,7 +20,7 @@ export default function EventsList({ route }) {
 	const { user_id, ...userData } = user;
 	const membership_status = userData.membership_status_id;
 
-	const { type } = route.params;
+	const type = route.params.type;
 
 	const [filteredEvents, setFilteredEvents] = useState([]);
 
@@ -50,8 +50,8 @@ export default function EventsList({ route }) {
 		setIsLoading(true);
 		async function fetchData() {
 			await getEvents(true);
-			applyFilters(type, "All");
 			await dispatch(setEvent(events));
+			applyFilters(type, "All");
 			setFilteredEvents(events);
 			setIsLoading(false);
 		}
@@ -67,13 +67,13 @@ export default function EventsList({ route }) {
 		}
 	}, [selectedFilterU, selectedFilterM]);
 
-	// page refresh - needs to put contextEvents into dbEvents,
-	// then getEvents(false)
-
-	/* const handlePageRefresh = () => {
-		setFilteredEvents(contextEvents);
-		console.log("handlePageRefresh contextEvents", contextEvents);
-	}; */
+	useEffect(() => {
+		if (contextEvents) {
+            events = [...contextEvents];
+        }
+		applyFilters(type, "All");
+		setFilteredEvents(events);
+    }, [contextEvents]);
 
 	const getEvents = async (fetchFromDB) => {
 		let loyaltyCount = 0;
@@ -157,8 +157,8 @@ export default function EventsList({ route }) {
 		}
 		async function filterData() {
 			await getEvents(false);
-			applyFilters(type, itemValue);
 			await dispatch(setEvent(events));
+			applyFilters(type, itemValue);
 			setFilteredEvents(events);
 		}
 		filterData();		
@@ -236,7 +236,6 @@ export default function EventsList({ route }) {
 										userId: user_id,
 										type: type,
 										navigation: navigation,
-										// handleRefresh: handlePageRefresh,
 									})
 								}>
 								<View style={styles.rowContent}>
