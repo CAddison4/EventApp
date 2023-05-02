@@ -16,7 +16,7 @@ import MainProfile from "../../src/views/users/profile/MainProfile";
 import AuthForm from "../../src/views/AuthForm";
 import EventDetails from "../../src/views/users/events/EventDetails";
 import Confirmation from "../../src/views/users/events/Confirmation";
-import QRCode from "../../src/views/users/events/QRCode";
+import AttendeeQRCode from "../../src/views/users/events/AttendeeQRCode";
 import EventsList from "../../src/views/users/events/EventsList";
 import EventsCal from "../../src/views/users/events/EventsCal";
 import eventObjs from "../../src/views/users/events/Invited";
@@ -141,7 +141,7 @@ const Navigation = () => {
                 <Stack.Screen name="EventListItem" component={EventListItem} />
                 <Stack.Screen name="EventDetails" component={EventDetails} />
                 <Stack.Screen name="Confirmation" component={Confirmation} />
-                <Stack.Screen name="QRCode" component={QRCode} />
+                <Stack.Screen name="AttendeeQRCode" component={AttendeeQRCode} />
                 <Stack.Screen
                   name="ProfileNavButton"
                   component={ProfileNavButton}

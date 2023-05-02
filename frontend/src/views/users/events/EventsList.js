@@ -70,9 +70,10 @@ export default function EventsList({ route }) {
 	useEffect(() => {
 		if (contextEvents) {
             events = [...contextEvents];
-        }
-		applyFilters(type, "All");
-		setFilteredEvents(events);
+			type === "upcoming" ? applyFilters(type, selectedFilterU)
+		                        : applyFilters(type, selectedFilterM);
+			setFilteredEvents(events);
+		}
     }, [contextEvents]);
 
 	const getEvents = async (fetchFromDB) => {
@@ -81,6 +82,7 @@ export default function EventsList({ route }) {
 			loyaltyCount = await getLoyaltyCount(user_id);
 		}
 		if (fetchFromDB) {
+			console.log("getting events from db");
 			const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
 			const data = response.data;
 
@@ -119,11 +121,11 @@ export default function EventsList({ route }) {
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
 
-		// User is eligible if status is "Invited", or type is "Guest List" and user is
-		// "Registered", or type is "Loyalty" and event count for this user exceeds the
-		// count required for this event.
-		// If none of these conditions are met, the user is eligible if their membership
-		// status qualifies for this tier.
+		// User is eligible if status is "Invited", or type is "Guest List"
+		// and status is "Registered", or type is "Loyalty" and event count for
+		// this user exceeds the count required for this event.
+		// If none of these conditions are met, the user is eligible if their
+		// membership status qualifies for this tier.
 		eventObj.loyaltyCount = loyaltyCount;
 		if (eventObj.attendee_status_id === "Invited" ||
 		   (eventObj.type_id === "Guest List" && eventObj.attendee_status_id === "Registered") || (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)) {
@@ -133,9 +135,8 @@ export default function EventsList({ route }) {
 			eventObj.isEligible = eligibility.includes(membership_status) ? true : false;
 		}
 
-		// Check if the user is already in the waitlist for this event
-		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`);
-		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
+		// Check if the user is in the waitlist for this event
+		eventObj.isInWaitlist = eventObj.waitlist_userid !== null ? true : false;
 
 		if (eventObj.isInWaitlist) {
 			eventObj.color = "orange";
@@ -234,7 +235,6 @@ export default function EventsList({ route }) {
 									navigation.navigate("EventDetails", {
 										eventObj: item,
 										userId: user_id,
-										type: type,
 										navigation: navigation,
 									})
 								}>
