@@ -49,7 +49,7 @@ export default function EventDetails({ navigation, route }) {
 
 	async function updateEventFlag(type) {
 		const updatedEvents = contextEvents.map(event => {
-			if (event.event_id === eventObj.event_id && (event.attendee_userid === userId || event.waitlist_userid === userId)) {
+			if (event.event_id === eventObj.event_id) {
 				switch (type) {
 					case "Waitlist":
 						return { ...event, isInWaitlist: true, color: "orange" };
@@ -63,7 +63,7 @@ export default function EventDetails({ navigation, route }) {
 							return {...event, isAttending: false, color: "black",  attendee_status_id: "Invited"};
 						}
 						else {
-							return {...event, isAttending: false, color: "black",  attendee_status_id: null};	
+							return {...event, isAttending: false, color: "black",  attendee_status_id: null };	
 						}
 					default:
 						return event;

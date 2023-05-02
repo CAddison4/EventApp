@@ -29,6 +29,7 @@ export default function EventsList({ route }) {
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoadingF, setIsLoadingF] = useState(true);
 	const [open, setOpen] = useState(false);
 
 	const navigation = useNavigation();
@@ -48,6 +49,7 @@ export default function EventsList({ route }) {
 
 	useEffect(() => {
 		setIsLoading(true);
+		console.log("in main useEffect", isLoading);
 		async function fetchData() {
 			await getEvents(true);
 			await dispatch(setEvent(events));
@@ -82,7 +84,6 @@ export default function EventsList({ route }) {
 			loyaltyCount = await getLoyaltyCount(user_id);
 		}
 		if (fetchFromDB) {
-			console.log("getting events from db");
 			const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
 			const data = response.data;
 
@@ -135,8 +136,10 @@ export default function EventsList({ route }) {
 			eventObj.isEligible = eligibility.includes(membership_status) ? true : false;
 		}
 
-		// Check if the user is in the waitlist for this event
-		eventObj.isInWaitlist = eventObj.waitlist_userid !== null ? true : false;
+		// Check if the user is already in the waitlist for this event
+		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`
+		);
+		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
 
 		if (eventObj.isInWaitlist) {
 			eventObj.color = "orange";
@@ -150,19 +153,22 @@ export default function EventsList({ route }) {
 	};
 
 	const handleFilterChange = (itemValue) => {
+		console.log("in filter change", isLoadingF);
 		if (type === "upcoming") {
 			setSelectedFilterU(itemValue);
 		}
 		else {
 			setSelectedFilterM(itemValue);
 		}
+		setIsLoadingF(true); 
 		async function filterData() {
 			await getEvents(false);
 			await dispatch(setEvent(events));
 			applyFilters(type, itemValue);
 			setFilteredEvents(events);
+			setIsLoadingF(false);
 		}
-		filterData();		
+		filterData();	
 	};
 
 	const applyFilters = (type, filterValue) => {
@@ -196,7 +202,7 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{isLoading ? (
+			{isLoading || isLoadingF ? (
 				<ActivityIndicator
 					size="large"
 					color="#0000ff"
