@@ -25,7 +25,7 @@ export default function AttendanceRecords({ navigation, user }) {
 		if (selectedFilter === "Attended") {
 			setFilteredRecords(
 				attendanceRecords.filter(
-					(event) => event.attendance_status === "Attended"
+					(event) => event.attendance_status_id === "Attended"
 				)
 			);
 		} else if (selectedFilter === "Upcoming") {
@@ -37,7 +37,7 @@ export default function AttendanceRecords({ navigation, user }) {
 		} else if (selectedFilter === "No Show") {
 			setFilteredRecords(
 				attendanceRecords.filter(
-					(event) => event.attendance_status === "No Show"
+					(event) => event.attendance_status_id === "No Show"
 				)
 			);
 		}
@@ -70,7 +70,8 @@ export default function AttendanceRecords({ navigation, user }) {
 					{ label: "Upcoming", value: "Upcoming" },
 					{ label: "No Show", value: "No Show" },
 				]}
-				defaultValue={selectedFilter}
+				value={selectedFilter}
+				// defaultValue={selectedFilter}
 				containerStyle={{ height: 40 }}
 				style={{ backgroundColor: "#fafafa" }}
 				itemStyle={{ justifyContent: "flex-start" }}

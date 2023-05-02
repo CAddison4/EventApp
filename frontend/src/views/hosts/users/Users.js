@@ -16,7 +16,8 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
-import SearchButton from "../../partials/hostPartials/SearchButton";
+// import SearchButton from "../../partials/hostPartials/SearchButton";
+import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 
 LogBox.ignoreLogs([
@@ -145,7 +146,7 @@ export default function Users({ navigation }) {
 			<>
 				{isPickerVisible && (
 					<>
-						<TextInput
+						{/* <TextInput
 							placeholder="Search..."
 							value={searchQuery}
 							onChangeText={setSearchQuery}
@@ -153,7 +154,14 @@ export default function Users({ navigation }) {
 							style={styles.searchBar}
 						/>
 
-						<SearchButton onPress={filterUsers} />
+						<SearchButton onPress={filterUsers} /> */}
+
+						<SearchBar
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							onSubmitEditing={filterUsers}
+							onPress={filterUsers}
+						/>
 
 						<ClearFilterButton
 							onPress={() => {

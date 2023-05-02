@@ -6,12 +6,17 @@ import { API_END_POINT } from "@env";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import SearchBar from "../../partials/hostPartials/SearchBar";
+import ClearFilterButton from "./ClearFilterButton";
 
 import AttendeeList from "../../hosts/events/AttendeeList";
 // import _ from "lodash";
 
 export default function EventsListHost({ eventView }) {
+	const [searchQuery, setSearchQuery] = useState("");
 	const [eventObjs, setEventObjs] = useState([]);
+	const [filteredEvents, setFilteredEvents] = useState([]);
+	const [attendeeList, setAttendeeList] = useState([]);
 	const navigation = useNavigation();
 
 	useEffect(() => {
@@ -19,16 +24,29 @@ export default function EventsListHost({ eventView }) {
 			const eventsWithAttendees = await getEventsWithAttendees();
 			console.log(eventsWithAttendees);
 
-			const eventData = eventsWithAttendees.filter((eventObj) => {
-				const eventDate = new Date(eventObj.event_date);
-				const now = new Date();
+			const eventData = eventsWithAttendees
+				.filter((eventObj) => {
+					const eventDate = new Date(eventObj.event_date);
+					const now = new Date();
 
-				if (eventView == "upcoming") {
-					return eventDate >= now;
-				} else {
-					return eventDate < now;
-				}
-			});
+					if (eventView === "upcoming") {
+						return eventDate >= now;
+					} else {
+						return eventDate < now;
+					}
+				})
+				.map((eventObj) => {
+					const options = {
+						month: "long",
+						day: "numeric",
+						year: "numeric",
+					};
+					const formattedDate = new Date(
+						eventObj.event_date
+					).toLocaleDateString("en-US", options);
+					return { ...eventObj, event_date: formattedDate };
+				})
+				.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
 
 			setEventObjs(eventData);
 		};
@@ -64,24 +82,82 @@ export default function EventsListHost({ eventView }) {
 		return eventsWithAttendees;
 	};
 
+	const filterEvents = () => {
+		setFilteredEvents(
+			eventObjs.filter((eventObj) =>
+				eventObj.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+			)
+		);
+	};
+
+	useEffect(() => {
+		const filterEvents = () => {
+			setFilteredEvents(eventObjs);
+		};
+		filterEvents();
+	}, [eventObjs, searchQuery]);
+
+	// const filteredEvents = filterEvents(eventObjs, searchQuery);
+
+	//Where should I call this?
+	const filterPastAttendance = (item, status) => {
+		switch (status) {
+			case "Attended":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "Attended"
+					)
+				);
+				return;
+			case "No Show":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "No Show"
+					)
+				);
+				return;
+			case "Unknown":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "Unknown"
+					)
+				);
+				return;
+			default:
+				setAttendeeList(item.attendees);
+				return;
+		}
+	};
+
 	return (
 		<View style={styles.container}>
+			<SearchBar
+				value={searchQuery}
+				onChangeText={setSearchQuery}
+				onSubmitEditing={filterEvents}
+				placeholder="Search events"
+				onPress={filterEvents}
+			/>
+			<ClearFilterButton onPress={() => setSearchQuery("")} />
+
 			<FlatList
-				data={eventObjs}
+				data={filteredEvents}
 				renderItem={({ item }) => (
 					<View>
+						<Text style={styles.headerTxt}>{item.event_date}</Text>
 						<Text
 							onPress={() =>
 								navigation.navigate("EventDetailsHost", {
 									upcomingEvent: item,
+									eventView: eventView,
 								})
 							}
-							style={styles.headerTxt}>
+							style={styles.bodyTxt}>
 							{item.event_name}
 						</Text>
-						<Text style={styles.bodyTxt}>Date: {item.event_date}</Text>
+
 						<Text>
-							<Text style={styles.bodyTxt}>Capacity: {item.capacity} </Text>
+							{/* <Text style={styles.bodyTxt}>Capacity: {item.capacity} </Text> */}
 							<Text
 								style={styles.bodyTxt}
 								onPress={() => {
@@ -92,7 +168,7 @@ export default function EventsListHost({ eventView }) {
 										eventDate: item.event_date,
 									});
 								}}>
-								Registered: {item.attendees.length}
+								Registered: {item.attendees.length}/{item.capacity}{" "}
 							</Text>
 							<Text
 								style={styles.bodyTxt}
@@ -106,6 +182,79 @@ export default function EventsListHost({ eventView }) {
 								}}>
 								Waitlist: {item.waitlist.length}
 							</Text>
+
+							{eventView === "past" && (
+								<>
+									{" "}
+									<Text
+										style={styles.bodyTxt}
+										onPress={() => {
+											navigation.navigate("AttendeeList", {
+												attendeeList: item.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "Attended"
+												),
+												type: "Attended",
+												eventName: item.event_name,
+												eventDate: item.event_date,
+											});
+										}}>
+										Attended:{" "}
+										{
+											// item.attendees.filter(
+											// 	(attendee) =>
+											// 		attendee.attendance_status_id === "Attended"
+											// ).length
+											item.attendees.filter(
+												(attendee) =>
+													attendee.attendance_status_id === "Attended"
+											).length
+										}
+									</Text>{" "}
+									<Text
+										style={styles.bodyTxt}
+										onPress={() => {
+											navigation.navigate("AttendeeList", {
+												attendeeList: item.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "No Show"
+												),
+												type: "No Show",
+												eventName: item.event_name,
+												eventDate: item.event_date,
+											});
+										}}>
+										No Show:{" "}
+										{
+											item.attendees.filter(
+												(attendee) =>
+													attendee.attendance_status_id === "No Show"
+											).length
+										}
+									</Text>{" "}
+									<Text
+										style={styles.bodyTxt}
+										onPress={() => {
+											navigation.navigate("AttendeeList", {
+												attendeeList: item.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "Unknown"
+												),
+												type: "Unknown",
+												eventName: item.event_name,
+												eventDate: item.event_date,
+											});
+										}}>
+										Unknown:{" "}
+										{
+											item.attendees.filter(
+												(attendee) =>
+													attendee.attendance_status_id === "Unknown"
+											).length
+										}
+									</Text>
+								</>
+							)}
 						</Text>
 					</View>
 				)}
