@@ -209,6 +209,18 @@ export async function getAttendee(userId, eventId) {
 }
 
 // Update attendee status for a specific event and user
+export async function editAttendee(eventId, userId, attendanceStatus) {
+  const res = await getPool().query(`
+    UPDATE eventattendees
+    SET attendance_status_id = $3
+    WHERE event_id = $1 AND user_id = $2
+    RETURNING event_id, user_id
+  `, [eventId, userId, attendanceStatus]);
+
+  return res.rows[0];
+}
+
+// Update attendee status for a specific event and user
 export async function editAttendeeStatus(eventId, userId, attendeeStatusId) {
   const res = await getPool().query(`
   UPDATE eventattendees SET (attendee_status_id) = ($3)

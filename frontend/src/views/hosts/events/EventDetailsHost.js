@@ -187,6 +187,7 @@ export default function EventDetailsHost({ navigation, route }) {
 							</>
 						)}
 
+
 						{eventObj.type_id === "Guest List" && (
 							<Button
 								title="Set Invites"
@@ -201,6 +202,13 @@ export default function EventDetailsHost({ navigation, route }) {
 							title="Delete"
 							onPress={() => handleDelete()}
 							style={styles.button}></Button>
+             <Button
+							title="Attendance"
+							onPress={() => {
+								navigation.navigate("Attendance", { eventObj: eventObj });
+							}}
+							buttonStyle={styles.button}
+						/>
 					</>
 				)
 			)}

@@ -2,12 +2,41 @@ import { StyleSheet, Text, View, Button } from "react-native";
 import CreateEvent from "./CreateEvent";
 import Users from "../users/Users";
 import EventsHost from "./EventsHost";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_END_POINT } from "@env";
 
 export default function HostMenu({ navigation }) {
+	const date = new Date();
+	const formattedDate = date.toISOString().slice(0,10);
+	const [eventObj, setEventObj] = useState(null);
+	useEffect(() => {
+		const getEvents = async () => {
+		  const response = await axios.get(`${API_END_POINT}event/date/${formattedDate}`);
+		  const data = response.data;
+		  setEventObj(data); 
+		};
+		getEvents();
+	  }, []);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Host Menu</Text>
 			<View style={styles.buttonsContainer}>
+				<View style={styles.buttonWrapper}>
+				{eventObj ? (
+					<>
+						<Text>Check Attendance</Text>
+						<Button
+							title={String(eventObj.event_name)}
+							onPress={() => {
+								navigation.navigate("Attendance", { eventObj: eventObj });
+							}}
+							buttonStyle={styles.button}
+						/>
+					</>
+				) : null}
+				</View>
 				<View style={styles.buttonWrapper}>
 					<Button
 						title="Events List"
@@ -65,5 +94,6 @@ const styles = StyleSheet.create({
 	button: {
 		width: 300,
 		height: 40,
+		marginBottom: 20,
 	},
 });

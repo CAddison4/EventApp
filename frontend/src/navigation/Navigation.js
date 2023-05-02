@@ -31,6 +31,7 @@ import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
 import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
 import PastEvents from "../../src/views/hosts/events/PastEvents";
 import AttendeeList from "../views/hosts/events/AttendeeList";
+import Attendance from "../views/hosts/events/Attendance";
 
 import InviteList from "../../src/views/hosts/events/InviteList";
 import Users from "../views/hosts/users/Users";
@@ -158,6 +159,7 @@ const Navigation = () => {
                 <Stack.Screen name="Users" component={Users} />
                 <Stack.Screen name="UserDetails" component={UserDetails} />
                 <Stack.Screen name="AttendeeList" component={AttendeeList} />
+                <Stack.Screen name="Attendance" component={Attendance} />
               </>
             )}
           </>
