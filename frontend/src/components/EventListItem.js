@@ -10,8 +10,8 @@ export default function EventListItem({ eventObj }) {
 			<Text style={[styles.boldText, {color: eventObj.color}]}>{eventObj.event_name}</Text>
 			<Text>
 				{`${formatLongDate(eventObj.event_date, false)}, `} 
-				{eventObj.type_id}, 
-				{eventObj.type_id === "Loyalty" ? ` ${eventObj.loyalty_max}` : ""}
+				{eventObj.type_id} 
+				{eventObj.type_id === "Loyalty" ? `, ${eventObj.loyalty_max}` : ""}
 			</Text>
 
 		</View>

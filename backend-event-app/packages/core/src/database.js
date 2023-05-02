@@ -176,9 +176,11 @@ export async function deleteAttendee(eventId, userId) {
 // Get attendee records for all events for a specific user 
 export async function getAttendeesByUser(userId) {
   const res = await getPool().query(`
-  SELECT ea.*, e.* FROM events e
+  SELECT ea.user_id AS attendee_userid, ea.attendee_status_id, e.*, ew.user_id AS waitlist_userid FROM events e
   LEFT JOIN eventattendees ea ON e.event_id = ea.event_id
   AND ea.user_id = $1
+  LEFT JOIN eventwaitlist ew ON e.event_id = ew.event_id
+  AND ew.user_id = $1
   WHERE cancelled = false
   ORDER BY e.event_date
   `, [userId])
@@ -317,7 +319,7 @@ export async function loyaltyCount(userId) {
 // Count how many events a specific user has of each status
 export async function eventCounts(userId) {
   const res = await getPool().query(`
-  SELECT ea.attendee_status_id, COUNT(*) as count FROM events e
+  SELECT ea.attendee_status_id, COUNT(*) AS count FROM events e
   LEFT JOIN eventattendees ea ON ea.event_id = e.event_id
   AND ea.user_id = $1
   WHERE e.event_date > now()
