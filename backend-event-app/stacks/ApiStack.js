@@ -37,6 +37,7 @@ export function API({ stack }) {
       "GET /attendee/events/{userId}": "packages/functions/src/attendees/getAttendeeEvents.main",
       "GET /attendee/users/{eventId}": "packages/functions/src/attendees/getAttendeeUsers.main",
       "GET /attendee/{userId}/{eventId}": "packages/functions/src/attendees/getAttendee.main",
+      "PUT /attendee/{eventId}/{userId}": "packages/functions/src/attendees/putAttendee.main",
       // Routes for updating an attendee status or attendance status
       "PUT /attendeestatus/{userId}/{eventId}": "packages/functions/src/attendees/putAttendeeStatus.main",
       "PUT /attendancestatus/{userId}/{eventId}": "packages/functions/src/attendees/putAttendanceStatus.main",
