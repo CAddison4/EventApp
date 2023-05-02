@@ -12,12 +12,28 @@ import axios from "axios";
 import { API_END_POINT } from '@env';
 
 export default function EventDetails({ navigation, route }) {
-	const { eventObj, userId, type } = route.params;
+	const eventObj = route.params.eventObj;
+	const userId = route.params.userId;
 
 	var contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
+	const [status, setStatus] = useState("");
+
+	useEffect(() => {
+		const yourStatus = 
+		eventObj.isInWaitlist
+			? "Waitlisted"
+			: eventObj.isEligible && eventObj.attendee_status_id === null
+				? "Eligible"
+				: eventObj.isEligible && eventObj.attendee_status_id !== null
+					? eventObj.attendee_status_id
+					: !eventObj.isEligible
+						? "Ineligible"
+						: "";
+		setStatus(yourStatus);
+    }, []);
 
 	useEffect(() => {
 		const getWaitlistPosition = async () => {
@@ -32,25 +48,30 @@ export default function EventDetails({ navigation, route }) {
 	}, []);
 
 	async function updateEventFlag(type) {
-		let updatedEvents = contextEvents.map(event => {
-			if (event.event_id === eventObj.event_id && event.user_id === userId) {
-			  switch (type) {
-				case "Waitlist":
-					return { ...event, isInWaitlist: true, color: "orange" };
-				case "Remove":
-				  	return { ...event, isInWaitlist: false, color: "black" };
-				case "Register":
-				  	return { ...event, isAttending: true, color: "green" };
-				case "Withdraw":
-				  	return { ...event, isAttending: false, color: "black" };
-				default:
-				  	return event;
-			  }
+		const updatedEvents = contextEvents.map(event => {
+			if (event.event_id === eventObj.event_id) {
+				switch (type) {
+					case "Waitlist":
+						return { ...event, isInWaitlist: true, color: "orange" };
+					case "Remove":
+						return { ...event, isInWaitlist: false, color: "black" };
+					case "Register":
+						return { ...event, isAttending: true, color: "green", attendee_status_id: "Registered" };
+					case "Withdraw":
+						//	go back to attendee_status_id = Invited or Null
+						if (eventObj.type_id === "Guest List") {
+							return {...event, isAttending: false, color: "black",  attendee_status_id: "Invited"};
+						}
+						else {
+							return {...event, isAttending: false, color: "black",  attendee_status_id: null };	
+						}
+					default:
+						return event;
+				}
 			} else {
-			  return event;
+				return event;
 			}
 		});
-
 		// Save the contextEvents array back in state
 		await dispatch(setEvent(updatedEvents));
 	}
@@ -58,7 +79,7 @@ export default function EventDetails({ navigation, route }) {
 	async function displayAlert(type, eventObj) {
 		switch (type) {
 			case "Waitlist":
-				Alert.alert(`You are waitlisted for {eventObj.event_name}`);
+				Alert.alert(`You are waitlisted for ${eventObj.event_name}`);
 				break;
 			case "Remove":
 				Alert.alert(`You have been removed from the waitlist for ${eventObj.event_name}`);
@@ -93,16 +114,7 @@ export default function EventDetails({ navigation, route }) {
 				</View>
 				<View style={styles.eventInfoItem}>
 					<Text style={styles.label}>Your status:</Text>
-					<Text style={styles.value}>
-						{eventObj.isInWaitlist
-							? "Waitlisted"
-							: eventObj.isEligible && eventObj.attendee_status_id === null
-								? "Eligible"
-								: !eventObj.isEligible
-									? "Ineligible"
-									: eventObj.attendee_status_id
-						}
-						</Text>
+					<Text style={styles.value}>{status}</Text>
 				</View>
 				{eventObj.isInWaitlist &&
 					<View style={styles.eventInfoItem}>
@@ -145,7 +157,7 @@ export default function EventDetails({ navigation, route }) {
 								title="QR Code"
 								onPress={() =>
 									//Will also need to pass the user information through to this screen.
-									navigation.navigate("QRCode", {
+									navigation.navigate("AttendeeQRCode", {
 										eventObj: eventObj,
 									})
 								}

@@ -29,6 +29,7 @@ export default function EventsList({ route }) {
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoadingF, setIsLoadingF] = useState(true);
 	const [open, setOpen] = useState(false);
 
 	const navigation = useNavigation();
@@ -48,6 +49,7 @@ export default function EventsList({ route }) {
 
 	useEffect(() => {
 		setIsLoading(true);
+		console.log("in main useEffect", isLoading);
 		async function fetchData() {
 			await getEvents(true);
 			await dispatch(setEvent(events));
@@ -70,9 +72,10 @@ export default function EventsList({ route }) {
 	useEffect(() => {
 		if (contextEvents) {
             events = [...contextEvents];
-        }
-		applyFilters(type, "All");
-		setFilteredEvents(events);
+			type === "upcoming" ? applyFilters(type, selectedFilterU)
+		                        : applyFilters(type, selectedFilterM);
+			setFilteredEvents(events);
+		}
     }, [contextEvents]);
 
 	const getEvents = async (fetchFromDB) => {
@@ -119,11 +122,11 @@ export default function EventsList({ route }) {
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
 
-		// User is eligible if status is "Invited", or type is "Guest List" and user is
-		// "Registered", or type is "Loyalty" and event count for this user exceeds the
-		// count required for this event.
-		// If none of these conditions are met, the user is eligible if their membership
-		// status qualifies for this tier.
+		// User is eligible if status is "Invited", or type is "Guest List"
+		// and status is "Registered", or type is "Loyalty" and event count for
+		// this user exceeds the count required for this event.
+		// If none of these conditions are met, the user is eligible if their
+		// membership status qualifies for this tier.
 		eventObj.loyaltyCount = loyaltyCount;
 		if (eventObj.attendee_status_id === "Invited" ||
 		   (eventObj.type_id === "Guest List" && eventObj.attendee_status_id === "Registered") || (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)) {
@@ -134,7 +137,8 @@ export default function EventsList({ route }) {
 		}
 
 		// Check if the user is already in the waitlist for this event
-		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`);
+		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`
+		);
 		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
 
 		if (eventObj.isInWaitlist) {
@@ -149,19 +153,22 @@ export default function EventsList({ route }) {
 	};
 
 	const handleFilterChange = (itemValue) => {
+		console.log("in filter change", isLoadingF);
 		if (type === "upcoming") {
 			setSelectedFilterU(itemValue);
 		}
 		else {
 			setSelectedFilterM(itemValue);
 		}
+		setIsLoadingF(true); 
 		async function filterData() {
 			await getEvents(false);
 			await dispatch(setEvent(events));
 			applyFilters(type, itemValue);
 			setFilteredEvents(events);
+			setIsLoadingF(false);
 		}
-		filterData();		
+		filterData();	
 	};
 
 	const applyFilters = (type, filterValue) => {
@@ -195,7 +202,7 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{isLoading ? (
+			{isLoading || isLoadingF ? (
 				<ActivityIndicator
 					size="large"
 					color="#0000ff"
@@ -234,7 +241,6 @@ export default function EventsList({ route }) {
 									navigation.navigate("EventDetails", {
 										eventObj: item,
 										userId: user_id,
-										type: type,
 										navigation: navigation,
 									})
 								}>
