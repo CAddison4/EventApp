@@ -1,4 +1,14 @@
-import { View, Text, Button, FlatList, LogBox } from "react-native";
+import {
+	View,
+	Text,
+	Button,
+	FlatList,
+	LogBox,
+	SectionList,
+	TextInput,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useState, useEffect } from "react";
@@ -6,12 +16,22 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
+import SearchButton from "../../partials/hostPartials/SearchButton";
+import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 
 LogBox.ignoreLogs([
 	"Non-serializable values were found in the navigation state",
 ]);
+// function ClearFilterButton({ onPress }) {
+// 	return <Button title="Clear Filter" onPress={onPress} />;
+// }
+
+// function SearchButton({ onPress }) {
+// 	return <Button title="Search" onPress={onPress} />;
+// }
 
 export default function Users({ navigation }) {
+	const [searchQuery, setSearchQuery] = useState("");
 	const [open, setOpen] = useState(false);
 	const [users, setUsers] = useState([]);
 	const [editedMemberships, setEditedMemberships] = useState([]);
@@ -25,6 +45,34 @@ export default function Users({ navigation }) {
 		const newUsers = await getUsers();
 		setUsers(newUsers);
 		setSelectedMembershipStatus("All");
+		setSearchQuery("");
+	};
+
+	const filterUsers = () => {
+		if (selectedMembershipStatus === "All") {
+			setFilteredUsers(
+				users.filter(
+					(user) =>
+						user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						user.email.toLowerCase().includes(searchQuery.toLowerCase())
+				)
+			);
+		} else {
+			setFilteredUsers(
+				users.filter(
+					(user) =>
+						user.membership_status_id === selectedMembershipStatus &&
+						(user.first_name
+							.toLowerCase()
+							.includes(searchQuery.toLowerCase()) ||
+							user.last_name
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase()) ||
+							user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+				)
+			);
+		}
 	};
 
 	const getUsers = async () => {
@@ -97,6 +145,23 @@ export default function Users({ navigation }) {
 			<>
 				{isPickerVisible && (
 					<>
+						<TextInput
+							placeholder="Search..."
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							onSubmitEditing={filterUsers}
+							style={styles.searchBar}
+						/>
+
+						<SearchButton onPress={filterUsers} />
+
+						<ClearFilterButton
+							onPress={() => {
+								setSearchQuery("");
+								setSelectedMembershipStatus("All");
+								setFilteredUsers(users);
+							}}
+						/>
 						<Text>Membership Status</Text>
 
 						<View style={{ zIndex: 2000 }}>
@@ -109,8 +174,16 @@ export default function Users({ navigation }) {
 								}))}
 								setOpen={setOpen}
 								setValue={handleMembershipFilterChange}
-								zIndex={5000}
+								// zIndex={5000}
 								// setItems={setItems}
+								listMode="SCROLLVIEW"
+								scrollViewProps={{
+									nestedScrollEnabled: true,
+								}}
+								dropDownContainerStyle={{
+									position: "relative",
+									top: 0,
+								}}
 							/>
 						</View>
 						{/* <Picker
@@ -124,9 +197,14 @@ export default function Users({ navigation }) {
 								/>
 							))}
 						</Picker> */}
-						<Text>{selectedMembershipStatus} Users</Text>
-						<FlatList
-							data={filteredUsers}
+						{/* <Text>{selectedMembershipStatus} Users</Text> */}
+						<SectionList
+							sections={[
+								{
+									title: selectedMembershipStatus + " Users",
+									data: filteredUsers,
+								},
+							]}
 							renderItem={({ item }) => (
 								<Text
 									onPress={() =>
@@ -139,6 +217,9 @@ export default function Users({ navigation }) {
 									{item.email}
 								</Text>
 							)}
+							renderSectionHeader={({ section: { title } }) => (
+								<Text>{title}</Text>
+							)}
 						/>
 					</>
 				)}
@@ -146,3 +227,24 @@ export default function Users({ navigation }) {
 		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		padding: 16,
+		backgroundColor: "#fff",
+	},
+	nameInput: {
+		paddingBottom: 8,
+		fontSize: 24,
+		borderBottomWidth: 1,
+		borderBottomColor: "#000",
+	},
+
+	searchBar: {
+		paddingBottom: 8,
+		fontSize: 24,
+		borderBottomWidth: 1,
+		borderBottomColor: "#000",
+	},
+});
