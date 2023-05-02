@@ -6,8 +6,9 @@ import {
   TextInput,
   Platform,
   ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import DropDownPicker from "react-native-dropdown-picker";
 import InviteList from "./InviteList";
 import axios from "axios";
@@ -62,32 +63,29 @@ export default function CreateEvent({ navigation }) {
       // record exists
       console.log(response);
       if (response.status == 200) {
-        return alert("Another event already starts on that date! Please choose another date and try again.");
+        return alert(
+          "Another event already starts on that date! Please choose another date and try again."
+        );
       }
     } catch (error) {
       console.log("No events on this date:", error);
     }
 
-	if (!inpEvnName || !inpEvnMax || !inpEvnLocation) {
-		return alert("Please fill in all fields!");
-	}
-	if (inpEvnMax < 1) {
-		return alert("Please enter a valid capacity!");
-	}
-	if (selectedEventType == "Loyalty" && loyaltyMinimum < 1) {
-		return alert("Please enter a valid loyalty minimum!");
-	}
-	if(startDateTime > endDateTime) {
-		return alert("Please enter a valid start and end date!");
-	}
-	if (startDateTime < new Date() || endDateTime < new Date()) {
-		return alert("The start and end dates cannot be in the past!");
-	}
-	if (startDateTime == endDateTime) {
-		if (startDateTime.getHours() > endDateTime.getHours()) {
-			return alert("The start and end times cannot be in the past!");
-		}
-	}
+    if (!inpEvnName || !inpEvnMax || !inpEvnLocation) {
+      return alert("Please fill in all fields!");
+    }
+    if (inpEvnMax < 1) {
+      return alert("Please enter a valid capacity!");
+    }
+    if (selectedEventType == "Loyalty" && loyaltyMinimum < 1) {
+      return alert("Please enter a valid loyalty minimum!");
+    }
+    if (startDateTime > endDateTime) {
+      return alert("Please enter a valid start and end date!");
+    }
+    if (startDateTime < new Date() || endDateTime < new Date()) {
+      return alert("The start and end dates cannot be in the past!");
+    }
 
     // POST
     try {
@@ -157,93 +155,111 @@ export default function CreateEvent({ navigation }) {
   // End of Date Picker
 
   return (
-    <View style={styles.container}>
-      {isPickerVisible && (
-        <>
-          {show && (
-            <DateTimePicker
-              value={isStartDateSelected == true ? startDateTime : endDateTime}
-              mode={mode}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={(event, selectedDate) => {
-                setShow(false);
-                if (isStartDateSelected == true) {
-                  handleStartDateChange(event, selectedDate);
-                } else {
-                  handleEndDateChange(event, selectedDate);
-                }
-              }}
-            />
-          )}
-          <Text>Event Type</Text>
-          <View style={{ zIndex: 2000 }}>
-            <DropDownPicker
-              open={open}
-              value={selectedEventType}
-              items={eligibilityData.eligibilityTypes.map((item) => ({
-                label: item.type_id,
-                value: item.type_id,
-              }))}
-              setOpen={setOpen}
-              setValue={handleEventTypeChange}
-            />
-          </View>
-          {selectedEventType == "Loyalty" && (
+    <KeyboardAvoidingView  behavior={"padding"} enabled>
+      <ScrollView>
+        <View style={styles.container}>
+          {isPickerVisible && (
             <>
-              <Text>Loyalty Minimum:</Text>
+              {show && (
+                <DateTimePicker
+                  value={
+                    isStartDateSelected == true ? startDateTime : endDateTime
+                  }
+                  mode={mode}
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={(event, selectedDate) => {
+                    setShow(false);
+                    if (isStartDateSelected == true) {
+                      handleStartDateChange(event, selectedDate);
+                    } else {
+                      handleEndDateChange(event, selectedDate);
+                    }
+                  }}
+                />
+              )}
+              <Text>Event Type</Text>
+              <View style={{ zIndex: 2000 }}>
+                <DropDownPicker
+                  open={open}
+                  value={selectedEventType}
+                  items={eligibilityData.eligibilityTypes.map((item) => ({
+                    label: item.type_id,
+                    value: item.type_id,
+                  }))}
+                  setOpen={setOpen}
+                  setValue={handleEventTypeChange}
+                />
+              </View>
+              {selectedEventType == "Loyalty" && (
+                <>
+                  <Text>Loyalty Minimum:</Text>
+                  <TextInput
+                    style={styles.nameInput}
+                    onChangeText={(loyaltyMinimum) =>
+                      setLoyaltyMinimum(parseInt(loyaltyMinimum))
+                    }
+                    keyboardType="numeric"
+                  />
+                </>
+              )}
+              <Text>Event Name</Text>
               <TextInput
                 style={styles.nameInput}
-                onChangeText={(loyaltyMinimum) =>
-                  setLoyaltyMinimum(parseInt(loyaltyMinimum))
-                }
+                onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
+              />
+              <Text>Max Participants</Text>
+              <TextInput
+                style={styles.nameInput}
+                onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
                 keyboardType="numeric"
               />
+              <View style={styles.dateTimeContainer}>
+                <View style={styles.dateContainer}>
+                  <Text>Start Date:</Text>
+                  <Button title="Change Date" onPress={showStartDatepicker} />
+                  <Text>{startDateTime.toDateString()}</Text>
+                </View>
+                <View style={styles.timeContainer}>
+                  <Text>Start Time:</Text>
+                  <Button title="Change Time" onPress={showStartTimepicker} />
+                  <Text>
+                    {startDateTime.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.dateTimeContainer}>
+                <View style={styles.dateContainer}>
+                  <Text>End Date:</Text>
+                  <Button title="Change Date" onPress={showEndDatepicker} />
+                  <Text>{endDateTime.toDateString()}</Text>
+                </View>
+                <View style={styles.timeContainer}>
+                  <Text>End Time:</Text>
+                  <Button title="Change Time" onPress={showEndTimepicker} />
+                  <Text>
+                    {endDateTime.toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+              </View>
+              <Text>Location</Text>
+              <TextInput
+                style={styles.nameInput}
+                onChangeText={(inpEvnLocation) =>
+                  setInpEvnLocation(inpEvnLocation)
+                }
+              />
+              <Button title="Create" onPress={handleCreateEvent} />
             </>
           )}
-          <Text>Event Name</Text>
-          <TextInput
-            style={styles.nameInput}
-            onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
-          />
-          <Text>Max Participants</Text>
-          <TextInput
-            style={styles.nameInput}
-            onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
-            keyboardType="numeric"
-          />
-          <View style={styles.dateTimeContainer}>
-            <View style={styles.dateContainer}>
-              <Text>Start Date:</Text>
-              <Button title="Change Date" onPress={showStartDatepicker} />
-              <Text>{startDateTime.toDateString()}</Text>
-            </View>
-            <View style={styles.timeContainer}>
-              <Text>Start Time:</Text>
-              <Button title="Change Time" onPress={showStartTimepicker} />
-              <Text>{startDateTime.toLocaleTimeString()}</Text>
-            </View>
-          </View>
-          <View style={styles.dateTimeContainer}>
-            <View style={styles.dateContainer}>
-              <Text>End Date:</Text>
-              <Button title="Change Date" onPress={showEndDatepicker} />
-              <Text>{endDateTime.toDateString()}</Text>
-            </View>
-            <View style={styles.timeContainer}>
-              <Text>End Time:</Text>
-              <Button title="Change Time" onPress={showEndTimepicker} />
-              <Text>{endDateTime.toLocaleTimeString()}</Text>
-            </View>
-          </View>
-          <Text>Location</Text>
-          <TextInput
-            style={styles.nameInput}
-            onChangeText={(inpEvnLocation) => setInpEvnLocation(inpEvnLocation)}
-          />
-          <Button title="Create" onPress={handleCreateEvent} />
-        </>
-      )}
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
