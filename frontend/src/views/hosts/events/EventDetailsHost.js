@@ -123,6 +123,13 @@ export default function EventDetailsHost({ navigation, route }) {
             )}
             <Button title="Edit" onPress={() => setIsEdit(true)} style={styles.button}></Button>
             <Button title="Delete" onPress={() => handleDelete()} style={styles.button}></Button>
+            <Button
+							title="Attendance"
+							onPress={() => {
+								navigation.navigate("Attendance", { eventObj: eventObj });
+							}}
+							buttonStyle={styles.button}
+						/>
           </>
         )
       )}
