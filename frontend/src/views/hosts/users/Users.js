@@ -16,17 +16,19 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
+import SearchButton from "../../partials/hostPartials/SearchButton";
+import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 
 LogBox.ignoreLogs([
 	"Non-serializable values were found in the navigation state",
 ]);
-function ClearFilterButton({ onPress }) {
-	return <Button title="Clear Filter" onPress={onPress} />;
-}
+// function ClearFilterButton({ onPress }) {
+// 	return <Button title="Clear Filter" onPress={onPress} />;
+// }
 
-function SearchButton({ onPress }) {
-	return <Button title="Search" onPress={onPress} />;
-}
+// function SearchButton({ onPress }) {
+// 	return <Button title="Search" onPress={onPress} />;
+// }
 
 export default function Users({ navigation }) {
 	const [searchQuery, setSearchQuery] = useState("");
