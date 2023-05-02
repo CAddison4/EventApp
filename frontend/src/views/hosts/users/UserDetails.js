@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 
+import AttendanceRecords from "../../partials/hostPartials/AttendanceRecords";
+
 export default function UserDetails({ navigation, route }) {
 	const user = route.params.user;
 	const handleRefresh = route.params.handleRefresh;
@@ -63,17 +65,17 @@ export default function UserDetails({ navigation, route }) {
 					<>
 						<Text>Membership Status</Text>
 						<View style={{ zIndex: 2000 }}>
-						<DropDownPicker
-							open={open}
-							value={selectedMembershipStatus}
-							items={memberships.membershipStatuses.map((item) => ({
-								label: item.membership_status_id,
-								value: item.membership_status_id,
-							}))}
-							setOpen={setOpen}
-							setValue={handleMembershipStatusChange}
-							// setItems={setItems}
-						/>
+							<DropDownPicker
+								open={open}
+								value={selectedMembershipStatus}
+								items={memberships.membershipStatuses.map((item) => ({
+									label: item.membership_status_id,
+									value: item.membership_status_id,
+								}))}
+								setOpen={setOpen}
+								setValue={handleMembershipStatusChange}
+								// setItems={setItems}
+							/>
 						</View>
 						{/* <Picker
 							selectedValue={selectedMembershipStatus}
@@ -98,6 +100,7 @@ export default function UserDetails({ navigation, route }) {
 					</>
 				)}
 			</>
+			<AttendanceRecords user={user} navigation={navigation} />
 		</View>
 	);
 }
