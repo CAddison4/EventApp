@@ -1,11 +1,36 @@
-import { Api } from "sst/constructs";
+import { Api, Cognito  } from "sst/constructs";
 
 import * as iam from "aws-cdk-lib/aws-iam";
+import { UserPool, UserPoolClient } from "aws-cdk-lib/aws-cognito";
 
 export function API({ stack }) {
 
+  
+
+  const auth = new Cognito(stack, "Auth", {
+    cdk: {
+      userPool: UserPool.fromUserPoolId(stack, "EventRSVPApplication-staging", process.env.COGNITO_USER_POOL_ID),
+      userPoolClient: UserPoolClient.fromUserPoolClientId(
+        stack,
+        "eventr29718598_app_client",
+        process.env.COGNITO_USER_POOL_CLIENT_ID
+      ),
+    },
+  });
+
+
   const api = new Api(stack, "api", {
+    authorizers: {
+      cognito: {
+        type: "user_pool",
+        userPool: {
+          id: auth.userPoolId,  
+          
+        }
+      }
+    },
     defaults: {
+      authorizer: "cognito",
       function: {
         environment: {
           DATABASE_URL: process.env.DATABASE_URL,
@@ -53,17 +78,15 @@ export function API({ stack }) {
       "GET /loyalty/{userId}": "packages/functions/src/utilities/getLoyaltyCount.main",
       "GET /eventcounts/{userId}": "packages/functions/src/utilities/getEventCounts.main",
     },
-    authorizer: {
-      name: "none"
-    }
+    
     
   });
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    // UserPoolId: auth.userPoolId,
-    // IdentityPoolId: auth.cognitoIdentityPoolId ?? "",
-    // UserPoolClientId: auth.userPoolClientId,
+    UserPoolId: auth.userPoolId,
+    IdentityPoolId: auth.cognitoIdentityPoolId ?? "",
+    UserPoolClientId: auth.userPoolClientId,
   });
 
   return {

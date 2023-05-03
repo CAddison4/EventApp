@@ -3,6 +3,17 @@ import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
+import { getUserData } from "./UserApiComponents";
+
+export const getRefreshToken = async () => {
+  try {
+    const session = await Auth.currentSession();
+    const refreshToken = session.getRefreshToken().getToken();
+    return refreshToken;
+  } catch (error) {
+    console.log('Error retrieving refresh token', error);
+  }
+}
 
 export const handleSignUp = async (
   email,
@@ -78,42 +89,62 @@ export const handleSignUp = async (
 export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
-    const apiEndpoint = `${API_END_POINT}user/email/${username}`;
-    const apiResponse = await fetch(apiEndpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
 
-    if (!apiResponse.ok) {
-      return {
-        success: false,
-        message: "Failed to retrieve user data, Check your email and try again",
-      };
-    }
-    const apiResponseJson = await apiResponse.json();
-    console.log("API RESPONSE JSON", apiResponseJson);
-    const loyalty = await fetch(`${API_END_POINT}loyalty/${apiResponseJson.user_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const loyaltyJson = await loyalty.json();
+    const user = await Auth.signIn(username, password);
+
+    // const session = await user.getSession();
+    const accessToken = (await Auth.currentSession()).getAccessToken().getJwtToken();
+    // console.log("ACCESS TOKEN", accessToken);
+
+    const idToken = (await Auth.currentSession()).getIdToken().getJwtToken();
+    // console.log("ID TOKEN", idToken);
+    // const refreshToken = Auth.getRefreshToken().getToken();
+
+    // console.log("USER", user);
+    // console.log("SESSION", session);
+
+
+    // console.log("REFRESH TOKEN", refreshToken);
+
+
+    // const apiEndpoint = `${API_END_POINT}user/email/${username}`;
+    // const apiResponse = await fetch(apiEndpoint, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     'Authorization': `Bearer ${accessToken}`
+    //   },
+    // });
+
+    // if (!apiResponse.ok) {
+    //   return {
+    //     success: false,
+    //     message: "Failed to retrieve user data, Check your email and try again",
+    //   };
+    // }
+    // const apiResponseJson = await apiResponse.json();
+    // console.log("API RESPONSE JSON", apiResponseJson);
+    // const loyalty = await fetch(`${API_END_POINT}loyalty/${apiResponseJson.user_id}`, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     'Authorization': `Bearer ${accessToken}`
+    //   },
+    // });
+    // const loyaltyJson = await loyalty.json();
     
-    const mergedUserData = {
-      ...apiResponseJson,
-      ...loyaltyJson,
-    };
-    console.log("MERGED USER DATA", mergedUserData);
-    await dispatch(setUser(mergedUserData));
-    await Auth.signIn(username, password);
-
-    return {
-      success: true,
-      message: "Successfully signed in",
-    };
+    // const mergedUserData = {
+    //   ...apiResponseJson,
+    //   ...loyaltyJson,
+    // };
+    // console.log("MERGED USER DATA", mergedUserData);
+    // await dispatch(setUser(mergedUserData));
+    // return {
+    //   success: true,
+    //   message: "Successfully signed in",
+    // };
+    const test = await getUserData(username, accessToken, dispatch);
+    console.error("TEST", test);
   } catch (error) {
     let message = "Error signing in: " + error.message;
 
@@ -122,6 +153,7 @@ export const handleSignIn = async (username, password, dispatch) => {
         "The email address or password you entered is incorrect. Please try again.";
     }
     return {
+      
       success: false,
       message: message,
     };

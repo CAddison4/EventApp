@@ -5,6 +5,7 @@ export default {
     return {
       name: "backend-event-app",
       region: "us-west-2",
+      
     };
   },
   stacks(app) {
