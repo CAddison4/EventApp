@@ -81,7 +81,7 @@ export default function Attendancce({ navigation, route }) {
                 </Text>
                 <Button
                 title={
-                    editAttendance.includes(attendee.user_id.toString()) ? "UNCHECK" : "SHOW"
+                    editAttendance.includes(attendee.user_id.toString()) ? "NO SHOW" : "ATTENDED"
                 }
                 onPress={() => {
                     handleAttendance(attendee.user_id);
