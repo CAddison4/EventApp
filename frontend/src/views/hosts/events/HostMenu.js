@@ -10,21 +10,34 @@ export default function HostMenu({ navigation }) {
 	const date = new Date();
 	const formattedDate = date.toISOString().slice(0,10);
 	const [eventObj, setEventObj] = useState(null);
+	const [errors, setErrors] = useState([]);
+
 	useEffect(() => {
-		const getEvents = async () => {
+	  const getEvents = async () => {
+		try {
 		  const response = await axios.get(`${API_END_POINT}event/date/${formattedDate}`);
-		  const data = response.data;
-		  setEventObj(data); 
-		};
-		getEvents();
-	  }, []);
+		  console.log("response: " + response.status)
+		  if (response.status === 200) {
+			const eventExists = response.data.eventExists;
+			if (eventExists) {
+			  setErrors(errors => [...errors, "Another event already starts on that date! Please choose another date and try again."]);
+			}
+		  }
+		} catch (error) {
+		  if (error.response && error.response.statusCode === 500) {
+		  }
+		}
+	  }
+	  getEvents();
+	}, []);
+	
 
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Host Menu</Text>
 			<View style={styles.buttonsContainer}>
 				<View style={styles.buttonWrapper}>
-				{eventObj ? (
+				{/* {eventObj ? (
 					<>
 						<Text>Check Attendance</Text>
 						<Button
@@ -35,7 +48,7 @@ export default function HostMenu({ navigation }) {
 							buttonStyle={styles.button}
 						/>
 					</>
-				) : null}
+				) : null} */}
 				</View>
 				<View style={styles.buttonWrapper}>
 					<Button
