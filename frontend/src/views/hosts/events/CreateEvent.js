@@ -18,7 +18,10 @@ import DateTimePicker, {
 	DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
 
+import { useForm } from 'react-hook-form';
+
 export default function CreateEvent({ navigation }) {
+  const { register, handleSubmit, formState: { errors } } = useForm();
 	const defaultValue = "Guest List";
 
 	const [selectedEventType, setSelectedEventType] = useState(defaultValue);
@@ -107,8 +110,10 @@ export default function CreateEvent({ navigation }) {
 					eventObj: response.data.event,
 				});
 			} else {
-				navigation.navigate("EventDetails", {
+				navigation.navigate("EventDetailsHost", {
 					eventObj: response.data.event,
+          // add two properties to the event object
+          // attendees, and waitlist
 				});
 			}
 		} catch (error) {
