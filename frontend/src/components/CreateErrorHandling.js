@@ -23,6 +23,10 @@ export async function ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, sele
       if (!inpEvnName) {
         errors.inpEvnName = "Please fill in event name!";
       }
+      // integer validation
+      if (inpEvnMax % 1 !== 0) {
+        errors.inpEvnMax = "Please enter a valid capacity!";
+      }
       if (!inpEvnMax) {
         errors.inpEvnMax = "Please fill in event capacity!";
       } else if (inpEvnMax < 1) {

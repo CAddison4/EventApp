@@ -5,18 +5,13 @@ import {
 	Button,
 	TextInput,
 	Platform,
-	ScrollView,
 	KeyboardAvoidingView,
+	FlatList,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import DropDownPicker from "react-native-dropdown-picker";
-import InviteList from "./InviteList";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import { useEffect, useState } from "react";
-import DateTimePicker, {
-	DateTimePickerAndroid,
-} from "@react-native-community/datetimepicker";
 import MyDateTimePicker from "../../../components/DateTimePicker";
 import { ValidateInputs } from "../../../components/CreateErrorHandling";
 
@@ -110,7 +105,9 @@ export default function CreateEvent({ navigation }) {
 
 	return (
 		<KeyboardAvoidingView behavior={"padding"} enabled>
-			<ScrollView>
+		    <FlatList
+				data={[{ key: 'eventForm' }]}
+				renderItem={({ item }) => (
 				<View style={styles.container}>
 					{isPickerVisible && (
 						<>
@@ -220,12 +217,13 @@ export default function CreateEvent({ navigation }) {
 									setInpEvnLocation(inpEvnLocation)
 								}
 							/>
-
 							<Button title="Create" onPress={handleCreateEvent} />
 						</>
 					)}
 				</View>
-			</ScrollView>
+
+				)}
+			/>
 		</KeyboardAvoidingView>
 	);
 }
