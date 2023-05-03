@@ -4,7 +4,6 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from "react-native-dropdown-picker";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -49,7 +48,6 @@ export default function EventsList({ route }) {
 
 	useEffect(() => {
 		setIsLoading(true);
-		console.log("in main useEffect", isLoading);
 		async function fetchData() {
 			await getEvents(true);
 			await dispatch(setEvent(events));
@@ -153,7 +151,6 @@ export default function EventsList({ route }) {
 	};
 
 	const handleFilterChange = (itemValue) => {
-		console.log("in filter change", isLoadingF);
 		if (type === "upcoming") {
 			setSelectedFilterU(itemValue);
 		}
@@ -235,7 +232,7 @@ export default function EventsList({ route }) {
 					data={filteredEvents}
 					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 					renderItem={({ item }) => (
-						<View style={styles.row}>
+						<View>
 							<TouchableOpacity
 								onPress={() =>
 									navigation.navigate("EventDetails", {
@@ -244,15 +241,8 @@ export default function EventsList({ route }) {
 										navigation: navigation,
 									})
 								}>
-								<View style={styles.rowContent}>
-									<EventListItem
-										eventObj={item}/>
-									<Ionicons
-										name="chevron-forward-outline"
-										size={18}
-										color="grey"
-									/>
-								</View>
+								<EventListItem
+									eventObj={item}/>
 							</TouchableOpacity>						
 						</View>
 					)}
@@ -268,7 +258,7 @@ const styles = StyleSheet.create({
 		width: "100%",
     	maxWidth: 400,
 		backgroundColor: "#fff",
-		paddingLeft: 30,
+		paddingLeft: 5,
 		justifyContent: "space-between",
 	},
 	activityIndicator: {
@@ -287,21 +277,5 @@ const styles = StyleSheet.create({
 	},
 	list: {
 		paddingTop: 10,
-	},
-	row: {
-		paddingBottom: 20,
-		width: "100%",
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	rowContent: {
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "flex-end",
-		alignItems: "center",
-		columnGap: 25,
-		marginRight: 10,
 	},
 });

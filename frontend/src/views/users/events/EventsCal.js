@@ -77,6 +77,8 @@ export default function EventsCal({ navigation, route }) {
 			const selectedEvent = events.find((event) => event.event_id === eventId);
 			navigation.navigate("EventDetails", {
 			  eventObj: selectedEvent,
+			  userId: userId,
+			  navigation: navigation,
 			});
 		}
 	};

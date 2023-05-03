@@ -14,6 +14,9 @@ import { API_END_POINT } from '@env';
 export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const userId = route.params.userId;
+	
+	/* const user = useSelector((state) => state.user);
+	const { userId, ...userData } = user; */
 
 	var contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
@@ -36,15 +39,16 @@ export default function EventDetails({ navigation, route }) {
     }, []);
 
 	useEffect(() => {
-		const getWaitlistPosition = async () => {
-			const response = await axios.get(`${API_END_POINT}waitlistposition/${eventObj.event_id}/${userId}`);
-			return response.data.waitlistPosition;
-		};
-		const fetchData = async () => {
-			const position = await getWaitlistPosition();
+		const findWaitlistPosition = async () => {
+			const response = await axios.get(
+				`${API_END_POINT}waitlistposition/${eventObj.event_id}/${userId}`
+			);
+			position = response.data.waitlistPosition;
 			setWaitlistPosition(position);
-		  };
-		fetchData();	
+		};
+		if (eventObj.isInWaitlist) {
+			findWaitlistPosition();
+		}
 	}, []);
 
 	async function updateEventFlag(type) {

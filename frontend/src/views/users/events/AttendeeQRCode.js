@@ -2,7 +2,7 @@ import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import { formatLongDate } from "../../../utilities/dates";
-//import { BarCodeScanner } from 'expo-barcode-scanner';
+//import { QRCode } from "react-native-qrcode-svg";
 
 export default function AttendeeQRCode({ route }) {
 
@@ -15,13 +15,14 @@ export default function AttendeeQRCode({ route }) {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.qrcode}
-				
-			/>
+			<View>
+				{/* <QRCode value="Hello, world!" size={200} /> */}
+			</View>
 			<Text style={styles.title}>{firstName} {lastName}</Text>
 			<Text style={styles.title}>{eventObj.event_name}</Text>
 			<Text>{formatLongDate(eventObj.event_date, true)}</Text>
 			<Text>{eventObj.event_location}</Text>
+			<Text style={styles.instructions}>Please present this QR code on arrival at the tournament as proof of registration.</Text>
 		</View>
 	);
 }
@@ -33,20 +34,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	qrcode: {
-		backgroundColor: "#fff",
-		color: "#000",
-		height: 200,
-		width: 200,
-		borderStyle: "solid",
-		borderWidth: 2,
-		borderColor: "#000",
-		marginBottom: 20,
-	},
 	title: {
 		fontSize: 18,
 		fontWeight: "bold",
 		textAlign: "center",
-		marginBottom: 20,
+		marginTop: 20,
 	},
 });
