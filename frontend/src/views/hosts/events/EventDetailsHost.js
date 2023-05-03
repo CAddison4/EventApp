@@ -7,13 +7,16 @@ import AttendeeList from "./AttendeeList";
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;
 	const eventId = eventObj.event_id;
-	const eventView = route.params.eventView;
+	//const eventView = route.params.eventView;
 	const [isEdit, setIsEdit] = useState(false);
 	const [editedName, setEditedName] = useState(eventObj.event_name);
 	const [editedStartDate, setEditedStartDate] = useState(eventObj.event_start);
 	const [editedEndDate, setEditedEndDate] = useState(eventObj.event_end);
 	const [editedLocation, setEditedLocation] = useState(eventObj.event_location);
 	const [editedCapacity, setEditedCapacity] = useState(eventObj.capacity);
+
+	const formattedStartDate = new Date(eventObj.event_start);
+	const currentDate = new Date();
 
 	const handleSubmit = async () => {
 		// formart setInpEvnStartDatetime with just date
@@ -66,6 +69,36 @@ export default function EventDetailsHost({ navigation, route }) {
 			}
 		} catch (error) {
 			console.log("Error cancelling event:", error.message);
+		}
+	};
+
+	//Where should I call this?
+	const filterPastAttendance = (item, status) => {
+		switch (status) {
+			case "Attended":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "Attended"
+					)
+				);
+				return;
+			case "No Show":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "No Show"
+					)
+				);
+				return;
+			case "Unknown":
+				setAttendeeList(
+					item.attendees.filter(
+						(attendee) => attendee.attendance_status_id === "Unknown"
+					)
+				);
+				return;
+			default:
+				setAttendeeList(item.attendees);
+				return;
 		}
 	};
 	return (
@@ -122,10 +155,11 @@ export default function EventDetailsHost({ navigation, route }) {
 						<Text>Capacity: {eventObj.capacity}</Text>
 						<Text>Start Time: {eventObj.event_start}</Text>
 						<Text>End Time: {eventObj.event_end}</Text>
+						{console.log("EventObj", eventObj)}
 						<Text>Registered: {eventObj.attendees.length}</Text>
 						<Text>Waitlisted: {eventObj.waitlist.length}</Text>
 
-						{eventView === "past" && (
+						{formattedStartDate < currentDate && (
 							<>
 								<Text
 									onPress={() => {

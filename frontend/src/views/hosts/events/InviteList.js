@@ -43,7 +43,7 @@ export default function InviteList({ navigation, route }) {
 	// count how many users are selected
 	const numSelected = selected.length;
 
-	const handleCheck = (user_id) => {
+	const handleSelect = (user_id) => {
 		setSelected((selected) => {
 			// if user_id is already in selected, remove it
 			if (selected.includes(user_id)) {
@@ -107,7 +107,7 @@ export default function InviteList({ navigation, route }) {
 								</Text>
 								<Checkbox
 									value={selected.includes(item.user_id)}
-									onValueChange={() => handleCheck(item.user_id)}
+									onValueChange={() => handleSelect(item.user_id)}
 									style={styles.checkbox}
 								/>
 							</View>
