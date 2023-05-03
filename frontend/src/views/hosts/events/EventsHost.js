@@ -11,21 +11,21 @@ export default function Events({ navigation }) {
 		<Tab.Navigator
 			initialRouteName="Upcoming"
 			screenOptions={({ route }) => ({
-				tabBarIcon: ({ focused, color, size }) => {
-					let iconName;
+				// tabBarIcon: ({ focused, color, size }) => {
+				// 	let iconName;
 
-					if (route.name === "Upcoming") {
-						iconName = focused
-							? "chevron-up-circle"
-							: "chevron-up-circle-outline";
-					}
+				// 	if (route.name === "Upcoming") {
+				// 		iconName = focused
+				// 			? "chevron-up-circle"
+				// 			: "chevron-up-circle-outline";
+				// 	}
 
-					if (route.name === "Past") {
-						iconName = focused ? "time" : "time-outline";
-					}
-					// You can return any component that you like here!
-					return <Ionicons name={iconName} size={size} color={color} />;
-				},
+				// 	if (route.name === "Past") {
+				// 		iconName = focused ? "time" : "time-outline";
+				// 	}
+				// 	// You can return any component that you like here!
+				// 	return <Ionicons name={iconName} size={size} color={color} />;
+				// },
 				tabBarActiveTintColor: "tomato",
 				tabBarInactiveTintColor: "gray",
 
