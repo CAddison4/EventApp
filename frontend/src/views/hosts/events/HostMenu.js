@@ -8,7 +8,7 @@ import { API_END_POINT } from "@env";
 
 export default function HostMenu({ navigation }) {
 	const date = new Date();
-	const formattedDate = date.toISOString().slice(0,10);
+	const formattedDate = date.toISOString().slice(0, 10);
 	const [eventObj, setEventObj] = useState(null);
 	const [errors, setErrors] = useState([]);
 
@@ -37,18 +37,18 @@ export default function HostMenu({ navigation }) {
 			<Text style={styles.title}>Host Menu</Text>
 			<View style={styles.buttonsContainer}>
 				<View style={styles.buttonWrapper}>
-				{/* {eventObj ? (
-					<>
-						<Text>Check Attendance</Text>
-						<Button
-							title={String(eventObj.event_name)}
-							onPress={() => {
-								navigation.navigate("Attendance", { eventObj: eventObj });
-							}}
-							buttonStyle={styles.button}
-						/>
-					</>
-				) : null} */}
+					{eventObj ? (
+						<>
+							<Text>Check Attendance</Text>
+							<Button
+								title={String(eventObj.event_name)}
+								onPress={() => {
+									navigation.navigate("Attendance", { eventObj: eventObj });
+								}}
+								buttonStyle={styles.button}
+							/>
+						</>
+					) : null}
 				</View>
 				<View style={styles.buttonWrapper}>
 					<Button
