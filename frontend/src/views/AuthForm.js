@@ -10,7 +10,9 @@ import { SafeAreaView } from "react-navigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-const AuthForm = ({}) => {
+const AuthForm = ({route}) => {
+  const { initialUsername, initialMessage } = route?.params ?? {};
+  const [message, setMessage] = useState("");
 	const [formType, setFormType] = useState("signIn");
 	const [username, setUsername] = useState("");
 
@@ -29,8 +31,8 @@ const AuthForm = ({}) => {
           headerShown: false,
         }}
         initialParams={
-          {initialUsername: "",
-        initialMessage: ""}
+          {initialUsername: initialUsername ?? "",
+        initialMessage: initialMessage ?? ""}
         }
       />
       <Stack.Screen
