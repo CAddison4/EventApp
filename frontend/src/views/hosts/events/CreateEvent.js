@@ -5,18 +5,15 @@ import {
 	Button,
 	TextInput,
 	Platform,
-	ScrollView,
 	KeyboardAvoidingView,
+	FlatList,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import DropDownPicker from "react-native-dropdown-picker";
-import InviteList from "./InviteList";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import { useEffect, useState } from "react";
-import DateTimePicker, {
-	DateTimePickerAndroid,
-} from "@react-native-community/datetimepicker";
+import MyDateTimePicker from "../../../components/DateTimePicker";
+import { ValidateInputs } from "../../../components/CreateErrorHandling";
 
 export default function CreateEvent({ navigation }) {
 	const defaultValue = "Guest List";
@@ -39,8 +36,17 @@ export default function CreateEvent({ navigation }) {
 	const [isStartDateSelected, setIsStartDateSelected] = useState(true);
 	const apiURL = API_END_POINT;
 	const [open, setOpen] = useState(false);
+  const [errors, setErrors] = useState({});
 
-	const handleEventTypeChange = (itemValue, itemIndex) => {
+  const handleDateTimeChange = (selectedDateOrTime, identifier) => {
+    if (identifier === 'startDate') {
+      setStartDateTime(selectedDateOrTime);
+    } else {
+      setEndDateTime(selectedDateOrTime);
+    }
+  };
+
+  const handleEventTypeChange = (itemValue, itemIndex) => {
 		setSelectedEventType(itemValue); // Update the state with the selected event type value
 	};
 
@@ -56,38 +62,17 @@ export default function CreateEvent({ navigation }) {
 	}, []);
 
 	const handleCreateEvent = async () => {
-		try {
-			const response = await axios.get(
-				`${apiURL}event/date/${startDateTime.toISOString().slice(0, 10)}`
-			);
-			// record exists
-			console.log(response);
-			if (response.status == 200) {
-				return alert(
-					"Another event already starts on that date! Please choose another date and try again."
-				);
-			}
-		} catch (error) {
-			console.log("No events on this date:", error);
-		}
-
-		if (!inpEvnName || !inpEvnMax || !inpEvnLocation) {
-			return alert("Please fill in all fields!");
-		}
-		if (inpEvnMax < 1) {
-			return alert("Please enter a valid capacity!");
-		}
-		if (selectedEventType == "Loyalty" && loyaltyMinimum < 1) {
-			return alert("Please enter a valid loyalty minimum!");
-		}
-		if (startDateTime > endDateTime) {
-			return alert("Please enter a valid start and end date!");
-		}
-		if (startDateTime < new Date() || endDateTime < new Date()) {
-			return alert("The start and end dates cannot be in the past!");
-		}
-
-		// POST
+    // error handling for inputs
+    console.log(inpEvnName)
+    const errors = await ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, selectedEventType, loyaltyMinimum, startDateTime, endDateTime);
+    console.log(errors);
+    // error occured
+    if (Object.keys(errors).length > 0) {
+      console.log("error occured")
+      setErrors(errors);
+      return;
+    }
+      // no errors go to POST
 		try {
 			const response = await axios.post(`${apiURL}/event`, {
 				eligibilityType: selectedEventType,
@@ -107,76 +92,25 @@ export default function CreateEvent({ navigation }) {
 					eventObj: response.data.event,
 				});
 			} else {
-				navigation.navigate("EventDetails", {
+				navigation.navigate("EventDetailsHost", {
 					eventObj: response.data.event,
+          // add two properties to the event object
+          // attendees, and waitlist
 				});
 			}
 		} catch (error) {
 			console.log("Error creating event:", error);
 		}
-	};
-
-	//Start of Date Picker
-	const handleStartDateChange = (event, selectedDate) => {
-		const currentDate = selectedDate || startDateTime;
-		setStartDateTime(currentDate);
-		setIsStartDateSelected(true);
-	};
-
-	const handleEndDateChange = (event, selectedDate) => {
-		const currentDate = selectedDate || endDateTime;
-		setEndDateTime(currentDate);
-		setIsStartDateSelected(false);
-	};
-
-	const showStartDatepicker = () => {
-		setMode("date");
-		setShow(true);
-		setIsStartDateSelected(true);
-	};
-
-	const showStartTimepicker = () => {
-		setMode("time");
-		setShow(true);
-		setIsStartDateSelected(true);
-	};
-
-	const showEndDatepicker = () => {
-		setMode("date");
-		setShow(true);
-		setIsStartDateSelected(false);
-	};
-
-	const showEndTimepicker = () => {
-		setMode("time");
-		setShow(true);
-		setIsStartDateSelected(false);
-	};
-	// End of Date Picker
+  }
 
 	return (
 		<KeyboardAvoidingView behavior={"padding"} enabled>
-			<ScrollView>
+		    <FlatList
+				data={[{ key: 'eventForm' }]}
+				renderItem={({ item }) => (
 				<View style={styles.container}>
 					{isPickerVisible && (
 						<>
-							{show && (
-								<DateTimePicker
-									value={
-										isStartDateSelected == true ? startDateTime : endDateTime
-									}
-									mode={mode}
-									display={Platform.OS === "ios" ? "compact" : "default"}
-									onChange={(event, selectedDate) => {
-										setShow(false);
-										if (isStartDateSelected == true) {
-											handleStartDateChange(event, selectedDate);
-										} else {
-											handleEndDateChange(event, selectedDate);
-										}
-									}}
-								/>
-							)}
 							<Text>Event Type</Text>
 							<View style={{ zIndex: 2000 }}>
 								<DropDownPicker
@@ -192,6 +126,7 @@ export default function CreateEvent({ navigation }) {
 							</View>
 							{selectedEventType == "Loyalty" && (
 								<>
+                {errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
 									<Text>Loyalty Minimum:</Text>
 									<TextInput
 										style={styles.nameInput}
@@ -202,11 +137,14 @@ export default function CreateEvent({ navigation }) {
 									/>
 								</>
 							)}
-							<Text>Event Name</Text>
+               {errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
+              <Text>Event name</Text>
 							<TextInput
+                required
 								style={styles.nameInput}
 								onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 							/>
+               {errors.inpEvnMax && <Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>}
 							<Text>Max Participants</Text>
 							<TextInput
 								style={styles.nameInput}
@@ -215,13 +153,27 @@ export default function CreateEvent({ navigation }) {
 							/>
 							<View style={styles.dateTimeContainer}>
 								<View style={styles.dateContainer}>
+                {errors.startDateTime && <Text style={{ color: "red" }}>{errors.startDateTime}</Text>}
 									<Text>Start Date:</Text>
-									<Button title="Change Date" onPress={showStartDatepicker} />
+                  <View>
+                  <MyDateTimePicker
+                  buttonTitle='Change Date'
+                  mode={"date"}
+                  date={startDateTime}
+                  onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, 'startDate')}
+                />
+                   </View>
+									{/* <Button title="Change Date" onPress={showStartDatepicker} /> */}
 									<Text>{startDateTime.toDateString()}</Text>
 								</View>
 								<View style={styles.timeContainer}>
 									<Text>Start Time:</Text>
-									<Button title="Change Time" onPress={showStartTimepicker} />
+                  <MyDateTimePicker
+                  buttonTitle='Change Time'
+                  mode={"time"}
+                  date={startDateTime}
+                  onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, 'startTime')}
+                />
 									<Text>
 										{startDateTime.toLocaleTimeString("en-US", {
 											hour: "2-digit",
@@ -233,13 +185,23 @@ export default function CreateEvent({ navigation }) {
 							<View style={styles.dateTimeContainer}>
 								<View style={styles.dateContainer}>
 									<Text>End Date:</Text>
-									<Button title="Change Date" onPress={showEndDatepicker} />
+                  <MyDateTimePicker
+                    buttonTitle='Change Date'
+                    mode={"date"}
+                    date={endDateTime}
+                    onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, 'endDate')}
+                  />
 									<Text>{endDateTime.toDateString()}</Text>
 								</View>
 								<View style={styles.timeContainer}>
 									<Text>End Time:</Text>
-									<Button title="Change Time" onPress={showEndTimepicker} />
-									<Text>
+                  <MyDateTimePicker
+                  buttonTitle='Change Time'
+                  mode={"time"}
+                  date={endDateTime}
+                  onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, 'endTime')}
+                />
+                <Text>
 										{endDateTime.toLocaleTimeString("en-US", {
 											hour: "2-digit",
 											minute: "2-digit",
@@ -247,6 +209,7 @@ export default function CreateEvent({ navigation }) {
 									</Text>
 								</View>
 							</View>
+              {errors.inpEvnLocation && <Text style={{ color: "red" }}>{errors.inpEvnLocation}</Text>}
 							<Text>Location</Text>
 							<TextInput
 								style={styles.nameInput}
@@ -258,7 +221,9 @@ export default function CreateEvent({ navigation }) {
 						</>
 					)}
 				</View>
-			</ScrollView>
+
+				)}
+			/>
 		</KeyboardAvoidingView>
 	);
 }

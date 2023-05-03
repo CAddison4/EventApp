@@ -143,15 +143,16 @@ export async function getCancelledEvents() {
   return res.rows
 }
 
-// Get event with date
-  export async function getEventWithDate(date) {
-    const res = await getPool().query(`
+// return event object if found, null if not found
+export async function getEventWithDate(date) {
+  const res = await getPool().query(`
     SELECT * FROM events
     WHERE DATE_TRUNC('day', event_date) = $1
     AND cancelled = false
     ORDER BY event_date`, [date]);
-    return res.rows[0];
-  }
+  return res.rows[0] || null;
+}
+
 
 // Create an attendee record for a particular event and user
 export async function createAttendee(eventId, userId, attendeeStatusId) {
