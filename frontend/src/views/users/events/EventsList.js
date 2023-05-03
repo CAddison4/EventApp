@@ -70,6 +70,7 @@ export default function EventsList({ route }) {
 	useEffect(() => {
 		if (contextEvents) {
             events = [...contextEvents];
+			setDBEvents(events);
 			type === "upcoming" ? applyFilters(type, selectedFilterU)
 		                        : applyFilters(type, selectedFilterM);
 			setFilteredEvents(events);

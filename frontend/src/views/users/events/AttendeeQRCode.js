@@ -2,7 +2,6 @@ import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import { formatLongDate } from "../../../utilities/dates";
-//import { QRCode } from "react-native-qrcode-svg";
 
 export default function AttendeeQRCode({ route }) {
 
@@ -13,9 +12,11 @@ export default function AttendeeQRCode({ route }) {
 
 	const eventObj = route.params.eventObj;
 
+	
+
 	return (
 		<View style={styles.container}>
-			<View>
+			<View style={styles.qrcode}>
 				{/* <QRCode value="Hello, world!" size={200} /> */}
 			</View>
 			<Text style={styles.title}>{firstName} {lastName}</Text>
@@ -34,10 +35,20 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
+	qrcode: {
+		height: 200,
+		width: 200,
+		borderStyle: "solid",
+		borderWidth: 2,
+	},
 	title: {
 		fontSize: 18,
 		fontWeight: "bold",
 		textAlign: "center",
 		marginTop: 20,
 	},
+	instructions: {
+		fontSize: 16,
+		margin: 20,
+	}
 });
