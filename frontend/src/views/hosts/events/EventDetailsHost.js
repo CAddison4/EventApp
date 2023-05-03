@@ -39,7 +39,15 @@ export default function EventDetailsHost({ navigation, route }) {
 			const data = response.data;
 			setIsEdit(false);
 			// push to event details page
-			navigation.push("EventDetailsHost", { upcomingEvent: data });
+			const attendees = eventObj.attendees;
+			const waitlist = eventObj.waitlist;
+			navigation.push("EventDetailsHost", { 
+				upcomingEvent: {
+				  ...data,
+				  attendees,
+				  waitlist
+				}
+			  });
 		} catch (error) {
 			alert("An error occurred while updating event");
 			console.error("Error updating event:", error);
@@ -111,29 +119,11 @@ export default function EventDetailsHost({ navigation, route }) {
 						placeholder="Event name"
 						style={styles.textInput}
 					/>
-					<TextInput
-						value={editedStartDate}
-						onChangeText={setEditedStartDate}
-						placeholder="Event date"
-						style={styles.textInput}
-					/>
-					<TextInput
-						value={editedEndDate}
-						onChangeText={setEditedEndDate}
-						placeholder="Event date"
-						style={styles.textInput}
-					/>
+					
 					<TextInput
 						value={editedLocation}
 						onChangeText={setEditedLocation}
 						placeholder="Event location"
-						style={styles.textInput}
-					/>
-					<TextInput
-						value={editedCapacity}
-						onChangeText={setEditedCapacity}
-						placeholder="Event capacity"
-						keyboardType="numeric"
 						style={styles.textInput}
 					/>
 					<Button
@@ -155,7 +145,6 @@ export default function EventDetailsHost({ navigation, route }) {
 						<Text>Capacity: {eventObj.capacity}</Text>
 						<Text>Start Time: {eventObj.event_start}</Text>
 						<Text>End Time: {eventObj.event_end}</Text>
-						{console.log("EventObj", eventObj)}
 						<Text>Registered: {eventObj.attendees.length}</Text>
 						<Text>Waitlisted: {eventObj.waitlist.length}</Text>
 
