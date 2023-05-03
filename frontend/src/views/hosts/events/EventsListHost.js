@@ -1,25 +1,31 @@
 import { StyleSheet, View, Text, Button, FlatList } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
-import ClearFilterButton from "./ClearFilterButton";
+import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 
-import { getEventsWithAttendees } from "../../hosts/HostComponents";
+import { setEvent } from "../../../components/store/eventSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-import AttendeeList from "../../hosts/events/AttendeeList";
+import { getEventsWithAttendees } from "../HostComponents";
+
+import AttendeeList from "./AttendeeList";
 // import _ from "lodash";
 
-export default function EventsListHost({ eventView }) {
+export default function EventsListHost({ route }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [eventObjs, setEventObjs] = useState([]);
 	const [filteredEvents, setFilteredEvents] = useState([]);
-	const [attendeeList, setAttendeeList] = useState([]);
+
+	const type = route.params.type;
 	const navigation = useNavigation();
+	const contextEvents = useSelector((state) => state.event);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const getData = async () => {
@@ -30,7 +36,7 @@ export default function EventsListHost({ eventView }) {
 					const eventDate = new Date(eventObj.event_date);
 					const now = new Date();
 
-					if (eventView === "upcoming") {
+					if (type == "upcoming") {
 						return eventDate >= now;
 					} else {
 						return eventDate < now;
@@ -97,7 +103,9 @@ export default function EventsListHost({ eventView }) {
 		filterEvents();
 	}, [eventObjs, searchQuery]);
 
-	// const filteredEvents = filterEvents(eventObjs, searchQuery);
+	useEffect(() => {
+		dispatch(setEvent(filteredEvents));
+	}, [filteredEvents]);
 
 	return (
 		<View style={styles.container}>
@@ -136,79 +144,6 @@ export default function EventsListHost({ eventView }) {
 											item.capacity - item.attendees.length
 									  }`}
 							</Text>
-
-							{/* {eventView === "past" && (
-								<>
-									{" "}
-									<Text
-										style={styles.bodyTxt}
-										onPress={() => {
-											navigation.navigate("AttendeeList", {
-												attendeeList: item.attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Attended"
-												),
-												type: "Attended",
-												eventName: item.event_name,
-												eventDate: item.event_date,
-											});
-										}}>
-										Attended:{" "}
-										{
-											// item.attendees.filter(
-											// 	(attendee) =>
-											// 		attendee.attendance_status_id === "Attended"
-											// ).length
-											item.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "Attended"
-											).length
-										}
-									</Text>{" "}
-									<Text
-										style={styles.bodyTxt}
-										onPress={() => {
-											navigation.navigate("AttendeeList", {
-												attendeeList: item.attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "No Show"
-												),
-												type: "No Show",
-												eventName: item.event_name,
-												eventDate: item.event_date,
-											});
-										}}>
-										No Show:{" "}
-										{
-											item.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "No Show"
-											).length
-										}
-									</Text>{" "}
-									<Text
-										style={styles.bodyTxt}
-										onPress={() => {
-											navigation.navigate("AttendeeList", {
-												attendeeList: item.attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Unknown"
-												),
-												type: "Unknown",
-												eventName: item.event_name,
-												eventDate: item.event_date,
-											});
-										}}>
-										Unknown:{" "}
-										{
-											item.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "Unknown"
-											).length
-										}
-									</Text>
-								</>
-							)} */}
 						</Text>
 					</View>
 				)}
@@ -269,3 +204,5 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 	},
 });
+
+// export default memo(EventsListHost);
