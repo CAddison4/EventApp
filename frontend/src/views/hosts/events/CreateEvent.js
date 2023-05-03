@@ -74,7 +74,7 @@ export default function CreateEvent({ navigation }) {
     }
       // no errors go to POST
 		try {
-			const response = await axios.post(`${apiURL}/event`, {
+			const postEventObj = {
 				eligibilityType: selectedEventType,
 				eventName: inpEvnName,
 				capacity: inpEvnMax,
@@ -83,20 +83,23 @@ export default function CreateEvent({ navigation }) {
 				eventEnd: endDateTime.toISOString(),
 				eventLocation: inpEvnLocation,
 				loyaltyMax: selectedEventType == "Loyalty" ? loyaltyMinimum : 0,
-			});
-			console.log("Event created successfully!", response.data.event);
-
+				reason_cancelled: null,
+			  };
+			const response = await axios.post(`${apiURL}/event`, postEventObj);
+			const newEvent = await axios.get(`${apiURL}/event/${response.data.event,event_id}`);
 			if (selectedEventType == "Guest List") {
 				// Navigate to InviteList screen
 				navigation.navigate("InviteList", {
-					eventObj: response.data.event,
+					eventObj: newEvent,
 				});
 			} else {
 				navigation.navigate("EventDetailsHost", {
-					eventObj: response.data.event,
-          // add two properties to the event object
-          // attendees, and waitlist
-				});
+					upcomingEvent: {
+					  ...newEvent,
+					  attendees: [],
+					  waitlist: [],
+					},
+				  });
 			}
 		} catch (error) {
 			console.log("Error creating event:", error);
@@ -217,6 +220,7 @@ export default function CreateEvent({ navigation }) {
 									setInpEvnLocation(inpEvnLocation)
 								}
 							/>
+							{errors.sameDate && <Text style={{ color: "red" }}>{errors.sameDate}</Text>}
 							<Button title="Create" onPress={handleCreateEvent} />
 						</>
 					)}
