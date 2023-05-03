@@ -5,9 +5,9 @@ import { API_END_POINT } from "@env";
 import DropDownPicker from "react-native-dropdown-picker";
 
 export default function AttendanceRecords({ navigation, user }) {
-	const [attendanceRecords, setAttendanceRecords] = useState([]);
+	const [eventObjs, setEventObjs] = useState([]);
 	const [selectedFilter, setSelectedFilter] = useState("");
-	const [filteredRecords, setFilteredRecords] = useState([]);
+	const [filteredEventObjs, setFilteredEventObjs] = useState([]);
 	const [open, setOpen] = useState(false);
 
 	const handleGetAttendanceRecords = async () => {
@@ -18,26 +18,26 @@ export default function AttendanceRecords({ navigation, user }) {
 		);
 		const data = response.data;
 		console.log("data", data);
-		setAttendanceRecords(data);
+		setEventObjs(data);
 	};
 
 	const filterRecords = () => {
 		if (selectedFilter === "Attended") {
-			setFilteredRecords(
-				attendanceRecords.filter(
-					(event) => event.attendance_status_id === "Attended"
+			setFilteredEventObjs(
+				eventObjs.filter(
+					(eventObj) => eventObj.attendance_status_id === "Attended"
 				)
 			);
 		} else if (selectedFilter === "Upcoming") {
-			setFilteredRecords(
-				attendanceRecords.filter(
-					(event) => event.attendance_status_id === "Unknown"
+			setFilteredEventObjs(
+				eventObjs.filter(
+					(eventObj) => eventObj.attendance_status_id === "Unknown"
 				)
 			);
 		} else if (selectedFilter === "No Show") {
-			setFilteredRecords(
-				attendanceRecords.filter(
-					(event) => event.attendance_status_id === "No Show"
+			setFilteredEventObjs(
+				eventObjs.filter(
+					(eventObj) => eventObj.attendance_status_id === "No Show"
 				)
 			);
 		}
@@ -57,7 +57,7 @@ export default function AttendanceRecords({ navigation, user }) {
 	useEffect(() => {
 		filterRecords();
 		// setSelectedFilter()
-	}, [selectedFilter, attendanceRecords]);
+	}, [selectedFilter, eventObjs]);
 
 	return (
 		<View>
@@ -82,8 +82,8 @@ export default function AttendanceRecords({ navigation, user }) {
 			/>
 
 			<FlatList
-				data={filteredRecords}
-				keyExtractor={(attendanceRecord) => attendanceRecord.event_id}
+				data={filteredEventObjs}
+				keyExtractor={(eventObj) => eventObj.event_id}
 				renderItem={({ item }) => (
 					<Text
 						style={styles.text}

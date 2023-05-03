@@ -9,6 +9,8 @@ import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "./ClearFilterButton";
 
+import { getEventsWithAttendees } from "../../hosts/HostComponents";
+
 import AttendeeList from "../../hosts/events/AttendeeList";
 // import _ from "lodash";
 
@@ -22,7 +24,6 @@ export default function EventsListHost({ eventView }) {
 	useEffect(() => {
 		const getData = async () => {
 			const eventsWithAttendees = await getEventsWithAttendees();
-			console.log(eventsWithAttendees);
 
 			const eventData = eventsWithAttendees
 				.filter((eventObj) => {
@@ -41,10 +42,9 @@ export default function EventsListHost({ eventView }) {
 						day: "numeric",
 						year: "numeric",
 					};
-					const formattedDate = new Date(
-						eventObj.event_date
-					).toLocaleDateString("en-US", options);
-					return { ...eventObj, event_date: formattedDate };
+					//const formattedDate = new Date(eventObj.event_date);
+					//.toLocaleDateString("en-US", options);
+					return { ...eventObj };
 				})
 				.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
 
@@ -53,34 +53,34 @@ export default function EventsListHost({ eventView }) {
 		getData();
 	}, []);
 
-	const getEventsWithAttendees = async () => {
-		const apiURL = API_END_POINT;
+	// const getEventsWithAttendees = async () => {
+	// 	const apiURL = API_END_POINT;
 
-		// Make request to get all events
-		const eventsResponse = await axios.get(`${apiURL}events`);
-		const events = eventsResponse.data;
+	// 	// Make request to get all events
+	// 	const eventsResponse = await axios.get(`${apiURL}events`);
+	// 	const events = eventsResponse.data;
 
-		// Make separate request for attendees of each event
-		const eventsWithAttendees = await Promise.all(
-			events.map(async (event) => {
-				const attendeesResponse = await axios.get(
-					`${apiURL}attendee/users/${event.event_id}`
-				);
-				const waitlistResponse = await axios.get(
-					`${apiURL}waitlist/users/${event.event_id}`
-				);
-				const attendees = attendeesResponse.data;
-				const waitlist = waitlistResponse.data;
-				return {
-					...event,
-					attendees,
-					waitlist,
-				};
-			})
-		);
+	// 	// Make separate request for attendees of each event
+	// 	const eventsWithAttendees = await Promise.all(
+	// 		events.map(async (event) => {
+	// 			const attendeesResponse = await axios.get(
+	// 				`${apiURL}attendee/users/${event.event_id}`
+	// 			);
+	// 			const waitlistResponse = await axios.get(
+	// 				`${apiURL}waitlist/users/${event.event_id}`
+	// 			);
+	// 			const attendees = attendeesResponse.data;
+	// 			const waitlist = waitlistResponse.data;
+	// 			return {
+	// 				...event,
+	// 				attendees,
+	// 				waitlist,
+	// 			};
+	// 		})
+	// 	);
 
-		return eventsWithAttendees;
-	};
+	// 	return eventsWithAttendees;
+	// };
 
 	const filterEvents = () => {
 		setFilteredEvents(
@@ -98,36 +98,6 @@ export default function EventsListHost({ eventView }) {
 	}, [eventObjs, searchQuery]);
 
 	// const filteredEvents = filterEvents(eventObjs, searchQuery);
-
-	//Where should I call this?
-	const filterPastAttendance = (item, status) => {
-		switch (status) {
-			case "Attended":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "Attended"
-					)
-				);
-				return;
-			case "No Show":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "No Show"
-					)
-				);
-				return;
-			case "Unknown":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "Unknown"
-					)
-				);
-				return;
-			default:
-				setAttendeeList(item.attendees);
-				return;
-		}
-	};
 
 	return (
 		<View style={styles.container}>
@@ -149,7 +119,7 @@ export default function EventsListHost({ eventView }) {
 							onPress={() =>
 								navigation.navigate("EventDetailsHost", {
 									upcomingEvent: item,
-									eventView: eventView,
+									// eventView: eventView,
 								})
 							}
 							style={styles.bodyTxt}>
@@ -157,33 +127,17 @@ export default function EventsListHost({ eventView }) {
 						</Text>
 
 						<Text>
-							{/* <Text style={styles.bodyTxt}>Capacity: {item.capacity} </Text> */}
-							<Text
-								style={styles.bodyTxt}
-								onPress={() => {
-									navigation.navigate("AttendeeList", {
-										attendeeList: item.attendees,
-										type: "Registered",
-										eventName: item.event_name,
-										eventDate: item.event_date,
-									});
-								}}>
-								Registered: {item.attendees.length}/{item.capacity}{" "}
-							</Text>
-							<Text
-								style={styles.bodyTxt}
-								onPress={() => {
-									navigation.navigate("AttendeeList", {
-										attendeeList: item.waitlist,
-										type: "Waitlisted",
-										eventName: item.event_name,
-										eventDate: item.event_date,
-									});
-								}}>
-								Waitlist: {item.waitlist.length}
+							<Text>
+								Status:{" "}
+								{item.attendees.length >= item.capacity
+									? `Full | Waitlist: ${item.waitlist.length}`
+									: (new Date(item.event_date) < new Date() && "Closed") ||
+									  `Open | Spots Available: ${
+											item.capacity - item.attendees.length
+									  }`}
 							</Text>
 
-							{eventView === "past" && (
+							{/* {eventView === "past" && (
 								<>
 									{" "}
 									<Text
@@ -254,7 +208,7 @@ export default function EventsListHost({ eventView }) {
 										}
 									</Text>
 								</>
-							)}
+							)} */}
 						</Text>
 					</View>
 				)}
