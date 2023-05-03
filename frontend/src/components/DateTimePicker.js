@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'react-native';
+import { Button, Platform } from 'react-native'; // Platformをインポート
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle }) {
@@ -24,6 +24,7 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
           mode="date"
           value={date}
           onChange={handleDateChange}
+          display={Platform.OS === 'ios' ? 'compact' : 'default'} 
         />
       )}
       {show && mode === 'time' && (
@@ -31,6 +32,7 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
           mode="time"
           value={date}
           onChange={handleDateChange}
+          display={Platform.OS === 'ios' ? 'compact' : 'default'} 
         />
       )}
     </>
