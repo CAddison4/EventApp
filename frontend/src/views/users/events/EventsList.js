@@ -4,7 +4,6 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import DropDownPicker from "react-native-dropdown-picker";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +28,7 @@ export default function EventsList({ route }) {
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoadingF, setIsLoadingF] = useState(true);
 	const [open, setOpen] = useState(false);
 
 	const navigation = useNavigation();
@@ -70,9 +70,11 @@ export default function EventsList({ route }) {
 	useEffect(() => {
 		if (contextEvents) {
             events = [...contextEvents];
-        }
-		applyFilters(type, "All");
-		setFilteredEvents(events);
+			setDBEvents(events);
+			type === "upcoming" ? applyFilters(type, selectedFilterU)
+		                        : applyFilters(type, selectedFilterM);
+			setFilteredEvents(events);
+		}
     }, [contextEvents]);
 
 	const getEvents = async (fetchFromDB) => {
@@ -95,8 +97,8 @@ export default function EventsList({ route }) {
 		}));
 	};
 
-	const getLoyaltyCount = async (user_id) => {
-		const response = await axios.get(`${API_END_POINT}loyalty/${user_id}`);
+	const getLoyaltyCount = async (userid) => {
+		const response = await axios.get(`${API_END_POINT}loyalty/${userid}`);
 		return response.data.eventCount;
 	}
 	
@@ -115,16 +117,17 @@ export default function EventsList({ route }) {
 		}
 		// Check if there is any capacity available in the event
 		let response = await axios.get(`${API_END_POINT}anycapacity/${eventObj.event_id}`);
-		eventObj.hasRoom = response.data.anyCapacityAvailable;
+		eventObj.hasRoom = response.data.numberOfAttendees < eventObj.capacity ? true : false;
+		eventObj.capacityAvailable = eventObj.capacity - parseInt(response.data.numberOfAttendees);
 
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
 
-		// User is eligible if status is "Invited", or type is "Guest List" and user is
-		// "Registered", or type is "Loyalty" and event count for this user exceeds the
-		// count required for this event.
-		// If none of these conditions are met, the user is eligible if their membership
-		// status qualifies for this tier.
+		// User is eligible if status is "Invited", or type is "Guest List"
+		// and status is "Registered", or type is "Loyalty" and event count for
+		// this user exceeds the count required for this event.
+		// If none of these conditions are met, the user is eligible if their
+		// membership status qualifies for this tier.
 		eventObj.loyaltyCount = loyaltyCount;
 		if (eventObj.attendee_status_id === "Invited" ||
 		   (eventObj.type_id === "Guest List" && eventObj.attendee_status_id === "Registered") || (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)) {
@@ -135,7 +138,8 @@ export default function EventsList({ route }) {
 		}
 
 		// Check if the user is already in the waitlist for this event
-		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`);
+		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`
+		);
 		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
 
 		if (eventObj.isInWaitlist) {
@@ -156,13 +160,15 @@ export default function EventsList({ route }) {
 		else {
 			setSelectedFilterM(itemValue);
 		}
+		setIsLoadingF(true); 
 		async function filterData() {
 			await getEvents(false);
 			await dispatch(setEvent(events));
 			applyFilters(type, itemValue);
 			setFilteredEvents(events);
+			setIsLoadingF(false);
 		}
-		filterData();		
+		filterData();	
 	};
 
 	const applyFilters = (type, filterValue) => {
@@ -196,7 +202,7 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{isLoading ? (
+			{isLoading || isLoadingF ? (
 				<ActivityIndicator
 					size="large"
 					color="#0000ff"
@@ -229,25 +235,17 @@ export default function EventsList({ route }) {
 					data={filteredEvents}
 					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
 					renderItem={({ item }) => (
-						<View style={styles.row}>
+						<View>
 							<TouchableOpacity
 								onPress={() =>
 									navigation.navigate("EventDetails", {
 										eventObj: item,
 										userId: user_id,
-										type: type,
 										navigation: navigation,
 									})
 								}>
-								<View style={styles.rowContent}>
-									<EventListItem
-										eventObj={item}/>
-									<Ionicons
-										name="chevron-forward-outline"
-										size={18}
-										color="grey"
-									/>
-								</View>
+								<EventListItem
+									eventObj={item}/>
 							</TouchableOpacity>						
 						</View>
 					)}
@@ -263,8 +261,8 @@ const styles = StyleSheet.create({
 		width: "100%",
     	maxWidth: 400,
 		backgroundColor: "#fff",
-		paddingLeft: 30,
-		justifyContent: "space-between",
+		paddingLeft: 5,
+		paddingRight: 5,
 	},
 	activityIndicator: {
 		flex: 1,
@@ -282,21 +280,5 @@ const styles = StyleSheet.create({
 	},
 	list: {
 		paddingTop: 10,
-	},
-	row: {
-		paddingBottom: 20,
-		width: "100%",
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	rowContent: {
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "flex-end",
-		alignItems: "center",
-		columnGap: 25,
-		marginRight: 10,
 	},
 });

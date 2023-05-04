@@ -38,7 +38,7 @@ export default function AttendeeList({ navigation, route }) {
 							onPress={() =>
 								navigation.navigate("UserDetails", { user: item })
 							}>
-							{item.first_name}
+							{item.first_name} {item.last_name} - {item.email}
 						</Text>
 					</View>
 				)}

@@ -143,15 +143,16 @@ export async function getCancelledEvents() {
   return res.rows
 }
 
-// Get event with date
-  export async function getEventWithDate(date) {
-    const res = await getPool().query(`
+// return event object if found, null if not found
+export async function getEventWithDate(date) {
+  const res = await getPool().query(`
     SELECT * FROM events
     WHERE DATE_TRUNC('day', event_date) = $1
     AND cancelled = false
     ORDER BY event_date`, [date]);
-    return res.rows[0];
-  }
+  return res.rows[0] || null;
+}
+
 
 // Create an attendee record for a particular event and user
 export async function createAttendee(eventId, userId, attendeeStatusId) {
@@ -176,7 +177,7 @@ export async function deleteAttendee(eventId, userId) {
 // Get attendee records for all events for a specific user 
 export async function getAttendeesByUser(userId) {
   const res = await getPool().query(`
-  SELECT ea.*, e.* FROM events e
+  SELECT ea.attendee_status_id, e.* FROM events e
   LEFT JOIN eventattendees ea ON e.event_id = ea.event_id
   AND ea.user_id = $1
   WHERE cancelled = false
@@ -206,6 +207,18 @@ export async function getAttendee(userId, eventId) {
   ORDER BY e.event_date
   `, [userId, eventId])
   return res.rows
+}
+
+// Update attendee status for a specific event and user
+export async function editAttendee(eventId, userId, attendanceStatus) {
+  const res = await getPool().query(`
+    UPDATE eventattendees
+    SET attendance_status_id = $3
+    WHERE event_id = $1 AND user_id = $2
+    RETURNING event_id, user_id
+  `, [eventId, userId, attendanceStatus]);
+
+  return res.rows[0];
 }
 
 // Update attendee status for a specific event and user
@@ -295,13 +308,10 @@ export async function getWaitlistPosition(eventId, userId) {
 // Check if any capacity remains for a specific event, returns true or false
 export async function anyCapacity(eventId) {
   const res = await getPool().query(`
-  SELECT e.capacity > (
-     SELECT COUNT(*) FROM eventattendees WHERE event_id = $1
-   ) AS any_capacity_available
-   FROM events e
-   WHERE e.event_id = $1
+  SELECT COUNT(*) AS number_of_attendees FROM eventattendees WHERE event_id = $1
+  AND attendee_status_id = 'Registered'
  `, [eventId])
- return res.rows[0].any_capacity_available
+ return res.rows[0].number_of_attendees
 }
 
 // Check how many events a specific user has attended prior to today
@@ -317,7 +327,7 @@ export async function loyaltyCount(userId) {
 // Count how many events a specific user has of each status
 export async function eventCounts(userId) {
   const res = await getPool().query(`
-  SELECT ea.attendee_status_id, COUNT(*) as count FROM events e
+  SELECT ea.attendee_status_id, COUNT(*) AS count FROM events e
   LEFT JOIN eventattendees ea ON ea.event_id = e.event_id
   AND ea.user_id = $1
   WHERE e.event_date > now()

@@ -16,7 +16,7 @@ import MainProfile from "../../src/views/users/profile/MainProfile";
 import AuthForm from "../../src/views/AuthForm";
 import EventDetails from "../../src/views/users/events/EventDetails";
 import Confirmation from "../../src/views/users/events/Confirmation";
-import QRCode from "../../src/views/users/events/QRCode";
+import AttendeeQRCode from "../../src/views/users/events/AttendeeQRCode";
 import EventsList from "../../src/views/users/events/EventsList";
 import EventsCal from "../../src/views/users/events/EventsCal";
 import eventObjs from "../../src/views/users/events/Invited";
@@ -31,6 +31,7 @@ import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
 import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
 import PastEvents from "../../src/views/hosts/events/PastEvents";
 import AttendeeList from "../views/hosts/events/AttendeeList";
+import Attendance from "../views/hosts/events/Attendance";
 
 import InviteList from "../../src/views/hosts/events/InviteList";
 import Users from "../views/hosts/users/Users";
@@ -124,6 +125,8 @@ const Navigation = () => {
         screenOptions={{
           headerStyle: {
             backgroundColor: "#607D8B",
+        //    backgroundColor: "#f6d5a7",
+            
           },
           headerTintColor: "#fff",
           headerTitleStyle: {
@@ -188,7 +191,7 @@ const Navigation = () => {
                 <Stack.Screen name="EventListItem" component={EventListItem} />
                 <Stack.Screen name="EventDetails" component={EventDetails} />
                 <Stack.Screen name="Confirmation" component={Confirmation} />
-                <Stack.Screen name="QRCode" component={QRCode} />
+                <Stack.Screen name="AttendeeQRCode" component={AttendeeQRCode} />
                 <Stack.Screen
                   name="ProfileNavButton"
                   component={ProfileNavButton}
@@ -204,6 +207,7 @@ const Navigation = () => {
                 <Stack.Screen name="Users" component={Users} />
                 <Stack.Screen name="UserDetails" component={UserDetails} />
                 <Stack.Screen name="AttendeeList" component={AttendeeList} />
+                <Stack.Screen name="Attendance" component={Attendance} />
               </>
             )}
           </>
