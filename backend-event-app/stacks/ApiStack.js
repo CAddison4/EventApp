@@ -31,6 +31,9 @@ export function API({ stack }) {
       "POST /event": "packages/functions/src/events/postEvent.main",
       "PUT /event/{eventId}": "packages/functions/src/events/putEvent.main",
       "GET /event/date/{date}": "packages/functions/src/events/getEventWithDate.main",
+      // Routes for creating and updating event capacity records
+      "POST /event/capacity/{eventId}": "packages/functions/src/capacity/postEventCapacity.main",
+      "PUT /event/capacity/{eventId}": "packages/functions/src/capacity/putEventCapacity.main",
       // Routes for creating an attendee, getting attendees for an event, getting events for a specific attendee, getting a specific attendee, deleting an attendee
       "POST /attendee/{eventId}/{userId}": "packages/functions/src/attendees/postAttendee.main",
       "DELETE /attendee/{eventId}/{userId}": "packages/functions/src/attendees/deleteAttendee.main",
