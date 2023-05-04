@@ -154,6 +154,36 @@ export async function getEventWithDate(date) {
   return res.rows[0] || null;
 }
 
+// Create an event capacity record for a particular event
+export async function createEventCapacity(eventId, capacity) {
+  const res = await getPool().query(`
+  INSERT INTO eventcapacity (event_id, capacity, number_of_attendees)
+  VALUES ($1, $2, $3)
+  RETURNING event_id`, [eventId, capacity, 0])
+  return res.rows[0]
+}
+
+// Update event capacity record for a specific event
+export async function editEventCapacity(eventId, functionType) {
+  let res;
+  if (functionType === "add") {
+    res = await getPool().query(`
+      UPDATE eventcapacity
+      SET number_of_attendees = number_of_attendees + 1
+      WHERE event_id = $1
+      RETURNING event_id
+    `, [eventId]);
+  }
+  else {
+    res = await getPool().query(`
+      UPDATE eventcapacity
+      SET number_of_attendees = number_of_attendees - 1
+      WHERE event_id = $1
+      RETURNING event_id
+    `, [eventId]);  
+  }
+  return res.rows[0];
+}
 
 // Create an attendee record for a particular event and user
 export async function createAttendee(eventId, userId, attendeeStatusId) {
@@ -178,9 +208,13 @@ export async function deleteAttendee(eventId, userId) {
 // Get attendee records for all events for a specific user 
 export async function getAttendeesByUser(userId) {
   const res = await getPool().query(`
-  SELECT ea.attendee_status_id, e.* FROM events e
+  SELECT ea.attendee_status_id, ea.attendance_status_id, ew.user_id, ec.capacity,
+  ec.number_of_attendees, e.* FROM events e
   LEFT JOIN eventattendees ea ON e.event_id = ea.event_id
   AND ea.user_id = $1
+  LEFT JOIN eventwaitlist ew ON e.event_id = ew.event_id
+  AND ew.user_id = $1
+  JOIN eventcapacity ec ON e.event_id = ec.event_id
   WHERE cancelled = false
   ORDER BY e.event_date
   `, [userId])
@@ -309,13 +343,10 @@ export async function getWaitlistPosition(eventId, userId) {
 // Check if any capacity remains for a specific event, returns true or false
 export async function anyCapacity(eventId) {
   const res = await getPool().query(`
-  SELECT e.capacity > (
-     SELECT COUNT(*) FROM eventattendees WHERE event_id = $1
-   ) AS any_capacity_available
-   FROM events e
-   WHERE e.event_id = $1
+  SELECT COUNT(*) AS number_of_attendees FROM eventattendees WHERE event_id = $1
+  AND attendee_status_id = 'Registered'
  `, [eventId])
- return res.rows[0].any_capacity_available
+ return res.rows[0].number_of_attendees
 }
 
 // Check how many events a specific user has attended prior to today

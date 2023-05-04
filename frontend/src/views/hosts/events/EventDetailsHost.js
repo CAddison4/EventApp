@@ -7,6 +7,7 @@ import AttendeeList from "./AttendeeList";
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;
 	const eventId = eventObj.event_id;
+	const handleRefresh = route.params.handleRefresh;
 	//const eventView = route.params.eventView;
 	const [isEdit, setIsEdit] = useState(false);
 	const [editedName, setEditedName] = useState(eventObj.event_name);
@@ -70,6 +71,7 @@ export default function EventDetailsHost({ navigation, route }) {
 			// check if the request was successful
 			if (response.status === 200) {
 				console.log("Event successfully cancelled");
+				handleRefresh();
 				// go back to event list
 				navigation.navigate("EventsHost");
 			} else {
@@ -210,7 +212,6 @@ export default function EventDetailsHost({ navigation, route }) {
 							</>
 						)}
 
-
 						{eventObj.type_id === "Guest List" && (
 							<Button
 								title="Set Invites"
@@ -225,7 +226,7 @@ export default function EventDetailsHost({ navigation, route }) {
 							title="Delete"
 							onPress={() => handleDelete()}
 							style={styles.button}></Button>
-             <Button
+						<Button
 							title="Attendance"
 							onPress={() => {
 								navigation.navigate("Attendance", { eventObj: eventObj });

@@ -1,9 +1,8 @@
-import { anyCapacity } from "@backend-event-app/core/database";
+import { createEventCapacity } from "@backend-event-app/core/database";
 
 export async function main(event) {
 
   try {
-
     const eventId = event.pathParameters.eventId;
 
     if (!eventId) {
@@ -13,12 +12,21 @@ export async function main(event) {
       };
     }
 
-    const numberOfAttendees = await anyCapacity(eventId);
+    const capacity = await createEventCapacity(eventId);
+
+    if (!capacity) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to create event capacity record' })
+      };
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ numberOfAttendees }),
+      body: JSON.stringify({ capacity: capacity }),
     }
   } catch (error) {
+    // Error handling logic
     console.error(error);
     return {
       statusCode: 500,

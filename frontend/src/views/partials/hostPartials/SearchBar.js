@@ -28,16 +28,15 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 	},
 	nameInput: {
-		paddingBottom: 8,
-		fontSize: 24,
+		paddingBottom: 2,
+		fontSize: 18,
 		borderBottomWidth: 1,
 		borderBottomColor: "#000",
 	},
 
 	searchBar: {
-		paddingBottom: 8,
-		fontSize: 24,
-		// borderBottomWidth: 1,
+		paddingBottom: 2,
+		fontSize: 18,
 		borderBottomColor: "#000",
 	},
 });

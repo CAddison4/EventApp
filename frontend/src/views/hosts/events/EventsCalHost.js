@@ -14,7 +14,6 @@ export default function EventsCalHost({ route }) {
 		}
 	}, [contextEvent]);
 
-	console.log("events", events);
 	return (
 		<View>
 			<Text>Events Calendar Host</Text>
