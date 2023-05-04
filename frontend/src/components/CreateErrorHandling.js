@@ -8,7 +8,8 @@ export async function ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, sele
         const response = await axios.get(`${API_END_POINT}event/date/${startDateTime.toISOString().slice(0, 10)}`);
         if (response.status === 200) {
           const eventExists = response.data.eventExists;
-          if (!eventExists) {
+          // if there is no events on that date it eventExists will have a value of null
+          if (eventExists != null) {
             errors.sameDate="Another event already starts on that date! Please choose another date and try again.";
           }
         }
