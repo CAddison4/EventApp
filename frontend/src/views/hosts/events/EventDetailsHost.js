@@ -155,7 +155,6 @@ export default function EventDetailsHost({ navigation, route }) {
 						<Text>Capacity: {eventObj.capacity}</Text>
 						<Text>Start Time: {eventObj.event_start}</Text>
 						<Text>End Time: {eventObj.event_end}</Text>
-						{console.log("EventObj", eventObj)}
 						<Text>Registered: {eventObj.attendees.length}</Text>
 						<Text>Waitlisted: {eventObj.waitlist.length}</Text>
 

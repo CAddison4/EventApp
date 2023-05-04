@@ -307,13 +307,10 @@ export async function getWaitlistPosition(eventId, userId) {
 // Check if any capacity remains for a specific event, returns true or false
 export async function anyCapacity(eventId) {
   const res = await getPool().query(`
-  SELECT e.capacity > (
-     SELECT COUNT(*) FROM eventattendees WHERE event_id = $1
-   ) AS any_capacity_available
-   FROM events e
-   WHERE e.event_id = $1
+  SELECT COUNT(*) AS number_of_attendees FROM eventattendees WHERE event_id = $1
+  AND attendee_status_id = 'Registered'
  `, [eventId])
- return res.rows[0].any_capacity_available
+ return res.rows[0].number_of_attendees
 }
 
 // Check how many events a specific user has attended prior to today

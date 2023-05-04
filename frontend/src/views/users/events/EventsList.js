@@ -97,8 +97,8 @@ export default function EventsList({ route }) {
 		}));
 	};
 
-	const getLoyaltyCount = async (user_id) => {
-		const response = await axios.get(`${API_END_POINT}loyalty/${user_id}`);
+	const getLoyaltyCount = async (userid) => {
+		const response = await axios.get(`${API_END_POINT}loyalty/${userid}`);
 		return response.data.eventCount;
 	}
 	
@@ -116,7 +116,8 @@ export default function EventsList({ route }) {
 		}
 		// Check if there is any capacity available in the event
 		let response = await axios.get(`${API_END_POINT}anycapacity/${eventObj.event_id}`);
-		eventObj.hasRoom = response.data.anyCapacityAvailable;
+		eventObj.hasRoom = response.data.numberOfAttendees < eventObj.capacity ? true : false;
+		eventObj.capacityAvailable = eventObj.capacity - parseInt(response.data.numberOfAttendees);
 
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     	maxWidth: 400,
 		backgroundColor: "#fff",
 		paddingLeft: 5,
-		justifyContent: "space-between",
+		paddingRight: 5,
 	},
 	activityIndicator: {
 		flex: 1,

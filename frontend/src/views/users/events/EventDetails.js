@@ -14,9 +14,6 @@ import { API_END_POINT } from '@env';
 export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const userId = route.params.userId;
-	
-	/* const user = useSelector((state) => state.user);
-	const { userId, ...userData } = user; */
 
 	var contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
@@ -60,14 +57,22 @@ export default function EventDetails({ navigation, route }) {
 					case "Remove":
 						return { ...event, isInWaitlist: false, color: "black" };
 					case "Register":
-						return { ...event, isAttending: true, color: "green", attendee_status_id: "Registered" };
+						let newCapacity = decreaseCapacity(event);
+						return { ...event, isAttending: true, color: "green", attendee_status_id: "Registered",
+						capacityAvailable: newCapacity,
+						hasRoom: checkRoom(event) };
 					case "Withdraw":
+						newCapacity = increaseCapacity(event);
 						//	go back to attendee_status_id = Invited or Null
 						if (eventObj.type_id === "Guest List") {
-							return {...event, isAttending: false, color: "black",  attendee_status_id: "Invited"};
+							return {...event, isAttending: false, color: "black",  attendee_status_id: "Invited",
+							capacityAvailable: newCapacity,
+							hasRoom: checkRoom(event) };
 						}
 						else {
-							return {...event, isAttending: false, color: "black",  attendee_status_id: null };	
+							return {...event, isAttending: false, color: "black",  attendee_status_id: null,
+							capacityAvailable: newCapacity,
+							hasRoom: checkRoom(event) };	
 						}
 					default:
 						return event;
@@ -78,6 +83,19 @@ export default function EventDetails({ navigation, route }) {
 		});
 		// Save the contextEvents array back in state
 		await dispatch(setEvent(updatedEvents));
+	}
+
+	function increaseCapacity(eventObj) {
+		return eventObj.capacityAvailable += 1;
+	}
+
+	function decreaseCapacity(eventObj) {
+		return eventObj.capacityAvailable -= 1;	
+	}
+
+	async function checkRoom(eventObj) {
+		let response = await axios.get(`${API_END_POINT}anycapacity/${eventObj.event_id}`);
+		eventObj.hasRoom = response.data.numberOfAttendees < eventObj.capacity ? true : false;	
 	}
 
 	async function displayAlert(type, eventObj) {
