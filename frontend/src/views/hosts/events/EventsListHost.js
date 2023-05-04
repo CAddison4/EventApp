@@ -1,4 +1,12 @@
-import { StyleSheet, View, Text, Button, FlatList } from "react-native";
+import {
+	StyleSheet,
+	View,
+	Text,
+	Button,
+	FlatList,
+	Keyboard,
+	ActivityIndicator,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect, memo } from "react";
 import axios from "axios";
@@ -14,13 +22,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { getEventsWithAttendees } from "../HostComponents";
 
-import AttendeeList from "./AttendeeList";
 // import _ from "lodash";
 
 export default function EventsListHost({ route }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [eventObjs, setEventObjs] = useState([]);
 	const [filteredEvents, setFilteredEvents] = useState([]);
+	const [submittedSearchQuery, setSubmittedSearchQuery] = useState("");
+	const [loading, setLoading] = useState(true);
 
 	const type = route.params.type;
 	const navigation = useNavigation();
@@ -55,53 +64,33 @@ export default function EventsListHost({ route }) {
 				.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
 
 			setEventObjs(eventData);
+			setLoading(false);
 		};
 		getData();
 	}, []);
 
-	// const getEventsWithAttendees = async () => {
-	// 	const apiURL = API_END_POINT;
-
-	// 	// Make request to get all events
-	// 	const eventsResponse = await axios.get(`${apiURL}events`);
-	// 	const events = eventsResponse.data;
-
-	// 	// Make separate request for attendees of each event
-	// 	const eventsWithAttendees = await Promise.all(
-	// 		events.map(async (event) => {
-	// 			const attendeesResponse = await axios.get(
-	// 				`${apiURL}attendee/users/${event.event_id}`
-	// 			);
-	// 			const waitlistResponse = await axios.get(
-	// 				`${apiURL}waitlist/users/${event.event_id}`
-	// 			);
-	// 			const attendees = attendeesResponse.data;
-	// 			const waitlist = waitlistResponse.data;
-	// 			return {
-	// 				...event,
-	// 				attendees,
-	// 				waitlist,
-	// 			};
-	// 		})
-	// 	);
-
-	// 	return eventsWithAttendees;
-	// };
-
 	const filterEvents = () => {
 		setFilteredEvents(
 			eventObjs.filter((eventObj) =>
-				eventObj.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+				eventObj.event_name
+					.toLowerCase()
+					.includes(searchQuery.toLowerCase().trim())
 			)
 		);
+	};
+
+	const handleSearchQuery = (query) => {
+		setSearchQuery(query);
+		setSubmittedSearchQuery(query);
 	};
 
 	useEffect(() => {
 		const filterEvents = () => {
 			setFilteredEvents(eventObjs);
+			setSubmittedSearchQuery(searchQuery);
 		};
 		filterEvents();
-	}, [eventObjs, searchQuery]);
+	}, [eventObjs, submittedSearchQuery]);
 
 	useEffect(() => {
 		dispatch(setEvent(filteredEvents));
@@ -109,45 +98,70 @@ export default function EventsListHost({ route }) {
 
 	return (
 		<View style={styles.container}>
-			<SearchBar
-				value={searchQuery}
-				onChangeText={setSearchQuery}
-				onSubmitEditing={filterEvents}
-				placeholder="Search events"
-				onPress={filterEvents}
-			/>
-			<ClearFilterButton onPress={() => setSearchQuery("")} />
+			{loading ? (
+				<ActivityIndicator
+					size="large"
+					color="#0000ff"
+					animating={true}
+					style={styles.activityIndicator}
+				/>
+			) : (
+				<>
+					<SearchBar
+						value={searchQuery}
+						// onChangeText={(query) => {
+						// 	handleSearchQuery(query);
+						// }}
+						onChangeText={handleSearchQuery}
+						onSubmitEditing={(query) => {
+							filterEvents(query);
+							Keyboard.dismiss();
+						}}
+						placeholder="Search events"
+						onPress={(query) => {
+							filterEvents(query);
+							Keyboard.dismiss();
+						}}
+					/>
+					<ClearFilterButton
+						onPress={() => {
+							setSubmittedSearchQuery("");
+							setSearchQuery("");
+						}}
+					/>
 
-			<FlatList
-				data={filteredEvents}
-				renderItem={({ item }) => (
-					<View>
-						<Text style={styles.headerTxt}>{item.event_date}</Text>
-						<Text
-							onPress={() =>
-								navigation.navigate("EventDetailsHost", {
-									upcomingEvent: item,
-									// eventView: eventView,
-								})
-							}
-							style={styles.bodyTxt}>
-							{item.event_name}
-						</Text>
+					<FlatList
+						data={filteredEvents}
+						renderItem={({ item }) => (
+							<View>
+								<Text style={styles.headerTxt}>{item.event_date}</Text>
+								<Text
+									onPress={() =>
+										navigation.navigate("EventDetailsHost", {
+											upcomingEvent: item,
+											// eventView: eventView,
+										})
+									}
+									style={styles.bodyTxt}>
+									{item.event_name}
+								</Text>
 
-						<Text>
-							<Text>
-								Status:{" "}
-								{item.attendees.length >= item.capacity
-									? `Full | Waitlist: ${item.waitlist.length}`
-									: (new Date(item.event_date) < new Date() && "Closed") ||
-									  `Open | Spots Available: ${
-											item.capacity - item.attendees.length
-									  }`}
-							</Text>
-						</Text>
-					</View>
-				)}
-			/>
+								<Text>
+									<Text>
+										Status:{" "}
+										{item.attendees.length >= item.capacity
+											? `Full | Waitlist: ${item.waitlist.length}`
+											: (new Date(item.event_date) < new Date() && "Closed") ||
+											  `Open | Spots Available: ${
+													item.capacity - item.attendees.length
+											  }`}
+									</Text>
+								</Text>
+							</View>
+						)}
+					/>
+				</>
+			)}
 		</View>
 	);
 }

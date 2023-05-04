@@ -1,6 +1,5 @@
 import { TextInput, StyleSheet, Button } from "react-native";
 // import { setSearchQuery, searchQuery } from "../../../state/searchQuery";
-import SearchButton from "./SearchButton";
 
 export default function SearchBar({
 	value,
