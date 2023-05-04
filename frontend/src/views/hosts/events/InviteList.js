@@ -1,6 +1,6 @@
 import Checkbox from "expo-checkbox";
 import axios from "axios";
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { API_END_POINT } from "@env";
 
@@ -32,9 +32,12 @@ export default function InviteList({ navigation, route }) {
 			const data = response.data;
 			// create a list of user_ids that are already invited
 			const users = data.map((user) => user.user_id);
-			if (users.length > 0) {
+			if (users) {
 				setSelected(users);
 				setoriginalSelected(users);
+			}else{
+				setSelected([]);
+				setoriginalSelected([]);
 			}
 		};
 		getInvitedUsers();
@@ -78,49 +81,64 @@ export default function InviteList({ navigation, route }) {
 				});
 			});
 		}
-		// navigate back to the event details page?
-		  navigation.navigate("EventDetailsHost", {
-			upcomingEvent: eventObj})
+		
+		// navigate back to the event details page
+		const attendeesResponse = await axios.get(
+			`${apiURL}attendee/users/${eventObj.event_id}`
+		);
+		const waitlistResponse = await axios.get(
+			`${apiURL}waitlist/users/${eventObj.event_id}`
+		);
+		const attendees = attendeesResponse.data;
+		const waitlist = waitlistResponse.data;
+		navigation.navigate("EventDetailsHost", {
+			upcomingEvent: {
+			  ...eventObj,
+			  attendees,
+			  waitlist,
+			}
+		  });
+
 	};
+
+	// if users or eventObj is not loaded, show loading indicator
+	if(!originalSelected || !eventObj){
+		return(
+			<ActivityIndicator
+			size="large"
+			color="#0000ff"
+			animating={true}
+			style={styles.activityIndicator}
+		/>
+		)
+	}
 
 	return (
 		<View style={styles.container}>
-			
-			{eventObj && (
-				<>
-					<Text style={styles.title}>All Users</Text>
-					<Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text>
-					<Text style={styles.eventInfo}>
-						Max Capacity - {eventObj.capacity}
-					</Text>
-					<Text style={styles.eventInfo}>Selected - {numSelected}</Text>
-					<FlatList
-						data={users}
-						renderItem={({ item }) => (
-							<View style={styles.userContainer}>
-								<Text
-									onPress={() =>
-										navigation.navigate("UserDetails", { user: item })
-									}
-									style={styles.userName}>
-									{item.first_name} {item.last_name}
-								</Text>
-								<Checkbox
-									value={selected.includes(item.user_id)}
-									onValueChange={() => handleSelect(item.user_id)}
-									style={styles.checkbox}
-								/>
-							</View>
-						)}
-					/>
-					<View style={styles.buttonContainer}>
-						<Button title="Save" onPress={handleSubmit} />
-					</View>
-				</>
-			)}
+ 
+		<Text style={styles.title}>All Users</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
+				Max Capacity - {eventObj.capacity}
+			</Text><Text style={styles.eventInfo}>Selected - {numSelected}</Text><FlatList
+					data={users}
+					renderItem={({ item }) => (
+						<View style={styles.userContainer}>
+							<Text
+								onPress={() => navigation.navigate("UserDetails", { user: item })}
+								style={styles.userName}>
+								{item.first_name} {item.last_name}
+							</Text>
+							<Checkbox
+								value={selected.includes(item.user_id)}
+								onValueChange={() => handleSelect(item.user_id)}
+								style={styles.checkbox} />
+						</View>
+					)} /><View style={styles.buttonContainer}>
+					<Button title="Save" onPress={handleSubmit} />
+				</View>
 		</View>
 	);
 }
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
