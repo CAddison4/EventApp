@@ -17,6 +17,7 @@ export default function EventsCal({ navigation, route }) {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		console.log("running use effect")
 		if (contextEvent) {
 			setEvents(contextEvent);
 			if (type === "myevents") {
