@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 Amplify.configure(config);
 
 
+
 const App = () => {
 
   return (

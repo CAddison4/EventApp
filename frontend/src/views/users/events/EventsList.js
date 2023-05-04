@@ -103,7 +103,6 @@ export default function EventsList({ route }) {
 	}
 	
 	const determineEventFlags = async (eventObj, loyaltyCount) => {
-		console.log("eventObj", eventObj)
 		const eligibility = [];
 		switch (eventObj.type_id) {
 			case ("Bronze Tier"):
