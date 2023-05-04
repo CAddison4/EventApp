@@ -62,24 +62,25 @@ export default function AttendanceRecords({ navigation, user }) {
 	return (
 		<View>
 			<Text>Attendance Records for {user.first_name}</Text>
-
-			<DropDownPicker
-				open={open}
-				items={[
-					{ label: "Attended", value: "Attended" },
-					{ label: "Upcoming", value: "Upcoming" },
-					{ label: "No Show", value: "No Show" },
-				]}
-				value={selectedFilter}
-				// defaultValue={selectedFilter}
-				containerStyle={{ height: 40 }}
-				style={{ backgroundColor: "#fafafa" }}
-				itemStyle={{ justifyContent: "flex-start" }}
-				dropDownStyle={{ backgroundColor: "#fafafa" }}
-				onChangeItem={(item) => handleFilterChange(item.value)}
-				setOpen={setOpen}
-				setValue={setSelectedFilter}
-			/>
+			<View style={{ zIndex: 2000 }}>
+				<DropDownPicker
+					open={open}
+					items={[
+						{ label: "Attended", value: "Attended" },
+						{ label: "Upcoming", value: "Upcoming" },
+						{ label: "No Show", value: "No Show" },
+					]}
+					value={selectedFilter}
+					// defaultValue={selectedFilter}
+					containerStyle={{ height: 40 }}
+					style={{ backgroundColor: "#fafafa" }}
+					itemStyle={{ justifyContent: "flex-start" }}
+					dropDownStyle={{ backgroundColor: "#fafafa" }}
+					onChangeItem={(item) => handleFilterChange(item.value)}
+					setOpen={setOpen}
+					setValue={setSelectedFilter}
+				/>
+			</View>
 
 			<FlatList
 				data={filteredEventObjs}

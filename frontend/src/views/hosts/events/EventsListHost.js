@@ -30,11 +30,36 @@ export default function EventsListHost({ route }) {
 	const [filteredEvents, setFilteredEvents] = useState([]);
 	const [submittedSearchQuery, setSubmittedSearchQuery] = useState("");
 	const [loading, setLoading] = useState(true);
+	const [refresh, setRefresh] = useState(false);
 
 	const type = route.params.type;
 	const navigation = useNavigation();
 	const contextEvents = useSelector((state) => state.event);
 	const dispatch = useDispatch();
+
+	const filterEvents = () => {
+		setFilteredEvents(
+			eventObjs.filter((eventObj) =>
+				eventObj.event_name
+					.toLowerCase()
+					.includes(searchQuery.toLowerCase().trim())
+			)
+		);
+	};
+
+	const handleSearchQuery = (query) => {
+		setSearchQuery(query);
+		setSubmittedSearchQuery(query);
+	};
+
+	const handleRefresh = () => {
+		setRefresh(true);
+		setLoading(true);
+		setSearchQuery("");
+		setSubmittedSearchQuery("");
+		setFilteredEvents([]);
+		setEventObjs([]);
+	};
 
 	useEffect(() => {
 		const getData = async () => {
@@ -65,24 +90,10 @@ export default function EventsListHost({ route }) {
 
 			setEventObjs(eventData);
 			setLoading(false);
+			setRefresh(false);
 		};
 		getData();
-	}, []);
-
-	const filterEvents = () => {
-		setFilteredEvents(
-			eventObjs.filter((eventObj) =>
-				eventObj.event_name
-					.toLowerCase()
-					.includes(searchQuery.toLowerCase().trim())
-			)
-		);
-	};
-
-	const handleSearchQuery = (query) => {
-		setSearchQuery(query);
-		setSubmittedSearchQuery(query);
-	};
+	}, [refresh]);
 
 	useEffect(() => {
 		const filterEvents = () => {
@@ -139,6 +150,7 @@ export default function EventsListHost({ route }) {
 									onPress={() =>
 										navigation.navigate("EventDetailsHost", {
 											upcomingEvent: item,
+											handleRefresh: handleRefresh,
 											// eventView: eventView,
 										})
 									}
