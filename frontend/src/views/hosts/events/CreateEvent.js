@@ -36,26 +36,18 @@ export default function CreateEvent({ navigation }) {
 	const handleDateTimeChange = (selectedDateTime, identifier) => {
 		if (identifier === "startDate") {
 			setStartDate(selectedDateTime);
-			if (selectedDateTime > endDate) {
-				setEndDate(selectedDateTime);
-			}
 			setStartDateTime(new Date(selectedDateTime.setHours(startTime.getHours(), startTime.getMinutes())));
 		} else if (identifier === "startTime") {
 			setStartTime(selectedDateTime);
 			setStartDateTime(new Date(startDate.setHours(selectedDateTime.getHours(), selectedDateTime.getMinutes())));
 		} else if (identifier === "endDate") {
 			setEndDate(selectedDateTime);
-			if (selectedDateTime < startDate) {
-				setStartDate(selectedDateTime);
-			}
 			setEndDateTime(new Date(selectedDateTime.setHours(endTime.getHours(), endTime.getMinutes())));
 		} else if (identifier === "endTime") {
 			setEndTime(selectedDateTime);
 			setEndDateTime(new Date(endDate.setHours(selectedDateTime.getHours(), selectedDateTime.getMinutes())));
 		}
 	};
-
-
 
 	const handleEventTypeChange = (itemValue, itemIndex) => {
 		setSelectedEventType(itemValue); // Update the state with the selected event type value
@@ -97,16 +89,20 @@ export default function CreateEvent({ navigation }) {
 				reason_cancelled: null,
 			};
 			const response = await axios.post(`${apiURL}/event`, postEventObj);
-			setTimeout(() => {
+
+			// Reset the state
 				setInpEvnName("");
 				setInpEvnMax("");
 				setInpEvnLocation("");
 				setLoyaltyMinimum(0);
+				setStartDate(new Date());
+				setStartTime(new Date());
+				setEndDate(new Date());
+				setEndTime(new Date());
 				setStartDateTime(new Date());
 				setEndDateTime(new Date());
 				setSelectedEventType(defaultValue);
 				setErrors({});
-			}, 0);
 
 			// Navigate to InviteList screen if event type is Guest List
 			if (selectedEventType == "Guest List") {
@@ -154,6 +150,7 @@ export default function CreateEvent({ navigation }) {
 										{errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
 										<Text>Loyalty Minimum:</Text>
 										<TextInput
+											value={loyaltyMinimum.toString()}
 											style={styles.nameInput}
 											onChangeText={(loyaltyMinimum) =>
 												setLoyaltyMinimum(parseInt(loyaltyMinimum))
@@ -165,13 +162,14 @@ export default function CreateEvent({ navigation }) {
 								{errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
 								<Text>Event name</Text>
 								<TextInput
-									required
+									value={inpEvnName}
 									style={styles.nameInput}
 									onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 								/>
 								{errors.inpEvnMax && <Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>}
 								<Text>Max Participants</Text>
 								<TextInput
+									value={inpEvnMax}
 									style={styles.nameInput}
 									onChangeText={(inpEvnMax) => setInpEvnMax(inpEvnMax)}
 									keyboardType="numeric"
@@ -182,6 +180,7 @@ export default function CreateEvent({ navigation }) {
 										<Text>Start Date:</Text>
 										<View>
 											<MyDateTimePicker
+											    value={startDate}
 												buttonTitle="Change Date"
 												mode={"date"}
 												date={startDate}
@@ -193,6 +192,7 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.timeContainer}>
 										<Text>Start Time:</Text>
 										<MyDateTimePicker
+										    value={startDateTime}
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={startDateTime}
@@ -210,6 +210,7 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.dateContainer}>
 										<Text>End Date:</Text>
 										<MyDateTimePicker
+										    value={endDate}
 											buttonTitle="Change Date"
 											mode={"date"}
 											date={endDate}
@@ -220,6 +221,7 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.timeContainer}>
 										<Text>End Time:</Text>
 										<MyDateTimePicker
+										    value={endDateTime}
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={endDateTime}
@@ -236,6 +238,7 @@ export default function CreateEvent({ navigation }) {
 								{errors.inpEvnLocation && <Text style={{ color: "red" }}>{errors.inpEvnLocation}</Text>}
 								<Text>Location</Text>
 								<TextInput
+								    value={inpEvnLocation}
 									style={styles.nameInput}
 									onChangeText={(inpEvnLocation) =>
 										setInpEvnLocation(inpEvnLocation)

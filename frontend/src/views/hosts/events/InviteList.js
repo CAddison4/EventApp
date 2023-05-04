@@ -81,15 +81,42 @@ export default function InviteList({ navigation, route }) {
 				});
 			});
 		}
+		
 		// navigate back to the event details page
-		  navigation.navigate("EventDetailsHost", {
-			upcomingEvent: eventObj})
+		const attendeesResponse = await axios.get(
+			`${apiURL}attendee/users/${eventObj.event_id}`
+		);
+		const waitlistResponse = await axios.get(
+			`${apiURL}waitlist/users/${eventObj.event_id}`
+		);
+		const attendees = attendeesResponse.data;
+		const waitlist = waitlistResponse.data;
+		navigation.navigate("EventDetailsHost", {
+			upcomingEvent: {
+			  ...eventObj,
+			  attendees,
+			  waitlist,
+			}
+		  });
+
 	};
+
+	// if users or eventObj is not loaded, show loading indicator
+	if(!originalSelected || !eventObj){
+		return(
+			<ActivityIndicator
+			size="large"
+			color="#0000ff"
+			animating={true}
+			style={styles.activityIndicator}
+		/>
+		)
+	}
 
 	return (
 		<View style={styles.container}>
  
-		{eventObj && users ? (<><Text style={styles.title}>All Users</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
+		<Text style={styles.title}>All Users</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
 				Max Capacity - {eventObj.capacity}
 			</Text><Text style={styles.eventInfo}>Selected - {numSelected}</Text><FlatList
 					data={users}
@@ -107,14 +134,7 @@ export default function InviteList({ navigation, route }) {
 						</View>
 					)} /><View style={styles.buttonContainer}>
 					<Button title="Save" onPress={handleSubmit} />
-				</View></>) : (
-				<ActivityIndicator
-					size="large"
-					color="#0000ff"
-					animating={true}
-					style={styles.activityIndicator}
-				/> )}
-
+				</View>
 		</View>
 	);
 }
