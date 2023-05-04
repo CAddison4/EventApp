@@ -3,7 +3,9 @@ import axios from "axios";
 import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { API_END_POINT } from "@env";
-
+import SearchBar from "../../partials/hostPartials/SearchBar";
+import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
+import DropDownPicker from "react-native-dropdown-picker";
 export default function InviteList({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const eventId = eventObj.event_id;
@@ -12,19 +14,81 @@ export default function InviteList({ navigation, route }) {
 	const [users, setUsers] = useState([]);
 	const [selected, setSelected] = useState([]);
 	const [originalSelected, setoriginalSelected] = useState([]);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [selectedMembershipStatus, setSelectedMembershipStatus] =
+	useState("All");
+	const [filteredUsers, setFilteredUsers] = useState([]);
+	const [updateFilter, setUpdateFilter] = useState(false);
+	const [isPickerVisible, setIsPickerVisible] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [open, setOpen] = useState(false);
+	const [memberships, setMemberships] = useState([]);
+
+
+
+
+	const filtersUsers = () => {
+		const filteredUsers = users.filter((user) =>
+		  user.first_name.toLowerCase().includes(searchQuery.toLowerCase())
+		  || user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+		  || user.email.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+		setFilteredUsers(filteredUsers);
+	  };
+
+	// filter users based on search query
+	  const filterMembership = () => {
+		console.log("filtering membership")
+		filtersUsers();
+		if (selectedMembershipStatus != "All") {
+		  const dropdownFiltered = filteredUsers.filter(
+			(user) => user.membership_status_id === selectedMembershipStatus
+		  );
+		  setFilteredUsers(dropdownFiltered);
+		}
+	}
+	const handleSearchPress = () => {
+		filterMembership();
+	};
+
+	const handleMembershipFilterChange = (item) => {
+		setSelectedMembershipStatus(item);
+	};
+
 
 	// fetch all the users and also fetch the list of users that are already invited
 	// check if the userid is in the list of invited users
 	useEffect(() => {
-		const getUsers = async (status) => {
+		const getUsers = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/users`);
 			const data = response.data;
-			const filteredData = data.filter((user) => user.role_id === "Attendee");
+			// get rid of Rejected and None users and host
+			const filteredData = await data.filter((user) => user.membership_status_id !== "Rejected" 
+														&& user.membership_status_id !== "None" 
+														&& user.role_id === "Attendee");
 			setUsers(filteredData);
+			setFilteredUsers(filteredData);
 		  };
 		  
+		const getFilteredMemberships = async () => {
+			const apiURL = API_END_POINT;
+			const membershipsResponse = await axios.get(`${apiURL}membership`);
+
+	
+			const membershipStatuses = membershipsResponse.data.membershipStatuses;
+			// get rid of Rejected and None and add All
+			const removed = membershipStatuses.filter((membership) => membership.membership_status_id !== "Rejected"
+																&& membership.membership_status_id !== "None");
+			const edited = [{ membership_status_id: "All" }, ...removed];
+			setMemberships(edited);
+			console.log(edited)
+		};
+	
 		getUsers();
+		getFilteredMemberships();
+
+		console.log(memberships);
 
 		const getInvitedUsers = async () => {
 			const apiURL = API_END_POINT;
@@ -40,12 +104,14 @@ export default function InviteList({ navigation, route }) {
 				setoriginalSelected([]);
 			}
 		};
+		console.log(loading);
+		setIsPickerVisible(true);
+		setLoading(false);
 		getInvitedUsers();
 	}, []);
 
 	// count how many users are selected
 	const numSelected = selected.length;
-
 	const handleSelect = (user_id) => {
 		setSelected((selected) => {
 			// if user_id is already in selected, remove it
@@ -98,11 +164,10 @@ export default function InviteList({ navigation, route }) {
 			  waitlist,
 			}
 		  });
-
-	};
+		};
 
 	// if users or eventObj is not loaded, show loading indicator
-	if(!originalSelected || !eventObj){
+	if(loading){
 		return(
 			<ActivityIndicator
 			size="large"
@@ -115,17 +180,57 @@ export default function InviteList({ navigation, route }) {
 
 	return (
 		<View style={styles.container}>
- 
-		<Text style={styles.title}>All Users</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
+
+		{isPickerVisible && (
+					<View style={styles.header}>
+						<SearchBar
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							onSubmitEditing={handleSearchPress}
+							onPress={handleSearchPress}
+						/>
+
+						<ClearFilterButton
+							onPress={() => {
+								setSearchQuery("");
+								setSelectedMembershipStatus("All");
+								setFilteredUsers(users);
+							}}
+						/>
+						 <Text>Membership Status</Text>
+
+						<View style={{ zIndex: 2000 }}>
+							<DropDownPicker
+								open={open}
+								value={selectedMembershipStatus}
+								items={memberships.map((item) => ({
+									label: item.membership_status_id,
+									value: item.membership_status_id,
+								}))}
+								setOpen={setOpen}
+								setValue={handleMembershipFilterChange}
+								listMode="SCROLLVIEW"
+								scrollViewProps={{
+									nestedScrollEnabled: true,
+								}}
+								dropDownContainerStyle={{
+									position: "relative",
+									top: 0,
+								}}
+							/>
+						</View> 
+					</View>)}
+		<Text style={styles.title}>Please make an invite list</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
 				Max Capacity - {eventObj.capacity}
 			</Text><Text style={styles.eventInfo}>Selected - {numSelected}</Text><FlatList
-					data={users}
+					data={filteredUsers}
 					renderItem={({ item }) => (
 						<View style={styles.userContainer}>
 							<Text
 								onPress={() => navigation.navigate("UserDetails", { user: item })}
 								style={styles.userName}>
-								{item.first_name} {item.last_name}
+								{item.first_name} {item.last_name} - {item.email}
+								{item.membership_status_id}
 							</Text>
 							<Checkbox
 								value={selected.includes(item.user_id)}
