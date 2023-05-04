@@ -1,5 +1,5 @@
 import { Api, Cognito  } from "sst/constructs";
-import jwt from 'jsonwebtoken';
+
 import * as iam from "aws-cdk-lib/aws-iam";
 import { UserPool, UserPoolClient } from "aws-cdk-lib/aws-cognito";
 
@@ -16,17 +16,14 @@ export function API({ stack }) {
     },
   });
 
-
-
   const api = new Api(stack, "api", {
     authorizers: {
       cognito: {
         type: "user_pool",
         userPool: {
-          id: auth.userPoolId,  
-
+          id: auth.userPoolId,  // Required
         }
-      },
+      }
     },
     defaults: {
       authorizer: "cognito",

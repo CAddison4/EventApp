@@ -7,8 +7,14 @@ import { getUserData } from "./UserApiComponents";
 
 export const getRefreshToken = async () => {
   try {
+
+    
+
     const session = await Auth.currentSession();
     const refreshToken = session.getRefreshToken().getToken();
+
+    //ASYNC STORAGE
+
     return refreshToken;
   } catch (error) {
     console.log('Error retrieving refresh token', error);
@@ -49,6 +55,7 @@ export const handleSignUp = async (
     const cockroachLastName = lastName.toProperCase();
 
     const apiEndpoint = `${API_END_POINT}/user`;
+
     const apiResponse = await fetch(apiEndpoint, {
       method: "POST",
       headers: {
@@ -62,12 +69,12 @@ export const handleSignUp = async (
         membershipStatusId: "None",
       }),
     });
+
     return {
       success: true,
       message: "Successfully signed up",
     };
   } catch (error) {
-    console.log("Error signing up:", error);
 
     let message = "Error signing up: " + error.message;
 
@@ -79,6 +86,7 @@ export const handleSignUp = async (
       message =
         "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
     }
+    
     return {
       success: false,
       message: message,
@@ -86,20 +94,25 @@ export const handleSignUp = async (
   }
 };
 
+
+
 export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
 
     const user = await Auth.signIn(username, password);
+    console.log("USER", user).then((data) => 
+      console.log("DATA", data)
+    
+    );
 
-    // const session = await user.getSession();
-    const accessToken = (await Auth.currentSession()).getAccessToken().getJwtToken();
-    // console.log("ACCESS TOKEN", accessToken);
+    const session = user.getSession();
+    console.log("Session", session);
 
-    const idToken = (await Auth.currentSession()).getIdToken().getJwtToken();
-    // console.log("ID TOKEN", idToken);
+
+    
     // const refreshToken = Auth.getRefreshToken().getToken();
-
+    // console.log("REFRESH TOKEN", refreshToken);
     // console.log("USER", user);
     // console.log("SESSION", session);
 
@@ -143,17 +156,27 @@ export const handleSignIn = async (username, password, dispatch) => {
     //   success: true,
     //   message: "Successfully signed in",
     // };
-    const test = await getUserData(username, accessToken, dispatch);
-    console.error("TEST", test);
+
+
+    // const test = await getUserData(username, accessToken, dispatch);
+    // console.error("TEST", test);
   } catch (error) {
     let message = "Error signing in: " + error.message;
-
     if (error.code === "UserNotFoundException") {
       message =
         "The email address or password you entered is incorrect. Please try again.";
     }
+    if (error.code === "NotAuthorizedException") {
+      message =
+        "The email address or password you entered is incorrect. Please try again.";
+    }
+    if (error.code === "UserNotConfirmedException") {
+      // Auth.resendSignUp(username);
+      console.log(Auth.getSession(username, password));
+      message =
+        "This account has not been confirmed. Please check your email for a confirmation link.";
+    }
     return {
-      
       success: false,
       message: message,
     };
@@ -199,7 +222,9 @@ export const handleForgotPassword = async (username) => {
       message: "Forgot password request successfully sent",
     };
   } catch (error) {
+    console.log("Error requesting new password:", error)
     let message = "There was an error sending the password reset request.";
+
     if (error.code === "UserNotFoundException") {
       message = "User not found. Please check your email and try again.";
     }
@@ -259,6 +284,8 @@ export const handleResetPassword = async (
 };
 
 export const handleSignOut = async () => {
+
+  //CLEAR ASYNC STORAGE
   try {
     await Auth.signOut();
     console.log("Successfully signed out");

@@ -83,7 +83,6 @@ const AuthForm = ({route}) => {
                 Reset Password
               </Text>
             </TouchableOpacity>
-
           </HideWithKeyboard>
           </>
   );
