@@ -74,8 +74,6 @@ export default function InviteList({ navigation, route }) {
 		const getFilteredMemberships = async () => {
 			const apiURL = API_END_POINT;
 			const membershipsResponse = await axios.get(`${apiURL}membership`);
-
-	
 			const membershipStatuses = membershipsResponse.data.membershipStatuses;
 			// get rid of Rejected and None and add All
 			const removed = membershipStatuses.filter((membership) => membership.membership_status_id !== "Rejected"
@@ -84,12 +82,7 @@ export default function InviteList({ navigation, route }) {
 			setMemberships(edited);
 			console.log(edited)
 		};
-	
-		getUsers();
-		getFilteredMemberships();
-
-		console.log(memberships);
-
+		
 		const getInvitedUsers = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/attendee/users/${eventId}`);
@@ -104,10 +97,13 @@ export default function InviteList({ navigation, route }) {
 				setoriginalSelected([]);
 			}
 		};
-		console.log(loading);
+	
+		getUsers();
+		getFilteredMemberships();
+		getInvitedUsers();
+
 		setIsPickerVisible(true);
 		setLoading(false);
-		getInvitedUsers();
 	}, []);
 
 	// count how many users are selected
@@ -180,98 +176,111 @@ export default function InviteList({ navigation, route }) {
 
 	return (
 		<View style={styles.container}>
+		  {isPickerVisible && (
+			<View style={styles.header}>
 
-		{isPickerVisible && (
-					<View style={styles.header}>
-						<SearchBar
-							value={searchQuery}
-							onChangeText={setSearchQuery}
-							onSubmitEditing={handleSearchPress}
-							onPress={handleSearchPress}
-						/>
-
-						<ClearFilterButton
-							onPress={() => {
-								setSearchQuery("");
-								setSelectedMembershipStatus("All");
-								setFilteredUsers(users);
-							}}
-						/>
-						 <Text>Membership Status</Text>
-
-						<View style={{ zIndex: 2000 }}>
-							<DropDownPicker
-								open={open}
-								value={selectedMembershipStatus}
-								items={memberships.map((item) => ({
-									label: item.membership_status_id,
-									value: item.membership_status_id,
-								}))}
-								setOpen={setOpen}
-								setValue={handleMembershipFilterChange}
-								listMode="SCROLLVIEW"
-								scrollViewProps={{
-									nestedScrollEnabled: true,
-								}}
-								dropDownContainerStyle={{
-									position: "relative",
-									top: 0,
-								}}
-							/>
-						</View> 
-					</View>)}
-		<Text style={styles.title}>Please make an invite list</Text><Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text><Text style={styles.eventInfo}>
-				Max Capacity - {eventObj.capacity}
-			</Text><Text style={styles.eventInfo}>Selected - {numSelected}</Text><FlatList
-					data={filteredUsers}
-					renderItem={({ item }) => (
-						<View style={styles.userContainer}>
-							<Text
-								onPress={() => navigation.navigate("UserDetails", { user: item })}
-								style={styles.userName}>
-								{item.first_name} {item.last_name} - {item.email}
-								{item.membership_status_id}
-							</Text>
-							<Checkbox
-								value={selected.includes(item.user_id)}
-								onValueChange={() => handleSelect(item.user_id)}
-								style={styles.checkbox} />
-						</View>
-					)} /><View style={styles.buttonContainer}>
-					<Button title="Save" onPress={handleSubmit} />
-				</View>
+			<Text>Membership Status</Text>
+			<View style={{ zIndex: 2000 }}>
+				<DropDownPicker
+				  open={open}
+				  value={selectedMembershipStatus}
+				  items={memberships.map((item) => ({
+					label: item.membership_status_id,
+					value: item.membership_status_id,
+				  }))}
+				  setOpen={setOpen}
+				  setValue={handleMembershipFilterChange}
+				  listMode="SCROLLVIEW"
+				  scrollViewProps={{
+					nestedScrollEnabled: true,
+				  }}
+				  dropDownContainerStyle={{
+					position: "relative",
+					top: 0,
+				  }}
+				/>
+			  </View>
+			  <SearchBar
+				value={searchQuery}
+				onChangeText={setSearchQuery}
+				onSubmitEditing={handleSearchPress}
+				onPress={handleSearchPress}
+			  />
+	  
+			  <ClearFilterButton
+				onPress={() => {
+				  setSearchQuery("");
+				  setSelectedMembershipStatus("All");
+				  setFilteredUsers(users);
+				}}
+			  />
+			</View>
+		  )}
+		  <Text style={styles.title}>Please make an invite list</Text>
+		  <Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text>
+		  <Text style={styles.eventInfo}>Max Capacity - {eventObj.capacity}</Text>
+		  <Text style={styles.eventInfo}>Selected - {numSelected}</Text>
+		  <FlatList
+			data={filteredUsers}
+			renderItem={({ item }) => (
+			  <View style={styles.userContainer}>
+				<Text
+				  onPress={() =>
+					navigation.navigate("UserDetails", { user: item })
+				  }
+				  style={styles.userName}
+				>
+				  {item.first_name} {item.last_name} - {item.email}
+				  {item.membership_status_id}
+				</Text>
+				<Checkbox
+				  value={selected.includes(item.user_id)}
+				  onValueChange={() => handleSelect(item.user_id)}
+				  style={styles.checkbox}
+				/>
+			  </View>
+			)}
+		  />
+		  <View style={styles.buttonContainer}>
+			<Button title="Save" onPress={handleSubmit} />
+		  </View>
 		</View>
-	);
+	  );
+	  
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		padding: 16,
-		backgroundColor: "#fff",
+	  flex: 1,
+	  backgroundColor: '#fff',
+	  paddingHorizontal: 20,
+	  paddingTop: 40,
 	},
 	title: {
-		fontSize: 24,
-		fontWeight: "bold",
-		marginBottom: 16,
+	  fontSize: 24,
+	  fontWeight: 'bold',
+	  marginBottom: 20,
 	},
 	eventInfo: {
-		fontSize: 18,
-		marginBottom: 8,
+	  fontSize: 18,
+	  marginBottom: 10,
 	},
 	userContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 8,
+	  flexDirection: 'row',
+	  alignItems: 'center',
+	  marginBottom: 10,
 	},
 	userName: {
-		flex: 1,
-		fontSize: 16,
+	  flex: 1,
+	  fontSize: 18,
 	},
 	checkbox: {
-		marginLeft: 16,
+	  marginRight: 10,
 	},
 	buttonContainer: {
-		marginTop: 16,
+	  marginTop: 20,
 	},
-});
+	header: {
+	  marginBottom: 20,
+	},
+  });
