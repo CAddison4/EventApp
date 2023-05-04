@@ -19,6 +19,7 @@ import UserDetails from "./UserDetails";
 // import SearchButton from "../../partials/hostPartials/SearchButton";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
+import UsersListItem from "../../../components/UsersListItem";
 
 LogBox.ignoreLogs([
 	"Non-serializable values were found in the navigation state",
@@ -142,20 +143,10 @@ export default function Users({ navigation }) {
 	}, [updateFilter]);
 
 	return (
-		<View>
-			<>
-				{isPickerVisible && (
-					<>
-						{/* <TextInput
-							placeholder="Search..."
-							value={searchQuery}
-							onChangeText={setSearchQuery}
-							onSubmitEditing={filterUsers}
-							style={styles.searchBar}
-						/>
-
-						<SearchButton onPress={filterUsers} /> */}
-
+		<View style={styles.container}>
+			{isPickerVisible && (
+				<>
+					<View style={styles.header}>
 						<SearchBar
 							value={searchQuery}
 							onChangeText={setSearchQuery}
@@ -182,8 +173,6 @@ export default function Users({ navigation }) {
 								}))}
 								setOpen={setOpen}
 								setValue={handleMembershipFilterChange}
-								// zIndex={5000}
-								// setItems={setItems}
 								listMode="SCROLLVIEW"
 								scrollViewProps={{
 									nestedScrollEnabled: true,
@@ -194,44 +183,26 @@ export default function Users({ navigation }) {
 								}}
 							/>
 						</View>
-						{/* <Picker
-							selectedValue={selectedMembershipStatus}
-							onValueChange={handleMembershipFilterChange}>
-							{editedMemberships.map((item, index) => (
-								<Picker.Item
-									value={item.membership_status_id}
-									key={index}
-									label={item.membership_status_id}
-								/>
-							))}
-						</Picker> */}
-						{/* <Text>{selectedMembershipStatus} Users</Text> */}
-						<SectionList
-							sections={[
-								{
-									title: selectedMembershipStatus + " Users",
-									data: filteredUsers,
-								},
-							]}
-							renderItem={({ item }) => (
-								<Text
+					</View>
+					<FlatList style={styles.list}
+						data={filteredUsers}
+						keyExtractor={(item) => `${item.user_id}`}
+						renderItem={({ item }) => (
+							<View>
+								<TouchableOpacity
 									onPress={() =>
 										navigation.navigate("UserDetails", {
 											user: item,
 											handleRefresh: handlePageRefresh,
 										})
 									}>
-									{item.first_name} {item.last_name} {item.membership_status_id}{" "}
-									{item.email}
-								</Text>
-							)}
-							renderSectionHeader={({ section: { title } }) => (
-								<Text>{title}</Text>
-							)}
-						/>
-					</>
-				)}
-			</>
+									<UsersListItem userObj={item}/>
+								</TouchableOpacity>
+							</View>
+						)}
+					/>
+				</>
+			)}
 		</View>
 	);
 }
@@ -239,20 +210,21 @@ export default function Users({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 16,
+		paddingLeft: 5,
+		paddingRight: 5,
 		backgroundColor: "#fff",
+		width: "100%",
+		maxWidth: 400,
+		marginBottom: 5,
 	},
-	nameInput: {
-		paddingBottom: 8,
-		fontSize: 24,
-		borderBottomWidth: 1,
-		borderBottomColor: "#000",
+	header: {
+		flexDirection: "column",
+		rowGap: 10,
+		paddingLeft: 10,
+		paddingRight: 10,
 	},
 
-	searchBar: {
-		paddingBottom: 8,
-		fontSize: 24,
-		borderBottomWidth: 1,
-		borderBottomColor: "#000",
+	list: {
+		paddingTop: 10,
 	},
 });

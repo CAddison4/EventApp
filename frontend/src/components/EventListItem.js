@@ -8,19 +8,33 @@ export default function EventListItem({ eventObj }) {
 		orange: 'timer-outline',
 		red: 'close-circle-outline',
 		green: 'checkmark-circle-outline',
-		black: '',
+		black: 'alert-circle-outline',
 	};
 
-	const iconName = colorToIconNameMap[eventObj.color] || '';
+	const iconName = colorToIconNameMap[eventObj.color] || 'alert-circle-outline';
+
+	var eventDescription = "";
+	
+	if (eventObj.type_id === "Loyalty") {
+		eventDescription = `Minimum past events required: ${eventObj.loyalty_max}`;
+	}
+	else {
+		if (!eventObj.hasRoom) {
+			eventDescription = `Capacity: ${eventObj.capacity}, event is FULL`;
+		}
+		else {
+			eventDescription = `Capacity: ${eventObj.capacity}, spots available: ${eventObj.capacityAvailable}`;
+		}
+	}
 
 	return (
 		<View style={styles.card}>
 			<View style={styles.icon}>
-			<Ionicons
-				name={iconName}
-				size={36}
-				color={eventObj.color}
-			/>	
+				<Ionicons
+					name={iconName}
+					size={36}
+					color={eventObj.color}
+				/>	
 			</View>
 			<View style={styles.eventItem}	
 				key={`${eventObj.event_id}${eventObj.user_id}`}>
@@ -29,8 +43,10 @@ export default function EventListItem({ eventObj }) {
 					{`${formatLongDate(eventObj.event_date, true)}`} 
 				</Text>
 				<Text>	
-					{eventObj.type_id} 
-					{eventObj.type_id === "Loyalty" ? `, minimum past events ${eventObj.loyalty_max}` : ""}
+					{eventObj.type_id}
+				</Text>
+				<Text>	
+					{eventDescription}
 				</Text>
 			</View>
 			<View>
@@ -50,6 +66,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		width: "100%",
 		backgroundColor: "#eee",
+	//	backgroundColor: "#faeede",
 		justifyContent: "space-between",
 		alignItems: "center",
 		borderRadius: 10,
@@ -66,7 +83,7 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 		width: "100%",
 		margin: 5,
-		marginLeft: 10,
+		marginLeft: 15,
 	},
 	boldText: {
 		fontWeight: "bold",

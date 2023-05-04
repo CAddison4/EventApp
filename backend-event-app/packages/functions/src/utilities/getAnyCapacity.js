@@ -13,10 +13,10 @@ export async function main(event) {
       };
     }
 
-    const anyCapacityAvailable = await anyCapacity(eventId);
+    const numberOfAttendees = await anyCapacity(eventId);
     return {
       statusCode: 200,
-      body: JSON.stringify({ anyCapacityAvailable }),
+      body: JSON.stringify({ numberOfAttendees }),
     }
   } catch (error) {
     console.error(error);
