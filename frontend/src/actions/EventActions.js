@@ -18,6 +18,13 @@ export async function registerForEvent(eventObj, userId) {
             console.error(error); // log the error for debugging
             // handle the error here
         }
+    }
+    // update capacity for this event
+    try {
+        const response = await axios.put(`${API_END_POINT}event/capacity/${eventObj.event_id}`, { function_type: "add"});
+    } catch (error) {
+        console.error(error); // log the error for debugging
+        // handle the error here
     }	
 }
 
@@ -37,5 +44,11 @@ export async function withdrawFromEvent(eventObj, userId) {
             console.error(error); // log the error for debugging
             // handle the error here
         }
-    }	
+    }
+    try {
+        const response = await axios.put(`${API_END_POINT}event/capacity/${eventObj.event_id}`, { function_type: "subtract"});
+    } catch (error) {
+        console.error(error); // log the error for debugging
+        // handle the error here
+    }		
 }

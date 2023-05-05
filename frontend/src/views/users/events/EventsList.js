@@ -93,9 +93,8 @@ export default function EventsList({ route }) {
 		else {
 			events = [...dbEvents];
 		}
-		await Promise.all(events.map(async (eventObj) => {
-			await determineEventFlags(eventObj, loyaltyCount);
-		}));
+
+		events.map(eventObj => determineEventFlags(eventObj, loyaltyCount));
 	};
 
 	const getLoyaltyCount = async (userid) => {
@@ -103,7 +102,7 @@ export default function EventsList({ route }) {
 		return response.data.eventCount;
 	}
 	
-	const determineEventFlags = async (eventObj, loyaltyCount) => {
+	const determineEventFlags = (eventObj, loyaltyCount) => {
 		const eligibility = [];
 		switch (eventObj.type_id) {
 			case ("Bronze Tier"):
@@ -116,9 +115,8 @@ export default function EventsList({ route }) {
 				break;
 		}
 		// Check if there is any capacity available in the event
-		let response = await axios.get(`${API_END_POINT}anycapacity/${eventObj.event_id}`);
-		eventObj.hasRoom = response.data.numberOfAttendees < eventObj.capacity ? true : false;
-		eventObj.capacityAvailable = eventObj.capacity - parseInt(response.data.numberOfAttendees);
+		eventObj.hasRoom = eventObj.number_of_attendees < eventObj.capacity ? true : false;
+		eventObj.capacityAvailable = eventObj.capacity - eventObj.number_of_attendees;
 
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
@@ -137,10 +135,7 @@ export default function EventsList({ route }) {
 			eventObj.isEligible = eligibility.includes(membership_status) ? true : false;
 		}
 
-		// Check if the user is already in the waitlist for this event
-		response = await axios.get(`${API_END_POINT}waitlist/inwaitlist/${eventObj.event_id}/${user_id}`
-		);
-		eventObj.isInWaitlist = response.data.waitlist > 0 ? true : false;
+		eventObj.isInWaitlist = eventObj.user_id === null ? false : true;
 
 		if (eventObj.isInWaitlist) {
 			eventObj.color = "orange";
