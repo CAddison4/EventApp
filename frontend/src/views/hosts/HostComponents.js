@@ -19,10 +19,14 @@ export const getEventsWithAttendees = async () => {
 			);
 			const attendees = attendeesResponse.data;
 			const waitlist = waitlistResponse.data;
+			const today = new Date();
+			const eventDate = new Date(event.event_date);
+			const type = eventDate >= today ? "upcoming" : "past";
 			return {
 				...event,
 				attendees,
 				waitlist,
+				type,
 			};
 		})
 	);

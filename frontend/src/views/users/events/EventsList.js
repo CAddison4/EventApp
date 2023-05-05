@@ -1,5 +1,3 @@
-//test
-
 import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 
 import * as React from "react";
@@ -125,3 +123,4 @@ const styles = StyleSheet.create({
 		paddingTop: 10,
 	},
 });
+
