@@ -45,6 +45,13 @@ export const amplifyRefreshTokens = async () => {
 };
 
 
+const generateTokens = async (username, email, firstName, lastName) => {
+  try {
+  }catch(error) {
+    console.log("Error generating tokens", error);
+  }
+}
+
 
 export const getCognitoTokens = async () => {
   try {

@@ -68,6 +68,7 @@ const Navigation = () => {
 
   // const awaitAsync = AsyncStorage.getItem("accessToken");
 
+
   axios.interceptors.request.use( async (config)  => {
       let expiration = 0;
       // Do something before request is sent
@@ -75,6 +76,7 @@ const Navigation = () => {
       if (userToken) {
         try {
           expiration = await jwt_decode(userToken).exp;
+          //compare expiration to now If expiration is in 10 minutes or less, refresh token
           if (
             (expiration !== 0 && expiration - Date.now() / 1000 < 600) ||
             expiration - Date.now() / 1000 < 0
@@ -95,8 +97,7 @@ const Navigation = () => {
           console.log("ERROR", error);
         }
       }
-      //compare expiration to now If expiration is in 10 minutes or less, refresh token
-
+      
       return  config;
     },
     (error) => {
@@ -104,6 +105,26 @@ const Navigation = () => {
       return  Promise.reject(error);
     }
   );
+
+
+  const autoSignIn = async () => {
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    if (refreshToken) {
+      try {
+        const refreshResult = amplifyRefreshTokens(refreshToken);
+        if (refreshResult.success) {
+          const { accessToken } = refreshResult;
+          const decodedToken = jwt_decode(accessToken);
+          const user = await Auth.signIn(decodedToken.username, accessToken);
+          // If user is successfully logged in, set the authenticated state to true
+          // and store the tokens in AsyncStorage
+          // ...
+        }
+      } catch (e) {
+        console.log('Error refreshing token:', e);
+      }
+    }
+  }
 
   useEffect(() => {
     // Listen to "auth" events using Amplify Hub
@@ -125,7 +146,7 @@ const Navigation = () => {
               if (userData.success == true) {
                 const userToken = await AsyncStorage.getItem("accessToken");
                 axios.defaults.headers.common["Authorization"] =
-                  "Bearer " + userToken;
+                `Bearer ${userToken}`;
                 setAuthenticated(true);
               }
             };
