@@ -1,4 +1,4 @@
-import { View, Text, Button, TextInput, StyleSheet } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
@@ -42,13 +42,15 @@ export default function EventDetailsHost({ navigation, route }) {
 			// push to event details page
 			const attendees = eventObj.attendees;
 			const waitlist = eventObj.waitlist;
-			navigation.push("EventDetailsHost", { 
+			handleRefresh();
+			Alert.alert("Event Updated");
+			navigation.goBack({
 				upcomingEvent: {
-				  ...data,
-				  attendees,
-				  waitlist
-				}
-			  });
+					...data,
+					attendees,
+					waitlist,
+				},
+			});
 		} catch (error) {
 			alert("An error occurred while updating event");
 			console.error("Error updating event:", error);
@@ -73,6 +75,7 @@ export default function EventDetailsHost({ navigation, route }) {
 				console.log("Event successfully cancelled");
 				handleRefresh();
 				// go back to event list
+				Alert.alert("Event Deleted");
 				navigation.navigate("EventsHost");
 			} else {
 				console.log("Error cancelling event");
@@ -121,7 +124,7 @@ export default function EventDetailsHost({ navigation, route }) {
 						placeholder="Event name"
 						style={styles.textInput}
 					/>
-					
+
 					<TextInput
 						value={editedLocation}
 						onChangeText={setEditedLocation}

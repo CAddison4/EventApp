@@ -19,13 +19,46 @@ export const getEventsWithAttendees = async () => {
 			);
 			const attendees = attendeesResponse.data;
 			const waitlist = waitlistResponse.data;
+			const today = new Date();
+			const eventDate = new Date(event.event_date);
+			const type = eventDate >= today ? "upcoming" : "past";
 			return {
 				...event,
 				attendees,
 				waitlist,
+				type,
 			};
 		})
 	);
 
 	return eventsWithAttendees;
 };
+
+// export const getEventsWithAttendees = async () => {
+// 	const apiURL = API_END_POINT;
+
+// 	// Make request to get all events
+// 	const eventsResponse = await axios.get(`${apiURL}events`);
+// 	const events = eventsResponse.data;
+
+// 	// Make separate request for attendees of each event
+// 	const eventsWithAttendees = await Promise.all(
+// 		events.map(async (event) => {
+// 			const attendeesResponse = await axios.get(
+// 				`${apiURL}attendee/users/${event.event_id}`
+// 			);
+// 			const waitlistResponse = await axios.get(
+// 				`${apiURL}waitlist/users/${event.event_id}`
+// 			);
+// 			const attendees = attendeesResponse.data;
+// 			const waitlist = waitlistResponse.data;
+// 			return {
+// 				...event,
+// 				attendees,
+// 				waitlist,
+// 			};
+// 		})
+// 	);
+
+// 	return eventsWithAttendees;
+// };
