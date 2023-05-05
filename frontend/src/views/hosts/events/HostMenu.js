@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import CreateEvent from "./CreateEvent";
-import Users from "../users/Users";
-import EventsHost from "./EventsHost";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
@@ -13,24 +11,28 @@ export default function HostMenu({ navigation }) {
 	const [errors, setErrors] = useState([]);
 
 	useEffect(() => {
-	  const getEvents = async () => {
-		try {
-		  const response = await axios.get(`${API_END_POINT}event/date/${formattedDate}`);
-		  console.log("response: " + response.status)
-		  if (response.status === 200) {
-			const eventExists = response.data.eventExists;
-			if (eventExists) {
-			  setErrors(errors => [...errors, "Another event already starts on that date! Please choose another date and try again."]);
+		const getEvents = async () => {
+			try {
+				const response = await axios.get(
+					`${API_END_POINT}event/date/${formattedDate}`
+				);
+				console.log("response: " + response.status);
+				if (response.status === 200) {
+					const eventExists = response.data.eventExists;
+					if (eventExists) {
+						setErrors((errors) => [
+							...errors,
+							"Another event already starts on that date! Please choose another date and try again.",
+						]);
+					}
+				}
+			} catch (error) {
+				if (error.response && error.response.statusCode === 500) {
+				}
 			}
-		  }
-		} catch (error) {
-		  if (error.response && error.response.statusCode === 500) {
-		  }
-		}
-	  }
-	  getEvents();
+		};
+		getEvents();
 	}, []);
-	
 
 	return (
 		<View style={styles.container}>

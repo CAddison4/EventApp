@@ -16,7 +16,7 @@ export default function SearchBar({
 				onSubmitEditing={onSubmitEditing}
 				style={styles.searchBar}
 			/>
-			<Button title="Search" onPress={onPress} />
+			{/* <Button title="Search" onPress={onPress} /> */}
 			{/* <SearchButton onPress={filterUsers} /> */}
 		</>
 	);
