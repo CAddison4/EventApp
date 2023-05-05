@@ -5,21 +5,7 @@ import { setUser } from "./store/userSlice";
 import { API_END_POINT } from "@env";
 import { getUserData } from "./UserApiComponents";
 
-export const getRefreshToken = async () => {
-  try {
 
-    
-
-    const session = await Auth.currentSession();
-    const refreshToken = session.getRefreshToken().getToken();
-
-    //ASYNC STORAGE
-
-    return refreshToken;
-  } catch (error) {
-    console.log('Error retrieving refresh token', error);
-  }
-}
 
 export const handleSignUp = async (
   email,
@@ -100,66 +86,8 @@ export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
 
-    const user = await Auth.signIn(username, password);
-    console.log("USER", user).then((data) => 
-      console.log("DATA", data)
-    
-    );
-
-    const session = user.getSession();
-    console.log("Session", session);
-
-
-    
-    // const refreshToken = Auth.getRefreshToken().getToken();
-    // console.log("REFRESH TOKEN", refreshToken);
-    // console.log("USER", user);
-    // console.log("SESSION", session);
-
-
-    // console.log("REFRESH TOKEN", refreshToken);
-
-
-    // const apiEndpoint = `${API_END_POINT}user/email/${username}`;
-    // const apiResponse = await fetch(apiEndpoint, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     'Authorization': `Bearer ${accessToken}`
-    //   },
-    // });
-
-    // if (!apiResponse.ok) {
-    //   return {
-    //     success: false,
-    //     message: "Failed to retrieve user data, Check your email and try again",
-    //   };
-    // }
-    // const apiResponseJson = await apiResponse.json();
-    // console.log("API RESPONSE JSON", apiResponseJson);
-    // const loyalty = await fetch(`${API_END_POINT}loyalty/${apiResponseJson.user_id}`, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     'Authorization': `Bearer ${accessToken}`
-    //   },
-    // });
-    // const loyaltyJson = await loyalty.json();
-    
-    // const mergedUserData = {
-    //   ...apiResponseJson,
-    //   ...loyaltyJson,
-    // };
-    // console.log("MERGED USER DATA", mergedUserData);
-    // await dispatch(setUser(mergedUserData));
-    // return {
-    //   success: true,
-    //   message: "Successfully signed in",
-    // };
-
-
-    // const test = await getUserData(username, accessToken, dispatch);
-    // console.error("TEST", test);
+    const user = await Auth.signIn(username, password);    
+    console.log("USER", user);
   } catch (error) {
     let message = "Error signing in: " + error.message;
     if (error.code === "UserNotFoundException") {
@@ -172,7 +100,6 @@ export const handleSignIn = async (username, password, dispatch) => {
     }
     if (error.code === "UserNotConfirmedException") {
       // Auth.resendSignUp(username);
-      console.log(Auth.getSession(username, password));
       message =
         "This account has not been confirmed. Please check your email for a confirmation link.";
     }

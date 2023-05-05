@@ -3,23 +3,21 @@ import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
-import {
-  registerForEvent,
-  withdrawFromEvent,
-} from "../../../actions/EventActions";
-import {
-  waitlistForEvent,
-  removeFromEventWaitlist,
-} from "../../../actions/WaitlistActions";
+import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
+import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
 import { setEvent } from "../../../components/store/eventSlice";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { API_END_POINT } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_END_POINT } from '@env';
+
 export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const userId = route.params.userId;
+
+	var contextEvents = useSelector((state) => state.event);
+	const dispatch = useDispatch();
+
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 	const [status, setStatus] = useState("");
 
@@ -155,17 +153,17 @@ export default function EventDetails({ navigation, route }) {
 				<View style={styles.actionButtons}>
 					{/* If eligible and in the waitlist,
 					button should say "Remove" */}
-          {eventObj.isEligible && eventObj.isInWaitlist && (
-            <Button
-              title="Remove from Waitlist"
-              onPress={() => {
-                removeFromEventWaitlist(eventObj, userId);
-                updateEventFlag("Remove");
-                displayAlert("Remove", eventObj);
-              }}
-            />
-          )}
-          {/* If eligible and already attending and not in waitlist,
+					{eventObj.isEligible && eventObj.isInWaitlist && (
+						<Button
+							title="Remove from Waitlist"
+							onPress={() => {
+								removeFromEventWaitlist(eventObj, userId);
+								updateEventFlag("Remove");
+								displayAlert("Remove", eventObj);
+							}}
+						/>
+					)}
+					{/* If eligible and already attending and not in waitlist,
 					button should say "Withdraw", also show QR code button */}
 					{eventObj.isEligible && eventObj.isAttending && !eventObj.isInWaitlist && (
 						<>
@@ -190,72 +188,69 @@ export default function EventDetails({ navigation, route }) {
 					)}
 					{/* If eligible and not already attending and event has room,
 					button should say "Register" */}
-          {eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
-            <Button
-              title="Register"
-              onPress={() => {
-                registerForEvent(eventObj, userId);
-                updateEventFlag("Register");
-                displayAlert("Register", eventObj);
-              }}
-            />
-          )}
-          {/* If eligible and not already attending and event has no room,
+					{eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
+						<Button
+							title="Register"
+							onPress={() => {
+								registerForEvent(eventObj, userId);
+								updateEventFlag("Register");
+								displayAlert("Register", eventObj);
+							}}
+						/>
+					)}
+					{/* If eligible and not already attending and event has no room,
 					button should say "Waitlist" */}
-          {eventObj.isEligible &&
-            !eventObj.isAttending &&
-            !eventObj.hasRoom &&
-            !eventObj.isInWaitlist && (
-              <Button
-                title="Waitlist"
-                onPress={() => {
-                  waitlistForEvent(eventObj, userId);
-                  updateEventFlag("Waitlist");
-                  displayAlert("Waitlist", eventObj);
-                }}
-              />
-            )}
-        </View>
-      </View>
-    </View>
-  );
+					{eventObj.isEligible && !eventObj.isAttending && !eventObj.hasRoom && !eventObj.isInWaitlist && (
+						<Button
+							title="Waitlist"
+							onPress={() => {
+								waitlistForEvent(eventObj, userId);
+								updateEventFlag("Waitlist");
+								displayAlert("Waitlist", eventObj);
+							}}
+						/>
+					)}
+				</View>
+			</View>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  eventInfoContainer: {
-    width: "100%",
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    padding: 20,
-  },
-  actionButtons: {
-    marginTop: 5,
-    flexDirection: "column",
-    justifyContent: "center",
-    rowGap: 10,
-    width: "100%",
-  },
-  eventInfoItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 10,
-  },
-  label: {
-    fontWeight: "bold",
-  },
-  value: {},
+	container: {
+		flex: 1,
+		flexDirection: "column",
+		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingHorizontal: 20,
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: "bold",
+		textAlign: "center",
+		marginBottom: 20,
+	},
+	eventInfoContainer: {
+		width: "100%",
+		backgroundColor: "#eee",
+		borderRadius: 10,
+		padding: 20,
+	},
+	actionButtons: {
+		marginTop: 5,
+		flexDirection: "column",
+		justifyContent: "center",
+		rowGap: 10,
+		width: "100%",
+	},
+	eventInfoItem: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginVertical: 10,
+	},
+	label: {
+		fontWeight: "bold",
+	},
+	value: {},
 });

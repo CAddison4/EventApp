@@ -88,6 +88,7 @@ export default function EventsList({ route }) {
 
 			events = data.filter(eventObj => new Date(eventObj.event_date) > today);
 			setDBEvents(events);
+			console.log("DB Events: ", events)
 		}
 		else {
 			events = [...dbEvents];

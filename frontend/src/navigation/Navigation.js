@@ -10,7 +10,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CommonActions } from "@react-navigation/native";
-
+import jwt_decode from "jwt-decode";
 // View imports
 import MainProfile from "../../src/views/users/profile/MainProfile";
 import AuthForm from "../../src/views/AuthForm";
@@ -42,7 +42,11 @@ import store from "../../src/components/store/index";
 import EventListItem from "../../src/components/EventListItem";
 import ProfileNavButton from "../../src/components/ProfileNavButton";
 import axios from "axios";
-import { getUserData } from "../components/UserApiComponents";
+import {
+  getUserData,
+  removeCognitoTokens,
+  amplifyRefreshTokens,
+} from "../components/UserApiComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Amplify imports
@@ -60,10 +64,46 @@ const Navigation = () => {
   const [userStatusLoaded, setUserStatusLoaded] = React.useState(false);
   const dispatch = useDispatch();
 
-  const [userRetrieved, setUserRetrieved] = React.useState(false);
+  const [refreshMessage, setRefreshMessage] = React.useState("");
 
-  // Get user data from database
-  const [loginErrorObj, setLoginErrorObj] = React.useState(null);
+  // const awaitAsync = AsyncStorage.getItem("accessToken");
+
+  axios.interceptors.request.use( async (config)  => {
+      let expiration = 0;
+      // Do something before request is sent
+      const userToken = await AsyncStorage.getItem("accessToken");
+      if (userToken) {
+        try {
+          expiration = await jwt_decode(userToken).exp;
+          if (
+            (expiration !== 0 && expiration - Date.now() / 1000 < 600) ||
+            expiration - Date.now() / 1000 < 0
+          ) {
+            const refreshResult = amplifyRefreshTokens(); 
+            if (
+              refreshResult.success == false &&
+              refreshResult.message == "NotAuthorizedException"
+            ) {
+              removeCognitoTokens();
+              setRefreshMessage(
+                "Your session has expired. Please log in again."
+              );
+              setAuthenticated(false);
+            }
+          }
+        } catch (error) {
+          console.log("ERROR", error);
+        }
+      }
+      //compare expiration to now If expiration is in 10 minutes or less, refresh token
+
+      return  config;
+    },
+    (error) => {
+      console.log("ERROR", error);
+      return  Promise.reject(error);
+    }
+  );
 
   useEffect(() => {
     // Listen to "auth" events using Amplify Hub
@@ -71,9 +111,7 @@ const Navigation = () => {
       switch (data.payload.event) {
         case "signIn":
           // Get user data from database
-
           try {
-
             const fetchData = async () => {
               const userAuth = await Auth.currentSession();
               const userEmail = userAuth.idToken.payload.email;
@@ -83,12 +121,12 @@ const Navigation = () => {
                 userAccessToken,
                 dispatch
               );
-              if (userData.success == true){
+
+              if (userData.success == true) {
                 const userToken = await AsyncStorage.getItem("accessToken");
-                console.log("USER DATA", userData);
-                axios.defaults.headers.common['Authorization'] = 'Bearer ' + userToken;
+                axios.defaults.headers.common["Authorization"] =
+                  "Bearer " + userToken;
                 setAuthenticated(true);
-                setUserRetrieved(true);
               }
             };
             fetchData();
@@ -99,15 +137,17 @@ const Navigation = () => {
           break;
         case "signOut":
           //CLEAR ASYNC STORAGE
+          removeCognitoTokens();
           // When user signs out, set authenticated to false
           setAuthenticated(false);
+
           break;
       }
     });
   }, []);
 
   const contextUser = useSelector((state) => state.user);
-  
+
   useEffect(() => {
     console.log("USER Context", user);
     console.log("USER Context", contextUser);
@@ -125,8 +165,7 @@ const Navigation = () => {
         screenOptions={{
           headerStyle: {
             backgroundColor: "#607D8B",
-        //    backgroundColor: "#f6d5a7",
-            
+            //    backgroundColor: "#f6d5a7",
           },
           headerTintColor: "#fff",
           headerTitleStyle: {
@@ -135,8 +174,14 @@ const Navigation = () => {
           headerRight: () => <ProfileNavButton />,
         }}
       >
-        {authenticated == false && userRetrieved == false ? (
-          <Stack.Screen name="AuthForm" options={{ headerRight: () => "" }}>
+        {authenticated == false ? (
+          <Stack.Screen
+            name="AuthForm"
+            options={{ headerRight: () => "" }}
+            initialParams={{
+              refreshMessage: refreshMessage !== "" ? refreshMessage : "",
+            }}
+          >
             {() => <AuthForm />}
           </Stack.Screen>
         ) : (
@@ -191,7 +236,10 @@ const Navigation = () => {
                 <Stack.Screen name="EventListItem" component={EventListItem} />
                 <Stack.Screen name="EventDetails" component={EventDetails} />
                 <Stack.Screen name="Confirmation" component={Confirmation} />
-                <Stack.Screen name="AttendeeQRCode" component={AttendeeQRCode} />
+                <Stack.Screen
+                  name="AttendeeQRCode"
+                  component={AttendeeQRCode}
+                />
                 <Stack.Screen
                   name="ProfileNavButton"
                   component={ProfileNavButton}

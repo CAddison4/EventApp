@@ -9,8 +9,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-//SET DEFAULT AXIOS HEADERS. THIS IS THE AUTHORIZATION TOKEN
-
+//Configuring Amplify
 Amplify.configure(config);
 
 

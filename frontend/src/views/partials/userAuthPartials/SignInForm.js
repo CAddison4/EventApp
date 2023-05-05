@@ -116,12 +116,10 @@ const SignInForm = ({ route }) => {
               <Button
                 title="Sign Up"
                 onPress={() => navigation.navigate("SignUpForm")}
-    
               />
               <Button
                 title="Sign In"
                 onPress={handleSubmit}
- 
               />
             </View>
             <View style={styles.buttonContainer}>

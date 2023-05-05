@@ -5,6 +5,47 @@ import { setUser } from "./store/userSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_END_POINT } from "@env";
 
+export const removeCognitoTokens = async () => {
+  try {
+    await AsyncStorage.removeItem("refreshToken");
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("idToken");
+  } catch (error) {
+    console.log("Error removing cognito tokens", error);
+  }
+};
+
+export const amplifyRefreshTokens = async () => {
+  try {
+    const userAuth = Auth.currentSession();
+    const refreshToken = await userAuth.getRefreshToken().getToken();
+    const accessToken = await userAuth.getAccessToken().getJwtToken();
+    const idToken = await userAuth.getIdToken().getJwtToken();
+
+    AsyncStorage.setItem("refreshToken", refreshToken);
+    AsyncStorage.setItem("accessToken", accessToken);
+    AsyncStorage.setItem("idToken", idToken);
+
+    return {
+      success: true,
+      message: "Successfully refreshed tokens",
+    };
+  } catch (error) {
+    if(error.code === "NotAuthorizedException") {
+      return{
+        success: false,
+        message: "NotAuthorizedException"
+      }
+    }
+    return {
+      success: false,
+      message: "Error refreshing tokens",
+    };
+  }
+};
+
+
+
 export const getCognitoTokens = async () => {
   try {
     const session = await Auth.currentSession();
@@ -45,6 +86,8 @@ export const getCognitoTokens = async () => {
     };
   }
 };
+
+
 
 export const getUserData = async (username, accessToken, dispatch) => {
   console.log("ACCESS TOKEN", accessToken);

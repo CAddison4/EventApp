@@ -63,7 +63,6 @@ const ForgotPasswordForm = ({ route }) => {
             <Button
               title="Send Reset Code"
               onPress={handleSubmit}
-              style={styles.primaryButton}
             />
           </View>
         </View>
