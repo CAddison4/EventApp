@@ -3,15 +3,14 @@ import { API_END_POINT } from "@env";
 
 export async function ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, selectedEventType, loyaltyMinimum, startDateTime, endDateTime) {
     let errors = {};
-    console.log( "startDateTime: " + startDateTime.toISOString().slice(0, 10));
   
     try {
         const response = await axios.get(`${API_END_POINT}event/date/${startDateTime.toISOString().slice(0, 10)}`);
-        console.log("response: " + response.status)
         if (response.status === 200) {
           const eventExists = response.data.eventExists;
-          if (eventExists) {
-            errors.push("Another event already starts on that date! Please choose another date and try again.");
+          // if there is no events on that date it eventExists will have a value of null
+          if (eventExists != null) {
+            errors.sameDate="Another event already starts on that date! Please choose another date and try again.";
           }
         }
       } catch (error) {

@@ -1,9 +1,11 @@
 import * as React from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
 import { waitlistForEvent, removeFromEventWaitlist } from "../../../actions/WaitlistActions";
+import { setEvent } from "../../../components/store/eventSlice";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -12,7 +14,9 @@ import { API_END_POINT } from '@env';
 export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const userId = route.params.userId;
-	const handleRefresh = route.params.handleRefresh;
+
+	var contextEvents = useSelector((state) => state.event);
+	const dispatch = useDispatch();
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 	const [status, setStatus] = useState("");
@@ -44,6 +48,56 @@ export default function EventDetails({ navigation, route }) {
 		}
 	}, []);
 
+	async function updateEventFlag(type) {
+		const updatedEvents = contextEvents.map(event => {
+			if (event.event_id === eventObj.event_id) {
+				switch (type) {
+					case "Waitlist":
+						return { ...event, isInWaitlist: true, color: "orange" };
+					case "Remove":
+						return { ...event, isInWaitlist: false, color: "black" };
+					case "Register":
+						let newCapacity = decreaseCapacity(event);
+						return { ...event, isAttending: true, color: "green", attendee_status_id: "Registered",
+						capacityAvailable: newCapacity,
+						hasRoom: checkRoom(event) };
+					case "Withdraw":
+						newCapacity = increaseCapacity(event);
+						//	go back to attendee_status_id = Invited or Null
+						if (eventObj.type_id === "Guest List") {
+							return {...event, isAttending: false, color: "black",  attendee_status_id: "Invited",
+							capacityAvailable: newCapacity,
+							hasRoom: checkRoom(event) };
+						}
+						else {
+							return {...event, isAttending: false, color: "black",  attendee_status_id: null,
+							capacityAvailable: newCapacity,
+							hasRoom: checkRoom(event) };	
+						}
+					default:
+						return event;
+				}
+			} else {
+				return event;
+			}
+		});
+		// Save the contextEvents array back in state
+		await dispatch(setEvent(updatedEvents));
+	}
+
+	function increaseCapacity(eventObj) {
+		return eventObj.capacityAvailable += 1;
+	}
+
+	function decreaseCapacity(eventObj) {
+		return eventObj.capacityAvailable -= 1;	
+	}
+
+	async function checkRoom(eventObj) {
+		let response = await axios.get(`${API_END_POINT}anycapacity/${eventObj.event_id}`);
+		eventObj.hasRoom = response.data.numberOfAttendees < eventObj.capacity ? true : false;	
+	}
+
 	async function displayAlert(type, eventObj) {
 		switch (type) {
 			case "Waitlist":
@@ -61,7 +115,6 @@ export default function EventDetails({ navigation, route }) {
 			default:
 				break;
 		}
-		handleRefresh();
 		navigation.goBack();
 	}
 
@@ -105,6 +158,7 @@ export default function EventDetails({ navigation, route }) {
 							title="Remove from Waitlist"
 							onPress={() => {
 								removeFromEventWaitlist(eventObj, userId);
+								updateEventFlag("Remove");
 								displayAlert("Remove", eventObj);
 							}}
 						/>
@@ -117,6 +171,7 @@ export default function EventDetails({ navigation, route }) {
 								title="Withdraw"
 								onPress={() => {
 									withdrawFromEvent(eventObj, userId);
+									updateEventFlag("Withdraw");
 									displayAlert("Withdraw", eventObj);
 								}}
 							/>
@@ -138,6 +193,7 @@ export default function EventDetails({ navigation, route }) {
 							title="Register"
 							onPress={() => {
 								registerForEvent(eventObj, userId);
+								updateEventFlag("Register");
 								displayAlert("Register", eventObj);
 							}}
 						/>
@@ -149,6 +205,7 @@ export default function EventDetails({ navigation, route }) {
 							title="Waitlist"
 							onPress={() => {
 								waitlistForEvent(eventObj, userId);
+								updateEventFlag("Waitlist");
 								displayAlert("Waitlist", eventObj);
 							}}
 						/>
