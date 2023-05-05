@@ -1,8 +1,16 @@
 import { Auth } from "aws-amplify";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
+import {
+  getUserData,
+  generateToken,
+  handleSignUpApi,
+} from "./UserApiComponents";
+
+import { Hub } from "aws-amplify";
 
 export const handleSignUp = async (
   email,
@@ -10,20 +18,31 @@ export const handleSignUp = async (
   password_confirmation,
   firstName,
   lastName
-) => {
+  ) => {
   String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
     });
   };
-
   if (password !== password_confirmation) {
     return {
       success: false,
       message: "Passwords do not match",
     };
   }
-
+  try {
+    const userJwtToken = await generateToken();
+    const response = await fetch(`${API_END_POINT}/users/email/${email}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userJwtToken}`,
+      },
+    });
+    console.log("RESPONSE USER LOOKUP", response);
+  } catch (error) {
+    console.log("ERROR", error);
+  }
   try {
     await Auth.signUp({
       username: email,
@@ -37,27 +56,24 @@ export const handleSignUp = async (
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();
 
-    const apiEndpoint = `${API_END_POINT}/user`;
-    const apiResponse = await fetch(apiEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: cockroachEmail,
-        firstName: cockroachFirstName,
-        lastName: cockroachLastName,
-        roleId: "Attendee",
-        membershipStatusId: "None",
-      }),
-    });
+    const apiResponse = await handleSignUpApi(
+      cockroachEmail,
+      cockroachFirstName,
+      cockroachLastName
+    );
+    console.log("API RESPONSE", apiResponse);
+
+    if (!apiResponse.success) {
+      return {
+        success: false,
+        message: apiResponse.message,
+      };
+    }
     return {
       success: true,
       message: "Successfully signed up",
     };
   } catch (error) {
-    console.log("Error signing up:", error);
-
     let message = "Error signing up: " + error.message;
 
     if (error.code === "UsernameExistsException") {
@@ -68,6 +84,7 @@ export const handleSignUp = async (
       message =
         "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
     }
+
     return {
       success: false,
       message: message,
@@ -75,51 +92,41 @@ export const handleSignUp = async (
   }
 };
 
+export const handleAutoSignIn = async () => {
+  console.log("HANDLE AUTO SIGN IN")
+  try {
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    if (refreshToken) {
+      console.log("REFRESH TOKEN", refreshToken);
+    }
+  } catch (error) {
+    console.log("ERROR", error);
+    return {
+      success: false,
+      message: "Error signing in",
+    };
+  }
+};
+
+
 export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
-    const apiEndpoint = `${API_END_POINT}user/email/${username}`;
-    const apiResponse = await fetch(apiEndpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!apiResponse.ok) {
-      return {
-        success: false,
-        message: "Failed to retrieve user data, Check your email and try again",
-      };
-    }
-    const apiResponseJson = await apiResponse.json();
-    console.log("API RESPONSE JSON", apiResponseJson);
-    const loyalty = await fetch(`${API_END_POINT}loyalty/${apiResponseJson.user_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const loyaltyJson = await loyalty.json();
-    
-    const mergedUserData = {
-      ...apiResponseJson,
-      ...loyaltyJson,
-    };
-    console.log("MERGED USER DATA", mergedUserData);
-    await dispatch(setUser(mergedUserData));
-    await Auth.signIn(username, password);
-
-    return {
-      success: true,
-      message: "Successfully signed in",
-    };
+    const user = await Auth.signIn(username, password);
   } catch (error) {
     let message = "Error signing in: " + error.message;
-
     if (error.code === "UserNotFoundException") {
       message =
         "The email address or password you entered is incorrect. Please try again.";
+    }
+    if (error.code === "NotAuthorizedException") {
+      message =
+        "The email address or password you entered is incorrect. Please try again.";
+    }
+    if (error.code === "UserNotConfirmedException") {
+      // Auth.resendSignUp(username);
+      message =
+        "This account has not been confirmed. Please check your email for a confirmation link.";
     }
     return {
       success: false,
@@ -167,7 +174,9 @@ export const handleForgotPassword = async (username) => {
       message: "Forgot password request successfully sent",
     };
   } catch (error) {
+    console.log("Error requesting new password:", error);
     let message = "There was an error sending the password reset request.";
+
     if (error.code === "UserNotFoundException") {
       message = "User not found. Please check your email and try again.";
     }
@@ -227,6 +236,7 @@ export const handleResetPassword = async (
 };
 
 export const handleSignOut = async () => {
+  //CLEAR ASYNC STORAGE
   try {
     await Auth.signOut();
     console.log("Successfully signed out");

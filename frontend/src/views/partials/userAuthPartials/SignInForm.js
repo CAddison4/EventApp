@@ -60,6 +60,7 @@ const SignInForm = ({ route }) => {
       console.log("Error signing in:", error);
     }
   };
+  
   const handleHostSignIn = async () => {
     try {
       const hostUserName = "sholmes47@my.bcit.ca";
@@ -115,24 +116,20 @@ const SignInForm = ({ route }) => {
               <Button
                 title="Sign Up"
                 onPress={() => navigation.navigate("SignUpForm")}
-                style={styles.primaryButton}
               />
               <Button
                 title="Sign In"
                 onPress={handleSubmit}
-                style={styles.primaryButton}
               />
             </View>
             <View style={styles.buttonContainer}>
               <Button
                 title="Sign In as Attendee"
                 onPress={handleAttendeeSignIn}
-                style={styles.primaryButton}
               />
               <Button
                 title="Sign In as Host"
                 onPress={handleHostSignIn}
-                style={styles.primaryButton}
               />
             </View>
           </View>

@@ -1,5 +1,6 @@
 import { createUser } from "@backend-event-app/core/database";
 export async function main(event) {
+  
   try {
     const body = JSON.parse(event.body);
 

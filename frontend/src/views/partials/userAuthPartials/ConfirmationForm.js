@@ -71,7 +71,6 @@ const ConfirmationForm = ({ route }) => {
             <Button
               title="Confirm"
               onPress={handleSubmit}
-              titleStyle={styles.button}
             />
           </View>
       </SafeAreaView>

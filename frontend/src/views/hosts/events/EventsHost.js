@@ -20,6 +20,7 @@ export default function EventsHost({ navigation }) {
 	const [pastEvents, setPastEvents] = useState([]);
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 
+
 	useEffect(() => {
 		const getData = async () => {
 			const eventsWithAttendees = await getEventsWithAttendees();
@@ -27,7 +28,7 @@ export default function EventsHost({ navigation }) {
 			const eventData = eventsWithAttendees.sort(
 				(a, b) => new Date(a.event_date) - new Date(b.event_date)
 			);
-
+				
 			setEventObjs(eventData);
 			setLoading(false);
 			setRefresh(false);
