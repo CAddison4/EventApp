@@ -1,15 +1,22 @@
+//test
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useEffect } from "react";
 
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
-import { NavigationEvents } from "react-navigation";
 
 const Tab = createBottomTabNavigator();
 
-export default function MyEvents() {
+export default function MyEvents( {route} ) {
+	const { eventObjs, handleFilterChange, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
+
+	useEffect(() => {
+        handleSetDisplayTab("My Events");
+    }, []);
+
 	return (
 		<Tab.Navigator
 			initialRouteName="EventsList"
@@ -33,13 +40,27 @@ export default function MyEvents() {
 				headerShown: false,
 			})}>
 			<Tab.Screen
-			   name="List" 
-			   component={EventsList}
-			   initialParams={{	type: "myevents" }} />
+			   	name="List" 
+			   	component={EventsList}
+			   	initialParams={{ eventObjs: eventObjs,
+							     handleFilterChange: handleFilterChange,
+								 type: "myevents",
+								 filterValueU: filterValueU,
+								 filterValueM: filterValueM,
+								 handleRefresh: handleRefresh,
+								 handleSetDisplayTab: handleSetDisplayTab }}
+			/>
 			<Tab.Screen
-			    name="Calendar"
+			   	name="Calendar"
 				component={EventsCal}
-				initialParams={{ type: "myevents" }} />
+				initialParams={{ eventObjs: eventObjs,
+					             handleFilterChange: handleFilterChange,
+								 type: "myevents",
+								 filterValueU: filterValueU,
+								 filterValueM: filterValueM,
+								 handleRefresh: handleRefresh,
+								 handleSetDisplayTab: handleSetDisplayTab }}
+			/>
 		</Tab.Navigator>
 	);
 }
