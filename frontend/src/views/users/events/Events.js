@@ -1,16 +1,24 @@
+// test
 import { StyleSheet, ActivityIndicator } from "react-native";
+
 import * as React from "react";
 
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { API_END_POINT } from '@env';
 
 import MyEvents from "./MyEvents";
 import Upcoming from "./Upcoming";
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
+
 export default function Events( { navigation } ) {
 
 	const user = useSelector((state) => state.user);
@@ -164,18 +172,15 @@ export default function Events( { navigation } ) {
 		}
 	}
 
-
 	return (
-		<Tab.Navigator>
-			<Tab.Screen
-				name="Upcoming"
-				component={Upcoming}
+		<>
+		{isLoading ? (
+			<ActivityIndicator
+				size="large"
+				color="#0000ff"
+				animating={true}
+				style={styles.activityIndicator}
 			/>
-			<Tab.Screen
-				name="My Events"
-				component={MyEvents}
-			/>
-
 		) : (
 			<Tab.Navigator initialRouteName={`${displayTab}`}>
 				<Tab.Screen
@@ -205,7 +210,6 @@ export default function Events( { navigation } ) {
 			</Tab.Navigator>
 		)}
 		</>
-
 	);
 }
 const styles = StyleSheet.create({
@@ -215,4 +219,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 	},
+	activityIndicator: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		height: 80
+	},
 });
+

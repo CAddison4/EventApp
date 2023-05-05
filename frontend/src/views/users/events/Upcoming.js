@@ -1,14 +1,12 @@
-
+//test
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect } from "react";
 
-
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
-
 
 const Tab = createBottomTabNavigator();
 
@@ -20,10 +18,7 @@ export default function Upcoming( {route} ) {
         handleSetDisplayTab("Upcoming");
     }, []);
 
-
-export default function Upcoming() {
 	return (
-
 		<Tab.Navigator
 			initialRouteName="EventsList"
 			screenOptions={({ route }) => ({
@@ -46,7 +41,6 @@ export default function Upcoming() {
 				headerShown: false,
 			})}>
 			<Tab.Screen
-
 			   	name="List" 
 			   	component={EventsList}
 			   	initialParams={{ eventObjs: eventObjs,
@@ -68,7 +62,6 @@ export default function Upcoming() {
 								 handleRefresh: handleRefresh,
 								 handleSetDisplayTab: handleSetDisplayTab }}
 			/>
-
 		</Tab.Navigator>
 
 	);
