@@ -223,8 +223,9 @@ export async function getAttendeesByUser(userId) {
 // Get attendee records for a specific event
 export async function getAttendeesByEvent(eventId) {
   const res = await getPool().query(`
-  SELECT ea.*, e.*, u.* FROM eventattendees ea
+  SELECT ea.*, e.*, u.*, ec.number_of_attendees FROM eventattendees ea
   JOIN events e ON ea.event_id = e.event_id
+  JOIN eventcapacity ec ON e.event_id = ec.event_id
   JOIN users u ON ea.user_id = u.user_id
   WHERE ea.event_id = $1 AND e.cancelled = false
   ORDER BY u.last_name

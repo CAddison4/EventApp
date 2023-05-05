@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useEffect } from "react";
 
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
@@ -9,7 +10,12 @@ import EventsList from "./EventsList";
 const Tab = createBottomTabNavigator();
 
 export default function Upcoming( {route} ) {
-	const { eventObjs, handleFilterChange } = route.params;
+
+	const { eventObjs, handleFilterChange, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
+
+	useEffect(() => {
+        handleSetDisplayTab("Upcoming");
+    }, []);
 
 	return (
 		<Tab.Navigator
@@ -38,14 +44,22 @@ export default function Upcoming( {route} ) {
 			   	component={EventsList}
 			   	initialParams={{ eventObjs: eventObjs,
 					             handleFilterChange: handleFilterChange,
-								 type: "upcoming" }}
+								 type: "upcoming",
+								 filterValueU: filterValueU,
+								 filterValueM: filterValueM,
+								 handleRefresh: handleRefresh,
+								 handleSetDisplayTab: handleSetDisplayTab }}
 			/>
 			<Tab.Screen
 		       	name="Calendar"
 			   	component={EventsCal}
 			   	initialParams={{ eventObjs: eventObjs,
 					             handleFilterChange: handleFilterChange,
-								 type: "upcoming" }}
+								 type: "upcoming",
+								 filterValueU: filterValueU,
+								 filterValueM: filterValueM,
+								 handleRefresh: handleRefresh,
+								 handleSetDisplayTab: handleSetDisplayTab }}
 			/>
 		</Tab.Navigator>
 

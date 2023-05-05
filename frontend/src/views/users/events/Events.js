@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 
 import * as React from "react";
 
@@ -31,6 +31,7 @@ export default function Events( { navigation } ) {
 	const [selectedFilterU, setSelectedFilterU] = useState("All");
 	const [selectedFilterM, setSelectedFilterM] = useState("All");
 	const [isLoading, setIsLoading] = useState(true);
+	const [displayTab, setDisplayTab] = useState("");
 	
 	const [refresh, setRefresh] = useState(false);
 
@@ -48,15 +49,15 @@ export default function Events( { navigation } ) {
 	}, [refresh]);
 
 	useEffect(() => {
-		console.log("In filter useEffect");
 		applyFilters("upcoming", selectedFilterU);
-		applyFilters("myevents", selectedFilterM);	
+		applyFilters("myevents", selectedFilterM);
 	}, [events]);
 
+	const handleSetDisplayTab = (tab) => {
+        setDisplayTab(tab);
+    };
+
 	const handleFilterChange = (filterValue, type) => {
-		console.log("Do we get this far?");
-		console.log("filterValue", filterValue);
-		console.log("type", type);
 		if (type === "upcoming") {
 			setSelectedFilterU(filterValue);
 		}
@@ -65,6 +66,14 @@ export default function Events( { navigation } ) {
 		}
 		setRefresh(true);
 	};
+
+	const handleRefresh = () => {
+		setRefresh(true);
+		/* setIsLoading(true);
+		setEvents([]);
+		setUpcomingEvents([]);
+		setMyEvents([]); */
+    };
 
 	const getEvents = async () => {
 		const loyaltyCount = await getLoyaltyCount(user_id);
@@ -162,16 +171,6 @@ export default function Events( { navigation } ) {
 		}
 	}
 
-	/* const handleRefresh = () => {
-		if (!refresh) {
-			setRefresh(true);
-			setIsLoading(true);
-			setEvents([]);
-			setUpcomingEvents([]);
-			setMyEvents([]);
-		}
-    }; */
-
 	return (
 		<>
 		{isLoading ? (
@@ -182,13 +181,17 @@ export default function Events( { navigation } ) {
 				style={styles.activityIndicator}
 			/>
 		) : (
-			<Tab.Navigator>
+			<Tab.Navigator initialRouteName={`${displayTab}`}>
 				<Tab.Screen
 					name="Upcoming"
 					component={Upcoming}
 					initialParams={{
 						eventObjs: upcomingEvents,
 						handleFilterChange: handleFilterChange,
+						filterValueU: selectedFilterU,
+						filterValueM: selectedFilterM,
+						handleRefresh: handleRefresh,
+						handleSetDisplayTab: handleSetDisplayTab,
 					}}
 				/>
 				<Tab.Screen
@@ -197,6 +200,10 @@ export default function Events( { navigation } ) {
 					initialParams={{
 						eventObjs: myEvents,
 						handleFilterChange: handleFilterChange,
+						filterValueU: selectedFilterU,
+						filterValueM: selectedFilterM,
+						handleRefresh: handleRefresh,
+						handleSetDisplayTab: handleSetDisplayTab,
 					}}
 				/>
 			</Tab.Navigator>

@@ -15,12 +15,12 @@ export default function EventsList({ route }) {
 	const user = useSelector((state) => state.user);
 	const { user_id, ...userData } = user;
 
-	const { eventObjs, handleFilterChange, type } = route.params;
+	const { eventObjs, handleFilterChange, type, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
 
 	const [filteredEvents, setFilteredEvents] = useState(eventObjs);
 
-	const [selectedFilterU, setSelectedFilterU] = useState("All");
-	const [selectedFilterM, setSelectedFilterM] = useState("All");
+	const [filterU, setFilterU] = useState(filterValueU);
+	const [filterM, setFilterM] = useState(filterValueM);
 	
 	const [open, setOpen] = useState(false);
 
@@ -34,16 +34,15 @@ export default function EventsList({ route }) {
 		{label: 'All', value: 'All'},
 		{label: 'Eligible', value: 'Eligible'}]);
 
-	useEffect(() => {
-		if (type === "upcoming") {
-			console.log("In eventslist filterChange useEffect", type, selectedFilterU);
-			handleFilterChange(selectedFilterU, type);
-		}
-		else {
-			console.log("In filter useEffect", type, selectedFilterM);
-			handleFilterChange(selectedFilterM, type);
-		}
-	}, [selectedFilterU, selectedFilterM]);
+	const handleFilterSelect = (value) => {
+        if (type === "upcoming") {
+            setFilterU(value);
+            handleFilterChange(value, type);
+        } else {
+            setFilterM(value);
+            handleFilterChange(value, type);
+        }
+    };
 
 	return (
 		<View style={styles.container}>
@@ -51,20 +50,26 @@ export default function EventsList({ route }) {
 				<View style={styles.picker}>
 					<DropDownPicker 
 						open={open}
-						value={selectedFilterU}
+						value={filterU}
 						items={filterItemsU}
 						setOpen={setOpen}
-						setValue={setSelectedFilterU}
+						setValue={(val) => {
+                            handleFilterSelect(val);
+                            handleSetDisplayTab("Upcoming");
+                        }}
 					/> 
 				</View>
 			) : (
 				<View style={styles.picker}>
 					<DropDownPicker 
 						open={open}
-						value={selectedFilterM}
+						value={filterM}
 						items={filterItemsM}
 						setOpen={setOpen}
-						setValue={setSelectedFilterM}
+						setValue={(val) => {
+                            handleFilterSelect(val);
+                            handleSetDisplayTab("My Events");
+                        }}
 					/> 
 				</View>
 			)}
