@@ -17,22 +17,9 @@ import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 
-import { setEvent } from "../../../components/store/eventSlice";
-import { useDispatch, useSelector } from "react-redux";
-
 export default function EventsListHost({ route }) {
-	const {
-		eventObjs,
-		// searchQuery,
-		// submittedSearchQuery,
-		handleRefresh,
-		// handleSearchQuery,
-		// handleSearchSubmit,
-		// handleClearFilter,
-	} = route.params;
-
 	const [searchQuery, setSearchQuery] = useState("");
-
+	const { eventObjs, handleRefresh } = route.params;
 	const navigation = useNavigation();
 
 	const handleSearchQuery = (query) => {
@@ -45,7 +32,6 @@ export default function EventsListHost({ route }) {
 
 	const handleClearFilter = () => {
 		setSearchQuery("");
-		console.log("clear filter");
 	};
 
 	return (

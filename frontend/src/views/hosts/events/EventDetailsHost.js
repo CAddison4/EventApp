@@ -143,7 +143,7 @@ export default function EventDetailsHost({ navigation, route }) {
 			) : (
 				eventObj && (
 					<>
-						<Text style={styles.title}>Event Details for event</Text>
+						<Text style={styles.title}>Event Details</Text>
 						<Text>Name: {eventObj.event_name}</Text>
 						<Text>Date: {eventObj.event_date}</Text>
 						<Text>Location: {eventObj.event_location}</Text>
