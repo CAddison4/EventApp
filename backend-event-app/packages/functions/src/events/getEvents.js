@@ -1,7 +1,7 @@
 import { getEvents } from "@backend-event-app/core/database";
 
 export async function main(event) {
-  console.log("getEvents:", event.headers.authorization.split(' ')[1].trim())
+  console.log("getEvents:", event.headers.authorization.split(' ')[1])
   try {
     const events = await getEvents();
 

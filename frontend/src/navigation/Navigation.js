@@ -136,10 +136,9 @@ const Navigation = () => {
             const fetchData = async () => {
               const userAuth = await Auth.currentSession();
               const userEmail = userAuth.idToken.payload.email;
-              const userAccessToken = userAuth.accessToken.jwtToken;
+              
               const userData = await getUserData(
                 userEmail,
-                userAccessToken,
                 dispatch
               );
 
@@ -148,6 +147,10 @@ const Navigation = () => {
                 axios.defaults.headers.common["Authorization"] =
                 `Bearer ${userToken}`;
                 setAuthenticated(true);
+              }
+              else{
+                setAuthenticated(false);
+                setRefreshMessage("Error Retrieving User Data. Please try again, Or contact support.")
               }
             };
             fetchData();

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
-import { getUserData } from "./UserApiComponents";
+import { getUserData, generateToken, handleSignUpApi } from "./UserApiComponents";
 
 
 
@@ -26,6 +26,20 @@ export const handleSignUp = async (
       message: "Passwords do not match",
     };
   }
+  try{
+    const userJwtToken = await generateToken();
+    const response = await fetch(`${API_END_POINT}/users/email/${email}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userJwtToken}`,
+      },
+    });
+    console.log("RESPONSE USER LOOKUP", response);
+  }
+  catch (error) {
+    console.log("ERROR", error);
+  }
 
   try {
     await Auth.signUp({
@@ -40,26 +54,10 @@ export const handleSignUp = async (
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();
 
-    const apiEndpoint = `${API_END_POINT}/user`;
+    
 
-    const apiResponse = await fetch(apiEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: cockroachEmail,
-        firstName: cockroachFirstName,
-        lastName: cockroachLastName,
-        roleId: "Attendee",
-        membershipStatusId: "None",
-      }),
-    });
-
-    return {
-      success: true,
-      message: "Successfully signed up",
-    };
+    
+    
   } catch (error) {
 
     let message = "Error signing up: " + error.message;
@@ -85,9 +83,10 @@ export const handleSignUp = async (
 export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
-
-    const user = await Auth.signIn(username, password);    
-    console.log("USER", user);
+    const user = await Auth.signIn(username, password);  
+    
+    
+    
   } catch (error) {
     let message = "Error signing in: " + error.message;
     if (error.code === "UserNotFoundException") {

@@ -1,7 +1,7 @@
 import { getUsers } from "@backend-event-app/core/database";
 
 export async function main(event) {
-
+console.log("getUsers:", event.headers.authorization.split(' ')[1])
   try {
     const users = await getUsers();
 

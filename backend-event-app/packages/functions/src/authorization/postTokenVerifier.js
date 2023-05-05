@@ -1,22 +1,38 @@
 import jwt from 'jsonwebtoken';
 
-exports.handler = async (event, context, callback) => {
-  const token = event.headers.Authorization.split(' ')[1];
+export async function handler(event, context) {
+
+  // Check if Authorization header is set
+  if (!event.headers || !event.headers.authorization) {
+    const effect = 'Deny';
+    const policy = generatePolicy('user', effect, event.methodArn);
+    return policy;
+ 
+  }
+
+  const token = event.headers.authorization.split(' ')[1];
   const secret = process.env.SECRET_KEY;
 
   try {
     const decodedToken = jwt.verify(token, secret);
+   
+    
+    if (!decodedToken || !decodedToken.email) {
+      const effect = 'Deny';
+      const policy = generatePolicy('user', effect, event.methodArn);
+      return policy;
+    }
+    
     // Check if decodedToken has the necessary fields and is not expired
     // If valid, return allow policy
     const effect = 'Allow';
-    const userId = decodedToken.userId;
-    const policy = generatePolicy(userId, effect, event.methodArn);
-    callback(null, policy);
+    const policy = generatePolicy('user', effect, event.methodArn);
+    return policy;
   } catch (err) {
     // Return deny policy if token is invalid
     const effect = 'Deny';
     const policy = generatePolicy('user', effect, event.methodArn);
-    callback(null, policy);
+    return policy;
   }
 };
 
