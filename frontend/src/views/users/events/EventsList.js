@@ -21,14 +21,12 @@ export default function EventsList({ route }) {
 
 	const type = route.params.type;
 
-	const [filteredEvents, setFilteredEvents] = useState([]);
-
+	const { eventObjs, handleFilterChange, type, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
 	const [dbEvents, setDBEvents] = useState([]);
 
-	const [selectedFilterU, setSelectedFilterU] = useState("All");
-	const [selectedFilterM, setSelectedFilterM] = useState("All");
-	const [isLoading, setIsLoading] = useState(true);
-	const [isLoadingF, setIsLoadingF] = useState(true);
+	const [filterU, setFilterU] = useState(filterValueU);
+	const [filterM, setFilterM] = useState(filterValueM);
+
 	const [open, setOpen] = useState(false);
 
 	const navigation = useNavigation();
@@ -46,26 +44,17 @@ export default function EventsList({ route }) {
 		{label: 'All', value: 'All'},
 		{label: 'Eligible', value: 'Eligible'}]);
 
-	useEffect(() => {
-		setIsLoading(true);
-		async function fetchData() {
-			await getEvents(true);
-			await dispatch(setEvent(events));
-			applyFilters(type, "All");
-			setFilteredEvents(events);
-			setIsLoading(false);
-		}
-		fetchData();
-	}, []);
 
-	useEffect(() => {
-		if (type === "upcoming") {
-			handleFilterChange(selectedFilterU);
-		}
-		else {
-			handleFilterChange(selectedFilterM);
-		}
-	}, [selectedFilterU, selectedFilterM]);
+	const handleFilterSelect = (value) => {
+        if (type === "upcoming") {
+            setFilterU(value);
+            handleFilterChange(value, type);
+        } else {
+            setFilterM(value);
+            handleFilterChange(value, type);
+        }
+    };
+
 
 	useEffect(() => {
 		if (contextEvents) {
@@ -196,33 +185,52 @@ export default function EventsList({ route }) {
 
 	return (
 		<View style={styles.container}>
-			{isLoading || isLoadingF ? (
-				<ActivityIndicator
-					size="large"
-					color="#0000ff"
-					animating = {true}
-               		style = {styles.activityIndicator} />
+
+			{type && type === "upcoming" ? (
+				<View style={styles.picker}>
+					<DropDownPicker 
+						open={open}
+						value={filterU}
+						items={filterItemsU}
+						setOpen={setOpen}
+						setValue={(val) => {
+                            handleFilterSelect(val);
+                            handleSetDisplayTab("Upcoming");
+                        }}
+					/> 
+				</View>
 			) : (
-				<>
-				{type && type === "upcoming" ? (
-					<View style={styles.picker}>
-						<DropDownPicker 
-							open={open}
-							value={selectedFilterU}
-							items={filterItemsU}
-							setOpen={setOpen}
-							setValue={setSelectedFilterU}
-						/> 
-					</View>
-				) : (
-					<View style={styles.picker}>
-						<DropDownPicker 
-							open={open}
-							value={selectedFilterM}
-							items={filterItemsM}
-							setOpen={setOpen}
-							setValue={setSelectedFilterM}
-						/> 
+				<View style={styles.picker}>
+					<DropDownPicker 
+						open={open}
+						value={filterM}
+						items={filterItemsM}
+						setOpen={setOpen}
+						setValue={(val) => {
+                            handleFilterSelect(val);
+                            handleSetDisplayTab("My Events");
+                        }}
+					/> 
+				</View>
+			)}
+			<FlatList style={styles.list}
+				data={filteredEvents}
+				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
+				renderItem={({ item }) => (
+					<View>
+						<TouchableOpacity
+							onPress={() =>
+								navigation.navigate("EventDetails", {
+									eventObj: item,
+									userId: user_id,
+									navigation: navigation,
+									handleRefresh: handleRefresh,
+								})
+							}>
+							<EventListItem
+								eventObj={item}/>
+						</TouchableOpacity>						
+
 					</View>
 				)}
 				<FlatList style={styles.list}
