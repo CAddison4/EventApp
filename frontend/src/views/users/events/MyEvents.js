@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
+import { NavigationEvents } from "react-navigation";
 
 const Tab = createBottomTabNavigator();
 
@@ -39,6 +40,7 @@ export default function MyEvents( {route} ) {
 				headerShown: false,
 			})}>
 			<Tab.Screen
+
 			   	name="List" 
 			   	component={EventsList}
 			   	initialParams={{ eventObjs: eventObjs,
@@ -49,9 +51,11 @@ export default function MyEvents( {route} ) {
 								 handleRefresh: handleRefresh,
 								 handleSetDisplayTab: handleSetDisplayTab }}
 			/>
+
 			<Tab.Screen
-			   	name="Calendar"
+			    name="Calendar"
 				component={EventsCal}
+
 				initialParams={{ eventObjs: eventObjs,
 					             handleFilterChange: handleFilterChange,
 								 type: "myevents",
@@ -60,6 +64,7 @@ export default function MyEvents( {route} ) {
 								 handleRefresh: handleRefresh,
 								 handleSetDisplayTab: handleSetDisplayTab }}
 			/>
+
 		</Tab.Navigator>
 	);
 }

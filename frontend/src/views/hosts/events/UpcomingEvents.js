@@ -6,9 +6,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import EventsCalHost from "./EventsCalHost";
 import EventsListHost from "./EventsListHost";
 
+import { setFilters } from "../../../components/store/filtersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+
 const Tab = createBottomTabNavigator();
 
-export default function Upcoming() {
+export default function Upcoming({ route }) {
+	const { eventObjs, handleRefresh } = route.params;
 	return (
 		<Tab.Navigator
 			initialRouteName="EventsListHost"
@@ -23,7 +28,6 @@ export default function Upcoming() {
 					if (route.name === "EventsCalHost") {
 						iconName = focused ? "calendar" : "calendar-outline";
 					}
-					// You can return any component that you like here!
 					return <Ionicons name={iconName} size={size} color={color} />;
 				},
 				tabBarActiveTintColor: "tomato",
@@ -34,12 +38,18 @@ export default function Upcoming() {
 			<Tab.Screen
 				name="EventsListHost"
 				component={EventsListHost}
-				initialParams={{ type: "upcoming" }}
+				initialParams={{
+					eventObjs: eventObjs,
+					handleRefresh: handleRefresh,
+				}}
 			/>
 			<Tab.Screen
 				name="EventsCalHost"
 				component={EventsCalHost}
-				initialParams={{ type: "upcoming" }}
+				initialParams={{
+					eventObjs: eventObjs,
+					handleRefresh: handleRefresh,
+				}}
 			/>
 		</Tab.Navigator>
 	);
