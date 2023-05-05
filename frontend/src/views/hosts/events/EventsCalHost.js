@@ -11,10 +11,8 @@ export default function EventsCalHost({ route, navigation }) {
 	// use filter to filter events by upcoming, past, or all
 	// type is the upcoming or past
 	const [loading, setLoading] = useState(true);
-	const [selected, setSelected] = useState(new Date().toISOString().slice(0, 10));
-	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-	const [pastMonths, setPastMonths] = useState(0);
-	const [futureMonths, setFutureMonths] = useState(0);
+	const [selected, setSelected] = useState("");
+	const [selectedYear, setSelectedYear] = useState("");
 	
 	const handleYearSelect = (year) => {
 		setSelectedYear(year);
@@ -28,9 +26,7 @@ export default function EventsCalHost({ route, navigation }) {
 			const eventDate = new Date(event.event_date);
 			return eventDate.getFullYear() === selectedYear;
 		});
-		console.log("filteredEvents",filteredEvents)
-		console.log("past",pastMonths)
-		console.log(futureMonths)
+		// console.log("filteredEvents",filteredEvents)
 		const eventDatesArray = filteredEvents.map((event) => {
 			// check the date is valid
 			if (event.event_date && Date.parse(event.event_date)) {
@@ -55,7 +51,7 @@ export default function EventsCalHost({ route, navigation }) {
 
 		setMarkedDates(mergedMarkedDates);
 		setLoading(false);
-	}, [eventObjs, selectedYear]);
+	}, [eventObjs]);
 
 	const infoPressed = () => {
 		// show alert that has descriptions of the different colors
@@ -72,6 +68,9 @@ export default function EventsCalHost({ route, navigation }) {
 		);
 	};
 	
+	useEffect(() => {
+		setSelected(current);
+	  }, [current]);
 
 	return (
 		<><View style={styles.titleContainer}>
@@ -81,7 +80,7 @@ export default function EventsCalHost({ route, navigation }) {
 					style={styles.informationIcon}
 					// use infoPressed function to show alert
 					onPress={() => { infoPressed(); }} /></Text>
-			<Text>{selected}</Text>
+			<Text>selected:{selected}</Text>
 		</View>
         <View style={{zIndex: 5000}}> 
             <Text>YearPicker Example {selectedYear}</Text>
@@ -99,9 +98,8 @@ export default function EventsCalHost({ route, navigation }) {
 			) : (
 				<View style={styles.calendarContainer}>
 					<Calendar
+					key={selected}
 					markedDates={markedDates}
-					pastMonths={pastMonths}
-					futureMonths={futureMonths}
 					current={selected}
 					/>
 				</View>
