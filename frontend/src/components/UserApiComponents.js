@@ -2,7 +2,7 @@ import { Auth } from "aws-amplify";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "./store/userSlice";
 
-import JWT from 'expo-jwt';
+import JWT from "expo-jwt";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_END_POINT, SECRET_KEY } from "@env";
@@ -80,19 +80,24 @@ export const generateToken = async (email) => {
 export const handleSignUpApi = async (email, firstName, lastName) => {
   try {
     const bearerToken = await generateToken();
-    console.log("CUSTOM JWT TOKEN", bearerToken);
+    if (!bearerToken.success) {
+      return {
+        success: false,
+        message: "Error signing up, please try again",
+      };
+    }
 
     const apiEndpoint = `${API_END_POINT}/user`;
     const apiResponse = await fetch(apiEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${bearerToken.token}`,
       },
       body: JSON.stringify({
-        email: cockroachEmail,
-        firstName: cockroachFirstName,
-        lastName: cockroachLastName,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
         roleId: "Attendee",
         membershipStatusId: "None",
       }),
@@ -139,9 +144,8 @@ export const getCognitoTokens = async () => {
 
 export const getUserData = async (username, dispatch) => {
   try {
-    
     const userJwtToken = await generateToken(username);
-    if(!userJwtToken.success) {
+    if (!userJwtToken.success) {
       return {
         success: false,
         message: "Failed to retrieve user data, Check your email and try again",
@@ -150,8 +154,7 @@ export const getUserData = async (username, dispatch) => {
 
     const accessToken = await AsyncStorage.getItem("accessToken");
     console.log("ACCESS TOKEN", accessToken);
-    
- 
+
     console.log("USER JWT TOKEN", userJwtToken);
     const apiEndpoint = `${API_END_POINT}user/email/${username}`;
     const apiResponse = await fetch(apiEndpoint, {
@@ -171,8 +174,7 @@ export const getUserData = async (username, dispatch) => {
     }
 
     const apiResponseJson = await apiResponse.json();
-    
-    
+
     const loyalty = await fetch(
       `${API_END_POINT}loyalty/${apiResponseJson.user_id}`,
       {
@@ -190,8 +192,8 @@ export const getUserData = async (username, dispatch) => {
       ...apiResponseJson,
       ...loyaltyJson,
     };
-    
-    console.log("MERGED USER DATA", mergedUserData)
+
+    console.log("MERGED USER DATA", mergedUserData);
     dispatch(setUser(mergedUserData));
 
     const tokens = await getCognitoTokens();

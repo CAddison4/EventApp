@@ -40,7 +40,7 @@ export function API({ stack }) {
       },
     },
     defaults: {
-      authorizer: "cognito" | "eventAppJwtAuthorizer",
+      authorizer: "cognito",
       function: {
         environment: {
           DATABASE_URL: process.env.DATABASE_URL,

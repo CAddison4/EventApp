@@ -53,7 +53,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Amplify, Hub, Auth } from "aws-amplify";
 import config from "../../src/aws-exports";
 Amplify.configure(config);
-
+import { handleAutoSignIn } from "../components/AuthComponents";
 // Navigation stack
 const Stack = createNativeStackNavigator();
 
@@ -106,27 +106,18 @@ const Navigation = () => {
     }
   );
 
-
-  const autoSignIn = async () => {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
-    if (refreshToken) {
-      try {
-        const refreshResult = amplifyRefreshTokens(refreshToken);
-        if (refreshResult.success) {
-          const { accessToken } = refreshResult;
-          const decodedToken = jwt_decode(accessToken);
-          const user = await Auth.signIn(decodedToken.username, accessToken);
-          // If user is successfully logged in, set the authenticated state to true
-          // and store the tokens in AsyncStorage
-          // ...
-        }
-      } catch (e) {
-        console.log('Error refreshing token:', e);
-      }
-    }
-  }
-
   useEffect(() => {
+    
+    // Check if user is signed in async
+    const checkAuth = async () => {
+      
+      try {
+        await handleAutoSignIn(dispatch);
+      } catch (e) {
+        console.log("ERROR NAVIGATION", e);
+      }
+    };
+    checkAuth();
     // Listen to "auth" events using Amplify Hub
     Hub.listen("auth", (data) => {
       switch (data.payload.event) {
@@ -136,7 +127,6 @@ const Navigation = () => {
             const fetchData = async () => {
               const userAuth = await Auth.currentSession();
               const userEmail = userAuth.idToken.payload.email;
-              
               const userData = await getUserData(
                 userEmail,
                 dispatch
@@ -164,7 +154,6 @@ const Navigation = () => {
           removeCognitoTokens();
           // When user signs out, set authenticated to false
           setAuthenticated(false);
-
           break;
       }
     });

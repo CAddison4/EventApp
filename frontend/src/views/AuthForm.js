@@ -11,7 +11,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
 const AuthForm = ({route}) => {
-  const { initialUsername, initialMessage } = route?.params ?? {};
+  const { initialUsername, initialMessage, refreshMessage } = route?.params ?? {};
   const [message, setMessage] = useState("");
 	const [formType, setFormType] = useState("signIn");
 	const [username, setUsername] = useState("");
@@ -32,7 +32,8 @@ const AuthForm = ({route}) => {
         }}
         initialParams={
           {initialUsername: initialUsername ?? "",
-        initialMessage: initialMessage ?? ""}
+        initialMessage: initialMessage ?? "",
+        refreshMessage: refreshMessage ?? ""}
         }
       />
       <Stack.Screen
