@@ -1,3 +1,5 @@
+// random comment
+
 import { StyleSheet, ActivityIndicator } from "react-native";
 
 import * as React from "react";
