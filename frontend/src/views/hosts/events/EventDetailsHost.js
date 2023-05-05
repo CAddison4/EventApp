@@ -86,34 +86,34 @@ export default function EventDetailsHost({ navigation, route }) {
 	};
 
 	//Where should I call this?
-	const filterPastAttendance = (item, status) => {
-		switch (status) {
-			case "Attended":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "Attended"
-					)
-				);
-				return;
-			case "No Show":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "No Show"
-					)
-				);
-				return;
-			case "Unknown":
-				setAttendeeList(
-					item.attendees.filter(
-						(attendee) => attendee.attendance_status_id === "Unknown"
-					)
-				);
-				return;
-			default:
-				setAttendeeList(item.attendees);
-				return;
-		}
-	};
+	// const filterPastAttendance = (item, status) => {
+	// 	switch (status) {
+	// 		case "Attended":
+	// 			setAttendeeList(
+	// 				item.attendees.filter(
+	// 					(attendee) => attendee.attendance_status_id === "Attended"
+	// 				)
+	// 			);
+	// 			return;
+	// 		case "No Show":
+	// 			setAttendeeList(
+	// 				item.attendees.filter(
+	// 					(attendee) => attendee.attendance_status_id === "No Show"
+	// 				)
+	// 			);
+	// 			return;
+	// 		case "Unknown":
+	// 			setAttendeeList(
+	// 				item.attendees.filter(
+	// 					(attendee) => attendee.attendance_status_id === "Unknown"
+	// 				)
+	// 			);
+	// 			return;
+	// 		default:
+	// 			setAttendeeList(item.attendees);
+	// 			return;
+	// 	}
+	// };
 	return (
 		<View style={styles.container}>
 			{isEdit ? (
