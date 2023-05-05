@@ -5,12 +5,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
+import { NavigationEvents } from "react-navigation";
 
 const Tab = createBottomTabNavigator();
 
-export default function MyEvents( {route} ) {
-	const { eventObjs, handleFilterChange } = route.params;
-
+export default function MyEvents() {
 	return (
 		<Tab.Navigator
 			initialRouteName="EventsList"
@@ -34,19 +33,13 @@ export default function MyEvents( {route} ) {
 				headerShown: false,
 			})}>
 			<Tab.Screen
-			   	name="List" 
-			   	component={EventsList}
-			   	initialParams={{ eventObjs: eventObjs,
-							     handleFilterChange: handleFilterChange,
-								 type: "myevents" }}
-			/>
+			   name="List" 
+			   component={EventsList}
+			   initialParams={{	type: "myevents" }} />
 			<Tab.Screen
-			   	name="Calendar"
+			    name="Calendar"
 				component={EventsCal}
-				initialParams={{ eventObjs: eventObjs,
-					             handleFilterChange: handleFilterChange,
-								 type: "myevents" }}
-			/>
+				initialParams={{ type: "myevents" }} />
 		</Tab.Navigator>
 	);
 }
