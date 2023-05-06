@@ -4,15 +4,16 @@ import { CalendarList } from "react-native-calendars";
 export default function Calendar({ markedDates, current}) {
   const [selected, setSelected] = useState("");
 
-  useEffect(() => {
-    setSelected(current);
-  }, [current]);
+//   useEffect(() => {
+//     setSelected(current);
+//   }, [current]);
 
   return (
     <CalendarList
-      current={selected}
-      pastScrollRange={0}
-      futureScrollRange={12}
+      key = {current}
+      current={current}
+      pastScrollRange={50}
+      futureScrollRange={50}
       scrollEnabled={true}
       showScrollIndicator={true}
       markedDates={markedDates}

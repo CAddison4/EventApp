@@ -12,22 +12,24 @@ export default function EventsCalHost({ route, navigation }) {
 	// type is the upcoming or past
 	const [loading, setLoading] = useState(true);
 	const [selected, setSelected] = useState("");
-	const [selectedYear, setSelectedYear] = useState("");
+	const [selectedYear, setSelectedYear] = useState( new Date().getFullYear());
 	
 	const handleYearSelect = (year) => {
 		setSelectedYear(year);
+		setSelected(year + "-01-01");
     };
 
 	// create marked array
 	useEffect(() => {
-		setSelected(selectedYear + "-01-01");
 
-		const filteredEvents = eventObjs.filter((event) => {
-			const eventDate = new Date(event.event_date);
-			return eventDate.getFullYear() === selectedYear;
-		});
+		// if you want to switch it to the selected year, use this
+		// const filteredEvents = eventObjs.filter((event) => {
+		// 	const eventDate = new Date(event.event_date);
+		// 	return eventDate.getFullYear() === selectedYear;
+		// });
+
 		// console.log("filteredEvents",filteredEvents)
-		const eventDatesArray = filteredEvents.map((event) => {
+		const eventDatesArray = eventObjs.map((event) => {
 			// check the date is valid
 			if (event.event_date && Date.parse(event.event_date)) {
 				const originalDate = new Date(event.event_date);
@@ -45,7 +47,6 @@ export default function EventsCalHost({ route, navigation }) {
 			}
 
 		});
-
 		// merge all the markedDates objects into one
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
 
@@ -67,10 +68,6 @@ export default function EventsCalHost({ route, navigation }) {
 			{ cancelable: false }
 		);
 	};
-	
-	useEffect(() => {
-		setSelected(current);
-	  }, [current]);
 
 	return (
 		<><View style={styles.titleContainer}>
