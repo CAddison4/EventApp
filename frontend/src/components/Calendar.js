@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { CalendarList } from "react-native-calendars";
 
-export default function Calendar({ markedDates, current}) {
+export default function Calendar({ markedDates, current, onDateSelect}) {
   const [selected, setSelected] = useState("");
 
-//   useEffect(() => {
-//     setSelected(current);
-//   }, [current]);
-
+  function handleDayPress(day) {
+    const selectedDate = day.dateString;
+    console.log("selectedDate", selectedDate)
+    setSelected(selectedDate);
+    onDateSelect(selectedDate);
+  }
   return (
     <CalendarList
       key = {current}
@@ -22,9 +24,7 @@ export default function Calendar({ markedDates, current}) {
       disabledOpacity={0.4}
       calendarHeight={350}
       markingType={"multi-dot"}
-      onDayPress={(day) => {
-        setSelected(day.dateString);
-      }}
+      onDayPress={handleDayPress}
       theme={{
         textDayFontSize: 18,
         textMonthFontSize: 16,
