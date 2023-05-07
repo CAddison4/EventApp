@@ -22,6 +22,8 @@ export default function EventsHost({ navigation }) {
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [eventsCalObjs, setEventsCalObjs] = useState([]);
 
+
+
 	useEffect(() => {
 		const getData = async () => {
 			const eventsWithAttendees = await getEventsWithAttendees();

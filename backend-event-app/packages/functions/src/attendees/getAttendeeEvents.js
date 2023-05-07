@@ -5,7 +5,7 @@ export async function main(event) {
   try {
 
     const userId = event.pathParameters.userId;
-
+    
     if (!userId) {
       return {
         statusCode: 400,
