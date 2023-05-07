@@ -72,8 +72,8 @@ export default function EventsCal({ navigation, route }) {
 	}, [events]);
 
 	// when a day is pressed, navigate to the event details screen
-	const dayPressed = (day) => {
-		const { eventId } = markedDates[day.dateString];
+	const handleDateSelect = (day) => {
+		const { eventId } = markedDates[day];
 		if (eventId) {
 			const selectedEvent = events.find((event) => event.event_id === eventId);
 			navigation.navigate("EventDetails", {
@@ -99,7 +99,6 @@ export default function EventsCal({ navigation, route }) {
 		);
 	};
 
-
 	return (
 		<><View style={styles.titleContainer}>
 			<Text style={styles.title}>Event Calendar
@@ -122,38 +121,11 @@ export default function EventsCal({ navigation, route }) {
 
 				) : (
 					<View style={styles.calendarContainer}>
-					<Calendar
+					<Calendar onDateSelect={handleDateSelect} 
 					key={selected }
 					markedDates={markedDates}
 					current={selected}
 					/>
-					{/* <CalendarList
-						current={selected}
-						pastScrollRange={0}
-						futureScrollRange={12}
-						scrollEnabled={true}
-						showScrollIndicator={true}
-						markedDates={markedDates}
-						disabledByDefault={true}
-						disableAllTouchEventsForDisabledDays={true}
-						disabledOpacity={0.4}
-						markingType={"multi-dot"}
-						onDayPress={(day) => {
-							dayPressed(day);
-						}}
-						theme={{
-							textDayFontSize: 18,
-							textMonthFontSize: 16,
-							textDayHeaderFontSize: 16,
-							monthTextColor: "black",
-							arrowColor: "black",
-							textMonthFontWeight: "bold",
-							todayTextColor: "lightblue",
-							dotColor: "#7EC8E3",
-							textDayStyle: { fontWeight: "bold" },
-							// Add the following style to increase row height
-							calendar: { height: "auto" },
-						}} /> */}
 					</View>
 			)}
 		</>
