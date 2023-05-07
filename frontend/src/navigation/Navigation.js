@@ -134,6 +134,7 @@ const Navigation = () => {
           try {
             const fetchData = async () => {
               const userAuth = await Auth.currentSession();
+              console.log(userAuth.accessToken.jwtToken)
               // console.log("USER AUTH", userAuth)
               const userEmail = userAuth.idToken.payload.email;
               const userData = await getUserData(

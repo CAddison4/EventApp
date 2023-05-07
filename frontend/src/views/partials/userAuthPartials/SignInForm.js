@@ -41,8 +41,8 @@ const SignInForm = ({ route }) => {
       return;
     }
     try {
-      const { success, message } = await handleSignIn(username, password, dispatch);
-      if (success === false) {
+      const signInAttempt = await handleSignIn(username, password, dispatch);
+      if (signInAttempt.success === false) {
         console.log("Error signing in:", message, success);
       setFormMessage(message);
       return;

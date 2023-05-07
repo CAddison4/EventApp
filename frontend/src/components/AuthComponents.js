@@ -150,6 +150,10 @@ export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
     const user = await Auth.signIn(username, password);
+    return {
+      success: true,
+      message: "",
+    }
   } catch (error) {
     let message = "Error signing in: " + error.message;
     if (error.code === "UserNotFoundException") {
