@@ -6,9 +6,6 @@ export async function main(event) {
     const userId = event.pathParameters.userId;
     const eventId = event.pathParameters.eventId;
 
-    console.log("put status", eventId );
-    console.log("put status", userId );
-
     const attendeeStatus = JSON.parse(event.body).status;
 
     if (!eventId || !userId || !attendeeStatus) {
@@ -18,7 +15,6 @@ export async function main(event) {
       };
     }
 
-    const body = JSON.parse(event.body);
     const attendee = await editAttendeeStatus(eventId, userId, attendeeStatus);
 
     if (!attendee || !attendee.user_id || !attendee.event_id) {

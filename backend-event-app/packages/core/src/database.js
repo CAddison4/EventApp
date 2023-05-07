@@ -312,7 +312,7 @@ export async function getEventWaitlist(eventId) {
   JOIN events e ON ew.event_id = e.event_id
   JOIN users u ON ew.user_id = u.user_id
   WHERE ew.event_id = $1
-  ORDER BY e.event_date, u.last_name
+  ORDER BY ew.waitlist_date, u.last_name
   `, [eventId])
   return res.rows
 }
@@ -378,5 +378,14 @@ export async function eventCounts(userId) {
   GROUP BY ea.attendee_status_id
   `, [userId])
   return res.rows
+}
+
+// Get remaining capacity for an event
+export async function getCapacity(eventId) {
+  const res = await getPool().query(`
+  SELECT ec.capacity - ec.number_of_attendees AS remaining FROM eventcapacity ec
+  WHERE ec.event_id = $1
+  `, [eventId])
+  return res.rows[0].remaining
 }
 

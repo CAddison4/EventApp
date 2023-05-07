@@ -2,53 +2,27 @@ import axios from "axios";
 import { API_END_POINT } from '@env';
 
 export async function registerForEvent(eventObj, userId) {
-    if (eventObj.attendee_status_id === "Invited") {
-        try {
-            const response = await axios.put(`${API_END_POINT}attendeestatus/${userId}/${eventObj.event_id}`, { status: "Registered"});
-        } catch (error) {
-            console.error(error); // log the error for debugging
-            // handle the error here
-        }
-    }
-    else
-    {
-        try {
-            const response = await axios.post(`${API_END_POINT}attendee/${eventObj.event_id}/${userId}`, { status: "Registered"});
-        } catch (error) {
-            console.error(error); // log the error for debugging
-            // handle the error here
-        }
-    }
-    // update capacity for this event
+    // Register this user for this event
     try {
-        const response = await axios.put(`${API_END_POINT}event/capacity/${eventObj.event_id}`, { function_type: "add"});
+        const response = await axios.post(`${API_END_POINT}registration/${userId}/${eventObj.event_id}`, {status: eventObj.attendee_status_id || ""});
+        if (response.data.status === 202) {
+            return "Full";
+        }
+        if (response.data.status === 200) {
+            return "Register";
+        }
     } catch (error) {
         console.error(error); // log the error for debugging
         // handle the error here
-    }	
+    }
 }
 
 export async function withdrawFromEvent(eventObj, userId) {
-    if (eventObj.type_id === "Guest List") {
-        try {
-            const response = await axios.put(`${API_END_POINT}attendeestatus/${userId}/${eventObj.event_id}`, { status: "Invited"});
-        } catch (error) {
-            console.error(error); // log the error for debugging
-            // handle the error here
-        }
-    }
-    else {
-        try {
-            const response = await axios.delete(`${API_END_POINT}attendee/${eventObj.event_id}/${userId}`);
-        } catch (error) {
-            console.error(error); // log the error for debugging
-            // handle the error here
-        }
-    }
+    // Withdraw this user from this event
     try {
-        const response = await axios.put(`${API_END_POINT}event/capacity/${eventObj.event_id}`, { function_type: "subtract"});
+        const response = await axios.post(`${API_END_POINT}withdraw/${userId}/${eventObj.event_id}`, {event_type: eventObj.type_id});
     } catch (error) {
         console.error(error); // log the error for debugging
         // handle the error here
-    }		
+    }
 }

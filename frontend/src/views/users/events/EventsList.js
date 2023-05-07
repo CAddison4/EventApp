@@ -1,12 +1,11 @@
 import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from "react-native-dropdown-picker";
 
-import { useDispatch, useSelector } from "react-redux";
-import { setEvent } from "../../../components/store/eventSlice";
+import { useSelector } from "react-redux";
 
 import EventListItem from "../../../components/EventListItem";
 
@@ -42,7 +41,7 @@ export default function EventsList({ route }) {
             setFilterM(value);
             handleFilterChange(value, type);
         }
-    };
+    };	
 
 	return (
 		<View style={styles.container}>
@@ -75,7 +74,7 @@ export default function EventsList({ route }) {
 			)}
 			<FlatList style={styles.list}
 				data={filteredEvents}
-				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
+				keyExtractor={(item) => `${item.event_id}${item.event_date}`}
 				renderItem={({ item }) => (
 					<View>
 						<TouchableOpacity
@@ -85,6 +84,8 @@ export default function EventsList({ route }) {
 									userId: user_id,
 									navigation: navigation,
 									handleRefresh: handleRefresh,
+									type: type,
+									handleSetDisplayTab: handleSetDisplayTab
 								})
 							}>
 							<EventListItem

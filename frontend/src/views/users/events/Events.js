@@ -38,16 +38,15 @@ export default function Events({ navigation }) {
 
   const today = new Date();
 
-  useEffect(() => {
-    console.log("In main useEffect");
-    setIsLoading(true);
-    async function fetchData() {
-      await getEvents();
-      setIsLoading(false);
-      setRefresh(false);
-    }
-    fetchData();
-  }, [refresh]);
+	useEffect(() => {
+		setIsLoading(true);
+		const fetchData = async () => {
+			await getEvents();
+			setIsLoading(false);
+			setRefresh(false);
+		}
+		fetchData();
+	}, [refresh]);
 
   useEffect(() => {
     applyFilters("upcoming", selectedFilterU);
@@ -67,68 +66,49 @@ export default function Events({ navigation }) {
     setRefresh(true);
   };
 
-  const handleRefresh = () => {
-    setRefresh(true);
-    /* setIsLoading(true);
-		setEvents([]);
-		setUpcomingEvents([]);
-		setMyEvents([]); */
-  };
+	const handleRefresh = () => {
+		setRefresh(true);
+    };
 
-  const getEvents = async () => {
-    const loyaltyCount = await getLoyaltyCount(user_id);
+	const getEvents = async () => {
 
-    const response = await axios.get(
-      `${API_END_POINT}attendee/events/${user_id}`
-    );
-    const data = response.data;
+		const loyaltyCount = await getLoyaltyCount(user_id);
+		
+		const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
+		const data = response.data;
+		
+		const eventData = data.filter(eventObj => new Date(eventObj.event_date) > today);
+		await Promise.all(
+			eventData.map(async (eventObj) => {
+				await determineEventFlags(eventObj, loyaltyCount);
+			})
+		);
+		setEvents(eventData);
+	};
 
-    const eventData = data.filter(
-      (eventObj) => new Date(eventObj.event_date) > today
-    );
-    await Promise.all(
-      eventData.map(async (eventObj) => {
-        await determineEventFlags(eventObj, loyaltyCount);
-      })
-    );
-    setEvents(eventData);
-  };
-
-  const getLoyaltyCount = async (userid) => {
-    // const bearerToken = await generateToken();
-	// console.log("bearerToken", bearerToken.token)
-    const response = await axios.get(`${API_END_POINT}loyalty/${userid}`);
-    // const response = await fetch(`${API_END_POINT}loyalty/${userid}`, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + bearerToken.token,
-    //   },
-    // });
-    return response.data.eventCount;
-  };
-
-  const determineEventFlags = (eventObj, loyaltyCount) => {
-    const eligibility = [];
-    switch (eventObj.type_id) {
-      case "Bronze Tier":
-        eligibility.push("Bronze");
-      case "Silver Tier":
-        eligibility.push("Silver");
-      case "Gold Tier":
-        eligibility.push("Gold");
-      default:
-        break;
-    }
-    // Check if there is any capacity available in the event
-    eventObj.hasRoom =
-      eventObj.number_of_attendees < eventObj.capacity ? true : false;
-    eventObj.capacityAvailable =
-      eventObj.capacity - eventObj.number_of_attendees;
-
-    // User is already attending if status is "Registered"
-    eventObj.isAttending =
-      eventObj.attendee_status_id === "Registered" ? true : false;
+	const getLoyaltyCount = async (userid) => {
+		const response = await axios.get(`${API_END_POINT}loyalty/${userid}`);
+		return response.data.eventCount;
+	}
+	
+	const determineEventFlags = (eventObj, loyaltyCount) => {
+		const eligibility = [];
+		switch (eventObj.type_id) {
+			case ("Bronze Tier"):
+				eligibility.push("Bronze");
+			case ("Silver Tier"):
+				eligibility.push("Silver");
+			case ("Gold Tier"):
+				eligibility.push("Gold");
+			default:
+				break;
+		}
+		// Check if there is any capacity available in the event
+		eventObj.hasRoom = eventObj.number_of_attendees < eventObj.capacity ? true : false;
+		eventObj.capacityAvailable = eventObj.capacity - eventObj.number_of_attendees;
+		
+		// User is already attending if status is "Registered"
+		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
 
     // User is eligible if status is "Invited", or type is "Guest List"
     // and status is "Registered", or type is "Loyalty" and event count for
