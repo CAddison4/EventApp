@@ -102,7 +102,7 @@ export async function createEvent(eventName, eventDate, eventStart, eventEnd, ev
   INSERT INTO events (event_name, event_date, event_start, event_end, event_location, capacity, type_id, loyalty_max, cancelled, reason )
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
   RETURNING *
-  `, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, false, ""])
+  `, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, false, null])
   return res.rows[0]
 }
 
@@ -183,6 +183,14 @@ export async function editEventCapacity(eventId, functionType) {
     `, [eventId]);  
   }
   return res.rows[0];
+}
+
+// Get all the events years
+export async function getEventYears() {
+  const res = await getPool().query(`
+  SELECT DISTINCT EXTRACT(YEAR FROM event_date) AS years FROM events
+  ORDER BY years DESC`)
+  return res.rows
 }
 
 // Create an attendee record for a particular event and user
