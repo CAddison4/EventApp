@@ -77,10 +77,8 @@ export default function EventsCalHost({ route, navigation }) {
 					style={styles.informationIcon}
 					// use infoPressed function to show alert
 					onPress={() => { infoPressed(); }} /></Text>
-			<Text>selected:{selected}</Text>
 		</View>
         <View style={{zIndex: 5000}}> 
-            <Text>YearPicker Example {selectedYear}</Text>
 			<YearPicker onSelect={handleYearSelect} />
         </View>
 			{loading ? (

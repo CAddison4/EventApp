@@ -20,7 +20,7 @@ export default function Calendar({ markedDates, current}) {
       disabledByDefault={true}
       disableAllTouchEventsForDisabledDays={true}
       disabledOpacity={0.4}
-      calendarHeight={250}
+      calendarHeight={350}
       markingType={"multi-dot"}
       onDayPress={(day) => {
         setSelected(day.dateString);

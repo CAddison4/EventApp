@@ -1,41 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import axios from "axios";
+import { API_END_POINT } from "@env";
 
 const YearPicker = ({ onSelect }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [open, setOpen] = useState(false);
   const [years, setYears] = useState([]);
 
-  const generateYears = () => {
-    const currentYear = new Date().getFullYear();
-    const years = [];
-    for (let i = currentYear - 2; i <= currentYear + 5; i++) {
-      years.push({ label: `${i}`, value: i });
+  const generateYears = async () => {
+    try {
+      const response = await axios.get(`${API_END_POINT}event/years`);
+      
+      // convert the response data into an array of objects for drop down picker
+      const years = response.data.map((item) => {
+        return {
+          label: item.years.toString(),
+          value: item.years
+        };
+      });
+      return years;
+    } catch (error) {
+      console.error('Error getting years:', error);
+      return [];
     }
-    return years;
   };
 
+  // get the years from the database
   useEffect(() => {
-    setYears(generateYears());
-    setOpen(true);
+    (async () => {
+      const years = await generateYears();
+      setYears(years);
+      // setOpen(true);
+    })();
   }, []);
 
   return (
-    <View>
-      <Text>Select Year:</Text>
-      <DropDownPicker
-        open={open}
-        value={selectedYear}
-        items={years}
-        setOpen={setOpen}
-        setValue={setSelectedYear}
-        onChangeValue={(value) => {
-          setSelectedYear(value);
-          onSelect(value); // pass the selected year to the parent component
-        }}
-      />
-    </View>
+    <>
+      {years.length > 0 && (
+        <View>
+          <Text>Select Year:</Text>
+          <DropDownPicker
+            open={open}
+            value={selectedYear}
+            items={years}
+            setOpen={setOpen}
+            setValue={setSelectedYear}
+            onChangeValue={(value) => {
+              setSelectedYear(value);
+              onSelect(value);
+            }}
+          />
+        </View>
+      )}
+    </>
   );
 };
 
