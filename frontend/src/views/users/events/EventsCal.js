@@ -1,13 +1,14 @@
-//test
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
 import { CalendarList } from "react-native-calendars";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Calendar from "../../../components/Calendar";
 
 export default function EventsCal({ navigation, route }) {
-	const [selected, setSelected] = useState("");
+	// set today for selected
+	const [selected, setSelected] = useState( new Date().toISOString().slice(0, 10));
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
 	const [filter, setFilter] = useState('All');
@@ -72,7 +73,6 @@ export default function EventsCal({ navigation, route }) {
 
 	// when a day is pressed, navigate to the event details screen
 	const dayPressed = (day) => {
-		setSelected(day.dateString);
 		const { eventId } = markedDates[day.dateString];
 		if (eventId) {
 			const selectedEvent = events.find((event) => event.event_id === eventId);
@@ -122,7 +122,12 @@ export default function EventsCal({ navigation, route }) {
 
 				) : (
 					<View style={styles.calendarContainer}>
-					<CalendarList
+					<Calendar
+					key={selected }
+					markedDates={markedDates}
+					current={selected}
+					/>
+					{/* <CalendarList
 						current={selected}
 						pastScrollRange={0}
 						futureScrollRange={12}
@@ -148,7 +153,7 @@ export default function EventsCal({ navigation, route }) {
 							textDayStyle: { fontWeight: "bold" },
 							// Add the following style to increase row height
 							calendar: { height: "auto" },
-						}} />
+						}} /> */}
 					</View>
 			)}
 		</>
