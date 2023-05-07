@@ -124,6 +124,11 @@ export function API({ stack }) {
         "packages/functions/src/utilities/getLoyaltyCount.main",
       "GET /eventcounts/{userId}":
         "packages/functions/src/utilities/getEventCounts.main",
+      // Routes for registering a user for and withdrawing a user from an event
+      "POST /registration/{userId}/{eventId}":
+        "packages/functions/src/attendees/registerForEvent.main",
+      "POST /withdraw/{userId}/{eventId}":
+        "packages/functions/src/attendees/withdrawFromEvent.main",
     },
   });
 

@@ -39,9 +39,8 @@ export default function Events( { navigation } ) {
 	const today = new Date();
 
 	useEffect(() => {
-		console.log("In main useEffect");
 		setIsLoading(true);
-		async function fetchData() {
+		const fetchData = async () => {
 			await getEvents();
 			setIsLoading(false);
 			setRefresh(false);
@@ -70,13 +69,10 @@ export default function Events( { navigation } ) {
 
 	const handleRefresh = () => {
 		setRefresh(true);
-		/* setIsLoading(true);
-		setEvents([]);
-		setUpcomingEvents([]);
-		setMyEvents([]); */
     };
 
 	const getEvents = async () => {
+
 		const loyaltyCount = await getLoyaltyCount(user_id);
 		
 		const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
@@ -111,7 +107,7 @@ export default function Events( { navigation } ) {
 		// Check if there is any capacity available in the event
 		eventObj.hasRoom = eventObj.number_of_attendees < eventObj.capacity ? true : false;
 		eventObj.capacityAvailable = eventObj.capacity - eventObj.number_of_attendees;
-
+		
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
 
