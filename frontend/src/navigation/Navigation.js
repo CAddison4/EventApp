@@ -112,7 +112,15 @@ const Navigation = () => {
     const checkAuth = async () => {
       
       try {
-        await handleAutoSignIn(dispatch);
+        const autoSignIn = await handleAutoSignIn(dispatch);
+        if (autoSignIn.success == true) {
+        
+        const userToken = await AsyncStorage.getItem("accessToken");
+        axios.defaults.headers.common["Authorization"] =
+        `Bearer ${userToken}`;
+        setAuthenticated(true);
+          
+        }
       } catch (e) {
         console.log("ERROR NAVIGATION", e);
       }
@@ -126,6 +134,8 @@ const Navigation = () => {
           try {
             const fetchData = async () => {
               const userAuth = await Auth.currentSession();
+              console.log(userAuth.accessToken.jwtToken)
+              // console.log("USER AUTH", userAuth)
               const userEmail = userAuth.idToken.payload.email;
               const userData = await getUserData(
                 userEmail,
@@ -162,8 +172,6 @@ const Navigation = () => {
   const contextUser = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("USER Context", user);
-    console.log("USER Context", contextUser);
     if (contextUser) {
       setUser(contextUser);
     }
