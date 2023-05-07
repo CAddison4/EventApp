@@ -86,9 +86,15 @@ export default function CreateEvent({ navigation }) {
 				eventEnd: endDateTime.toISOString(),
 				eventLocation: inpEvnLocation,
 				loyaltyMax: selectedEventType == "Loyalty" ? loyaltyMinimum : 0,
-				reason_cancelled: null,
+				reason_cancelled: "NULL",
 			};
 			const response = await axios.post(`${apiURL}/event`, postEventObj);
+
+			// create event capacity
+			const response_capacity = await axios.post(`${apiURL}/event/capacity/${response.data.event.event_id}`, {
+				capacity: inpEvnMax,
+			});
+
 
 			// Reset the state
 				setInpEvnName("");

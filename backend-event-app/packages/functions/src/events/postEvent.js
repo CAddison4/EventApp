@@ -11,7 +11,7 @@ export async function main(event) {
       };
     }
     
-    const res = await createEvent(body.eventName, body.eventDate, body.eventStart, body.eventEnd, body.eventLocation, body.capacity, body.eligibilityType, body.loyaltyMax, body.reason_cancelled);
+    const res = await createEvent(body.eventName, body.eventDate, body.eventStart, body.eventEnd, body.eventLocation, body.capacity, body.eligibilityType, body.loyaltyMax)
 
     console.log(res)
     if (!res) {
