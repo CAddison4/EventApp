@@ -4,6 +4,10 @@ export async function main(event) {
 
   try {
     const eventId = event.pathParameters.eventId;
+    const body = JSON.parse(event.body);
+
+    console.log("evetId: ", eventId);
+    console.log("body: ", body.capacity);
 
     if (!eventId) {
       return {
@@ -12,7 +16,7 @@ export async function main(event) {
       };
     }
 
-    const capacity = await createEventCapacity(eventId);
+    const capacity = await createEventCapacity(eventId, body.capacity);
 
     if (!capacity) {
       return {
