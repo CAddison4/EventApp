@@ -22,7 +22,7 @@ export default function EventsCalHost({ route, navigation }) {
 	// create marked array
 	useEffect(() => {
 
-		// if you want to switch it to the selected year, use this
+		// if you want to switch the array to have only the selected year, use this
 		// const filteredEvents = eventObjs.filter((event) => {
 		// 	const eventDate = new Date(event.event_date);
 		// 	return eventDate.getFullYear() === selectedYear;
@@ -69,6 +69,21 @@ export default function EventsCalHost({ route, navigation }) {
 		);
 	};
 
+
+	const handleDateSelect = (day) => {
+		// jump to the event details page
+		const selectedDate = day;
+		const { eventId } = markedDates[day];
+		if (eventId) {
+			const selectedEvent = eventObjs.find((event) => event.event_id === eventId);
+			console.log(selectedEvent);
+			navigation.navigate("EventDetailsHost", {
+				upcomingEvent: selectedEvent
+			});
+		}
+	};
+
+
 	return (
 		<><View style={styles.titleContainer}>
 			<Text style={styles.title}>Event Calendar
@@ -92,7 +107,7 @@ export default function EventsCalHost({ route, navigation }) {
 
 			) : (
 				<View style={styles.calendarContainer}>
-					<Calendar
+				<Calendar onDateSelect={handleDateSelect} 
 					key={selected }
 					markedDates={markedDates}
 					current={selected}
