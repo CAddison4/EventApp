@@ -1,5 +1,3 @@
-//test
-
 import * as React from "react";
 import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
@@ -15,6 +13,8 @@ export default function EventDetails({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const userId = route.params.userId;
 	const handleRefresh = route.params.handleRefresh;
+	const type = route.params.type;
+	const handleSetDisplayTab = route.params.handleSetDisplayTab;
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 	const [status, setStatus] = useState("");
@@ -46,25 +46,59 @@ export default function EventDetails({ navigation, route }) {
 		}
 	}, []);
 
-	async function displayAlert(type, eventObj) {
-		switch (type) {
+	function displayProgressAlert(action, eventObj) {
+		var progressMessage = "";
+		switch (action) {
 			case "Waitlist":
-				Alert.alert(`You are waitlisted for ${eventObj.event_name}`);
+				progressMessage = `Adding you to the waitlist for ${eventObj.event_name}...`;
 				break;
 			case "Remove":
-				Alert.alert(`You have been removed from the waitlist for ${eventObj.event_name}`);
+				progressMessage = `Removing you from the waitlist for ${eventObj.event_name}...`;
 				break;
 			case "Register":
-				Alert.alert(`You are registered for ${eventObj.event_name}`);
+				progressMessage = `Registering you for ${eventObj.event_name}...`;
 				break;
 			case "Withdraw":
-				Alert.alert(`You have withdrawn from ${eventObj.event_name}`);
+				progressMessage = `Withdrawing you from ${eventObj.event_name}...`;
 				break;
 			default:
 				break;
 		}
-		handleRefresh();
-		navigation.goBack();
+		displayAlert(progressMessage, false);
+	}
+       
+	function displayCompletionAlert(action, eventObj) {
+		var completionMessage = "";
+		switch (action) {
+			case "Waitlist":
+				completionMessage = `You are waitlisted for ${eventObj.event_name}`;
+				break;
+			case "Remove":
+				completionMessage = `You have been removed from the waitlist for ${eventObj.event_name}`;
+				break;
+			case "Register":
+				completionMessage = `You are registered for ${eventObj.event_name}`;
+				break;
+			case "Withdraw":
+				completionMessage = `You have been withdrawn from ${eventObj.event_name}`;
+				break;
+			case "Full":
+				completionMessage = `Sorry, this event is now full. Unable to register you for ${eventObj.event_name}`;
+				break;	
+			default:
+				completionMessage = "";
+				break;
+		}
+		displayAlert(completionMessage, true);
+	}
+
+	function displayAlert(message, showButton) {
+		if (showButton) {
+			Alert.alert("Updates complete.", message);
+		}
+		else {
+			Alert.alert("Updates in progress...", message, [], {cancelable: false});
+		}
 	}
 
 	return (
@@ -105,10 +139,15 @@ export default function EventDetails({ navigation, route }) {
 					{eventObj.isEligible && eventObj.isInWaitlist && (
 						<Button
 							title="Remove from Waitlist"
-							onPress={() => {
-								removeFromEventWaitlist(eventObj, userId);
-								displayAlert("Remove", eventObj);
+							onPress={async () => {
+								displayProgressAlert("Remove", eventObj);
+								await removeFromEventWaitlist(eventObj, userId);
+								displayCompletionAlert("Remove", eventObj);
+								handleSetDisplayTab(type);
+								handleRefresh();
+								navigation.goBack();
 							}}
+							
 						/>
 					)}
 					{/* If eligible and already attending and not in waitlist,
@@ -117,9 +156,13 @@ export default function EventDetails({ navigation, route }) {
 						<>
 							<Button
 								title="Withdraw"
-								onPress={() => {
-									withdrawFromEvent(eventObj, userId);
-									displayAlert("Withdraw", eventObj);
+								onPress={async () => {
+									displayProgressAlert("Withdraw", eventObj);
+									await withdrawFromEvent(eventObj, userId);
+									displayCompletionAlert("Withdraw", eventObj);
+									handleSetDisplayTab(type);
+									handleRefresh();
+									navigation.goBack();
 								}}
 							/>
 							<Button
@@ -138,9 +181,13 @@ export default function EventDetails({ navigation, route }) {
 					{eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
 						<Button
 							title="Register"
-							onPress={() => {
-								registerForEvent(eventObj, userId);
-								displayAlert("Register", eventObj);
+							onPress={async () => {
+								displayProgressAlert("Register", eventObj);
+								let msg = await registerForEvent(eventObj, userId);
+								displayCompletionAlert(msg, eventObj);
+								handleSetDisplayTab(type);
+								handleRefresh();
+								navigation.goBack();
 							}}
 						/>
 					)}
@@ -149,9 +196,13 @@ export default function EventDetails({ navigation, route }) {
 					{eventObj.isEligible && !eventObj.isAttending && !eventObj.hasRoom && !eventObj.isInWaitlist && (
 						<Button
 							title="Waitlist"
-							onPress={() => {
-								waitlistForEvent(eventObj, userId);
-								displayAlert("Waitlist", eventObj);
+							onPress={async () => {
+								displayProgressAlert("Waitlist", eventObj);
+								await waitlistForEvent(eventObj, userId);
+								displayCompletionAlert("Waitlist", eventObj);
+								handleSetDisplayTab(type);
+								handleRefresh();
+								navigation.goBack();
 							}}
 						/>
 					)}
