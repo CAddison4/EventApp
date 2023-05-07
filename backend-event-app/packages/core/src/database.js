@@ -185,6 +185,14 @@ export async function editEventCapacity(eventId, functionType) {
   return res.rows[0];
 }
 
+// Get all the events years
+export async function getEventYears() {
+  const res = await getPool().query(`
+  SELECT DISTINCT EXTRACT(YEAR FROM event_date) AS years FROM events
+  ORDER BY years DESC`)
+  return res.rows
+}
+
 // Create an attendee record for a particular event and user
 export async function createAttendee(eventId, userId, attendeeStatusId) {
   const res = await getPool().query(`
