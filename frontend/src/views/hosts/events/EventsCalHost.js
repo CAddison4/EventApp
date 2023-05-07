@@ -95,7 +95,7 @@ export default function EventsCalHost({ route, navigation }) {
 			) : (
 				<View style={styles.calendarContainer}>
 					<Calendar
-					key={selected}
+					key={selected }
 					markedDates={markedDates}
 					current={selected}
 					/>

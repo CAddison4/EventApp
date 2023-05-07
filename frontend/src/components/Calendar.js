@@ -12,8 +12,8 @@ export default function Calendar({ markedDates, current}) {
     <CalendarList
       key = {current}
       current={current}
-      pastScrollRange={50}
-      futureScrollRange={50}
+      pastScrollRange={0}
+      futureScrollRange={12}
       scrollEnabled={true}
       showScrollIndicator={true}
       markedDates={markedDates}
