@@ -225,18 +225,13 @@ export default function Users({ navigation }) {
 								<TouchableOpacity
 									key={index}
 									onPress={() => handleSelectRole(role.role_id)}
-									style={{
-										backgroundColor:
-											selectedRole === role.role_id ? "#A5E0B7" : "#0A0B0D",
-										padding: 10,
-										marginVertical: 5,
-										borderRadius: 5,
-										borderWidth: 1,
-										borderColor: "#ccc",
-										width: 100,
-										alignItems: "center",
-										color: "#fff",
-									}}>
+									style={[
+										styles.radioButton,
+										{
+											backgroundColor:
+												selectedRole === role.role_id ? "#A5E0B7" : "#0A0B0D",
+										},
+									]}>
 									<Text
 										style={{
 											color: "#fff",
@@ -325,5 +320,16 @@ const styles = StyleSheet.create({
 	title: {
 		marginVertical: 10,
 		fontWeight: "bold",
+	},
+
+	radioButton: {
+		padding: 10,
+		marginVertical: 5,
+		borderRadius: 5,
+		borderWidth: 1,
+		borderColor: "#ccc",
+		width: 100,
+		alignItems: "center",
+		color: "#fff",
 	},
 });

@@ -47,12 +47,12 @@ export default function EventsListHost({ route }) {
 	const updatedEventObjs = eventObjs.map((eventObj) => {
 		return {
 			...eventObj,
-			hasRoom: eventObj.attendees.length < eventObj.capacity,
-			capacityAvailable: eventObj.capacity - eventObj.attendees.length,
+			hasRoom: eventObj.numberOfAttendees > eventObj.capacity ? false : true,
+			capacityAvailable: eventObj.capacity - eventObj.numberOfAttendees,
 			color:
 				eventObj.type === "past"
 					? "red"
-					: eventObj.attendees.length >= eventObj.capacity
+					: eventObj.capacityAvailable === 0
 					? "orange"
 					: "green",
 		};
