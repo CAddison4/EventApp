@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "row",
 		width: "100%",
-		backgroundColor: "#213140",
+		backgroundColor: "#eee",
 		//	backgroundColor: "#faeede",
 		justifyContent: "space-between",
 		alignItems: "center",
@@ -72,10 +72,10 @@ const styles = StyleSheet.create({
 	boldText: {
 		fontWeight: "bold",
 		fontSize: 16,
-		color: "#fff",
+		// color: "#fff",
 	},
 	text: {
 		fontSize: 12,
-		color: "#fff",
+		// color: "#fff",
 	},
 });
