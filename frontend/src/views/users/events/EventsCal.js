@@ -8,33 +8,19 @@ import Calendar from "../../../components/Calendar";
 
 export default function EventsCal({ navigation, route }) {
 	// set today for selected
+	const user = useSelector((state) => state.user);
+	const { user_id, ...userData } = user;
+	const { eventObjs, handleFilterChange, type, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
 	const [selected, setSelected] = useState( new Date().toISOString().slice(0, 10));
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
-	const [filter, setFilter] = useState('All');
-	const userId = "c9054246-70e7-4bb6-93d6-ffe80e45a575";
 	const contextEvent = useSelector((state) => state.event);
-	const { type } = route.params;
 	let dateColor = "blue";
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		console.log("running use effect")
-		if (contextEvent) {
-			setEvents(contextEvent);
-			if (type === "myevents") {
-				console.log("filtering my events");
-				const filteredEvents = contextEvent.filter(
-					(eventObj => eventObj.attendee_status_id === "Registered" || eventObj.isInWaitlist)
-				);
-				setEvents(filteredEvents);
-			}
-		}
-		if(contextEvent.length>0){
-			setLoading(false);
-		}
-	}, [navigation, type, contextEvent, filter]);
-
+	useEffect(()=>{
+		setEvents(eventObjs);
+	},[])
 
 	useEffect(() => {
 		const eventDatesArray = events.map((event) => {
@@ -69,6 +55,7 @@ export default function EventsCal({ navigation, route }) {
 		// merge all the markedDates objects into one
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
 		setMarkedDates(mergedMarkedDates);
+		setLoading(false);
 	}, [events]);
 
 	// when a day is pressed, navigate to the event details screen
@@ -78,8 +65,11 @@ export default function EventsCal({ navigation, route }) {
 			const selectedEvent = events.find((event) => event.event_id === eventId);
 			navigation.navigate("EventDetails", {
 				eventObj: selectedEvent,
-				userId: userId,
+				userId: user_id,
 				navigation: navigation,
+				handleRefresh: handleRefresh,
+				type: type,
+				handleSetDisplayTab: handleSetDisplayTab
 			});
 		}
 	};
