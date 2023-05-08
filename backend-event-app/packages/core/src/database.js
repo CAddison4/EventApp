@@ -129,7 +129,8 @@ export async function getEvent(eventId) {
 // Get all events
 export async function getEvents() {
   const res = await getPool().query(`
-  SELECT * FROM events
+  SELECT e.*, ec.number_of_attendees FROM events e
+  JOIN eventcapacity ec ON e.event_id = ec.event_id
   WHERE cancelled = false
   ORDER BY event_date`)
   return res.rows

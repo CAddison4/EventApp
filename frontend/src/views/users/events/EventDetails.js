@@ -83,7 +83,7 @@ export default function EventDetails({ navigation, route }) {
 				completionMessage = `You have been withdrawn from ${eventObj.event_name}`;
 				break;
 			case "Full":
-				completionMessage = `Sorry, this event is now full. Unable to register you for ${eventObj.event_name}`;
+				completionMessage = `Sorry, this event is now full. Unable to register you for ${eventObj.event_name}. You have been added to the waitlist.`;
 				break;	
 			default:
 				completionMessage = "";

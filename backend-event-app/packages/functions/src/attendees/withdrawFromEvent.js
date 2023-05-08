@@ -35,7 +35,7 @@ export async function main(event) {
         // If event was full, it now has an open spot, so find first waitlist record
         // Delete waitlist record and create attendee record with status "Registered"
         var newAttendee = null;
-        if (remaining <= 0) {
+        if (parseInt(remaining) <= 0) {
             const waitlist = await getEventWaitlist(eventId);
             newAttendee = waitlist[0];
         }
