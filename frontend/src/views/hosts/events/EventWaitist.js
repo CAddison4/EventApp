@@ -10,7 +10,7 @@ import {
 import { formatDate, formatDateTime } from "../../../utilities/dates";
 
 //this page could possibly be removed...
-export default function AttendeeList({ navigation, route }) {
+export default function EventWaitlist({ navigation, route }) {
 	const attendeeList = route.params.attendeeList;
 	console.log("attendeeList", attendeeList);
 	const listType = route.params.type;

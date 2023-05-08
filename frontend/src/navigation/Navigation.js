@@ -30,7 +30,7 @@ import EventsHost from "../../src/views/hosts/events/EventsHost";
 import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
 import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
 import PastEvents from "../../src/views/hosts/events/PastEvents";
-import AttendeeList from "../views/hosts/events/AttendeeList";
+import EventWaitlist from "../views/hosts/events/EventWaitist";
 import Attendance from "../views/hosts/events/Attendance";
 import EventsListHost from "../views/hosts/events/EventsListHost";
 
@@ -268,7 +268,7 @@ const Navigation = () => {
 								<Stack.Screen name="InviteList" component={InviteList} />
 								<Stack.Screen name="Users" component={Users} />
 								<Stack.Screen name="UserDetails" component={UserDetails} />
-								<Stack.Screen name="AttendeeList" component={AttendeeList} />
+								<Stack.Screen name="EventWaitlist" component={EventWaitlist} />
 								<Stack.Screen name="Attendance" component={Attendance} />
 								<Stack.Screen
 									name="AttendanceRecords"
