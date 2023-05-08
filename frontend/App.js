@@ -1,22 +1,27 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import AuthForm from './src/views/AuthForm';
+
+import * as React from "react";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import store from "./src/components/store/index";
+import Navigation from "./src/navigation/Navigation";
+import { Amplify} from "aws-amplify";
+import config from "./src/aws-exports";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+//Configuring Amplify
+Amplify.configure(config);
+
+
 
 const App = () => {
+
   return (
-    <View style={styles.container}>
-      <AuthForm />
-    </View>
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default App;

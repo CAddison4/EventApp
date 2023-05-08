@@ -6,15 +6,16 @@ export async function main(event) {
     const userId = event.pathParameters.userId;
     const eventId = event.pathParameters.eventId;
 
-    if (!eventId || !userId) {
+    const attendeeStatus = JSON.parse(event.body).status;
+
+    if (!eventId || !userId || !attendeeStatus) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Missing or invalid parameters' })
       };
     }
 
-    const body = JSON.parse(event.body);
-    const attendee = await editAttendeeStatus(eventId, userId, body.attendeeStatusId);
+    const attendee = await editAttendeeStatus(eventId, userId, attendeeStatus);
 
     if (!attendee || !attendee.user_id || !attendee.event_id) {
       return {

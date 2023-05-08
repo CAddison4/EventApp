@@ -1,19 +1,23 @@
 import { createAttendee } from "@backend-event-app/core/database";
 
 export async function main(event) {
-  try {
-    const body = JSON.parse(event.body);
 
-    if (!body.eventId || !body.userId || !body.attendeeStatus) {
+  try {
+    const attendeeStatus = JSON.parse(event.body).status;
+
+    const eventId = event.pathParameters.eventId;
+    const userId = event.pathParameters.userId;
+
+    if (!eventId || !userId || !attendeeStatus) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing required input parameters' })
+        body: JSON.stringify({ error: 'Missing or invalid parameters' })
       };
     }
 
-    const attendee = await createAttendee(body.eventId, body.userId, body.attendeeStatus);
+    const attendee = await createAttendee(eventId, userId, attendeeStatus);
 
-    if (res.rows.length === 0) {
+    if (!attendee) {
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'Failed to create event attendee' })

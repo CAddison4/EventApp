@@ -13,7 +13,7 @@ export async function main(event) {
     }
 
     const body = JSON.parse(event.body);
-    const res = await editEvent(eventId, body.eventName, body.eventDate, body.eventStart, body.eventEnd, body.eventLocation, body.eventCapacity, body.eligibilityType, body.loyaltyMax, body.cancelled, body.reasonCancelled);
+    const res = await editEvent(eventId, body.eventName, body.eventDate, body.eventStart, body.eventEnd, body.eventLocation, body.capacity, body.eligibilityType, body.loyaltyMax, body.cancelled, body.reasonCancelled);
 
     if (!res || !res.event_id) {
       return {

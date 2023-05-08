@@ -1,64 +1,132 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import SignUpForm from './partials/userAuthPartials/SignUpForm';
-import SignInForm from './partials/userAuthPartials/SignInForm';
-import ForgotPasswordForm from './partials/userAuthPartials/ForgotPasswordForm';
-import ConfirmationForm from './partials/userAuthPartials/ConfirmationForm';
+import React, { useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
+import SignUpForm from "./partials/userAuthPartials/SignUpForm";
+import SignInForm from "./partials/userAuthPartials/SignInForm";
+import ForgotPasswordForm from "./partials/userAuthPartials/ForgotPasswordForm";
+import ConfirmationForm from "./partials/userAuthPartials/ConfirmationForm";
+import ResetPasswordForm from "./partials/userAuthPartials/ResetPasswordForm";
+import { HideWithKeyboard } from "react-native-hide-with-keyboard";
+import { SafeAreaView } from "react-navigation";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-const AuthForm = () => {
-  const [formType, setFormType] = useState('signIn');
+const AuthForm = ({route}) => {
+  const { initialUsername, initialMessage, refreshMessage } = route?.params ?? {};
+  const [message, setMessage] = useState("");
+	const [formType, setFormType] = useState("signIn");
+	const [username, setUsername] = useState("");
 
-  const handleFormTypeChange = (newFormType) => {
-    setFormType(newFormType);
-  };
+	const navigation = useNavigation();
+
+	const Stack = createNativeStackNavigator();
+  
 
   return (
-    <View style={styles.container}>
-      <View style={styles.tabBar}>
-        <TouchableOpacity style={styles.tab} onPress={() => handleFormTypeChange('signIn')}>
-          <Text style={[styles.tabText, formType === 'signIn' && styles.activeTab]}>Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tab} onPress={() => handleFormTypeChange('signUp')}>
-          <Text style={[styles.tabText, formType === 'signUp' && styles.activeTab]}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tab} onPress={() => handleFormTypeChange('forgotPassword')}>
-          <Text style={[styles.tabText, formType === 'forgotPassword' && styles.activeTab]}>Forgot Password</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tab} onPress={() => handleFormTypeChange('confirmation')}>
-          <Text style={[styles.tabText, formType === 'confirmation' && styles.activeTab]}>Confirmation</Text>
-        </TouchableOpacity>
-      </View>
-      {formType === 'signIn' && <SignInForm onFormTypeChange={handleFormTypeChange} />}
-      {formType === 'signUp' && <SignUpForm onFormTypeChange={handleFormTypeChange} />}
-      {formType === 'forgotPassword' && <ForgotPasswordForm onFormTypeChange={handleFormTypeChange} />}
-      {formType === 'confirmation' && <ConfirmationForm onFormTypeChange={handleFormTypeChange} />}
-    </View>
+    <>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="SignInForm"
+        component={SignInForm}
+        options={{ 
+          headerShown: false,
+        }}
+        initialParams={
+          {initialUsername: initialUsername ?? "",
+        initialMessage: initialMessage ?? "",
+        refreshMessage: refreshMessage ?? ""}
+        }
+      />
+      <Stack.Screen
+        name="SignUpForm"
+        component={SignUpForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ForgotPasswordForm"
+        component={ForgotPasswordForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ConfirmationForm"
+        component={ConfirmationForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ResetPasswordForm"
+        component={ResetPasswordForm}
+        options={{ headerShown: false }}
+      />
+      </Stack.Navigator>
+            <HideWithKeyboard style={styles.tabBar}>
+            <TouchableOpacity
+              style={styles.tab}
+              onPress={() => navigation.navigate("ConfirmationForm", { initialUsername: username })}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  formType === "confirmation" && styles.activeTabText,
+                ]}
+              >
+                Confirmation
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, formType === "ResetPasswordForm" && styles.activeTab]}
+              onPress={() => navigation.navigate("ResetPasswordForm", { initialUsername: username })}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  formType === "resetPassword" && styles.activeTabText,
+                ]}
+              >
+                Reset Password
+              </Text>
+            </TouchableOpacity>
+          </HideWithKeyboard>
+          </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: '#eee',
-    width: '100%',
-    height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  tab: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabText: {
-    fontWeight: 'bold',
-  },
-  activeTab: {
-    color: 'blue',
-  },
+	formView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "#fff",
+	},
+
+	tabBar: {
+		flex: 1,
+		position: "absolute",
+		left: 0,
+		right: 0,
+		bottom: 0,
+		justifyContent: "center",
+		flexDirection: "row",
+		height: 60,
+		marginTop: 20,
+	},
+	tab: {
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "center",
+		backgroundColor: "#eee",
+		width: 100,
+	},
+	tabText: {
+		display: "flex",
+		alignSelf: "center",
+		justifyContent: "center",
+		fontWeight: "bold",
+	},
+	activeTab: {
+		backgroundColor: "#fff",
+	},
+	activeTabText: {
+		color: "blue",
+	},
 });
 
 export default AuthForm;
