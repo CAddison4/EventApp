@@ -9,6 +9,8 @@ export default function Attendancce({ navigation, route }) {
   const [attendance, setAttendance] = useState([]);
   const [editAttendance, setEditAttendance] = useState([]);
   const [initialLoad, setInitialLoad] = useState(true);  
+
+  const today = new Date().toISOString().slice(0, 10);
   
   useEffect(() => {
     // get event attendees
@@ -77,17 +79,19 @@ export default function Attendancce({ navigation, route }) {
             attendees.map((attendee) => (
             <View style={styles.item} key={attendee.user_id}>
                 <Text style={styles.itemText}>
-                {attendee.first_name} {attendee.last_name}  {attendee.attendance_status_id}
+                  {attendee.first_name} {attendee.last_name}  {attendee.attendance_status_id}
                 </Text>
-                <Button
-                title={
-                    editAttendance.includes(attendee.user_id.toString()) ? "NO SHOW" : "ATTENDED"
-                }
-                onPress={() => {
-                    handleAttendance(attendee.user_id);
-                }}
-                buttonStyle={styles.button}
-                />
+                {eventObj.event_date <= today && (
+                  <Button
+                    title={
+                        editAttendance.includes(attendee.user_id.toString()) ? "NO SHOW" : "ATTENDED"
+                    }
+                    onPress={() => {
+                        handleAttendance(attendee.user_id);
+                    }}
+                    buttonStyle={styles.button}
+                  />
+                )}
             </View>
             ))}
         <Button title="Save" onPress={handleSubmit} />
