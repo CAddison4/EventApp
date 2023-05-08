@@ -45,14 +45,14 @@ export default function EventDetailsHost({ navigation, route }) {
 			const data = response.data;
 			setIsEdit(false);
 			// push to event details page
-			const attendees = eventObj.attendees;
+			// const attendees = eventObj.attendees;
 			const waitlist = eventObj.waitlist;
 			handleRefresh();
 			Alert.alert("Event Updated");
 			navigation.goBack({
 				upcomingEvent: {
 					...data,
-					attendees,
+					// attendees,
 					waitlist,
 				},
 			});
@@ -180,7 +180,7 @@ export default function EventDetailsHost({ navigation, route }) {
 
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Registered:</Text>
-								<Text style={styles.value}>{eventObj.attendees.length}</Text>
+								<Text style={styles.value}>{eventObj.number_of_attendees}</Text>
 							</View>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Waitlisted:</Text>
