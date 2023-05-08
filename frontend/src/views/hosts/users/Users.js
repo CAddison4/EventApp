@@ -8,7 +8,10 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
+	Keyboard,
 } from "react-native";
+
+import { ActivityIndicator } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useState, useEffect } from "react";
@@ -42,6 +45,9 @@ export default function Users({ navigation }) {
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [updateFilter, setUpdateFilter] = useState(false);
+	const [selectedRole, setSelectedRole] = useState("Attendee");
+
+	const roles = [{ role_id: "Attendee" }, { role_id: "Host" }];
 
 	const handlePageRefresh = async () => {
 		const newUsers = await getUsers();
@@ -50,14 +56,36 @@ export default function Users({ navigation }) {
 		setSearchQuery("");
 	};
 
+	const handleSearchQuery = (query) => {
+		setSearchQuery(query);
+	};
+
+	const handleSearchSubmit = () => {
+		Keyboard.dismiss();
+	};
+
+	const handleClearFilter = () => {
+		setSearchQuery("");
+		setSelectedMembershipStatus("All");
+	};
+
+	const handleSelectRole = (itemValue) => {
+		setSelectedRole(itemValue);
+	};
+
 	const filterUsers = () => {
 		if (selectedMembershipStatus === "All") {
 			setFilteredUsers(
 				users.filter(
 					(user) =>
-						user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						user.email.toLowerCase().includes(searchQuery.toLowerCase())
+						user.role_id === selectedRole &&
+						(user.first_name
+							.toLowerCase()
+							.includes(searchQuery.toLowerCase()) ||
+							user.last_name
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase()) ||
+							user.email.toLowerCase().includes(searchQuery.toLowerCase()))
 				)
 			);
 		} else {
@@ -65,6 +93,7 @@ export default function Users({ navigation }) {
 				users.filter(
 					(user) =>
 						user.membership_status_id === selectedMembershipStatus &&
+						user.role_id === selectedRole &&
 						(user.first_name
 							.toLowerCase()
 							.includes(searchQuery.toLowerCase()) ||
@@ -79,16 +108,26 @@ export default function Users({ navigation }) {
 
 	const getUsers = async () => {
 		const apiURL = API_END_POINT;
-		const usersResponse = await axios.get(`${apiURL}users`);
-		return usersResponse.data;
+		try {
+			const usersResponse = await axios.get(`${apiURL}users`);
+			return usersResponse.data;
+		} catch {
+			console.log("error");
+			return [];
+		}
 	};
 
 	const getFilteredMemberships = async () => {
 		const apiURL = API_END_POINT;
-		const membershipsResponse = await axios.get(`${apiURL}membership`);
-		const membershipStatuses = membershipsResponse.data.membershipStatuses;
-		const edited = [{ membership_status_id: "All" }, ...membershipStatuses];
-		return edited;
+		try {
+			const membershipsResponse = await axios.get(`${apiURL}membership`);
+			const membershipStatuses = membershipsResponse.data.membershipStatuses;
+			const edited = [{ membership_status_id: "All" }, ...membershipStatuses];
+			return edited;
+		} catch {
+			console.log("error");
+			return [{ membership_status_id: "All" }];
+		}
 	};
 
 	const handleGetEditedMemberships = async () => {
@@ -103,13 +142,13 @@ export default function Users({ navigation }) {
 
 	const handleMembershipFilterChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue);
-		if (itemValue === "All") {
-			setFilteredUsers(users);
-			return;
-		}
-		setFilteredUsers(
-			users.filter((user) => user.membership_status_id === itemValue)
-		);
+		// if (itemValue === "All") {
+		// 	setFilteredUsers(users);
+		// 	return;
+		// }
+		// setFilteredUsers(
+		// 	users.filter((user) => user.membership_status_id === itemValue)
+		// );
 	};
 
 	useEffect(() => {
@@ -121,17 +160,17 @@ export default function Users({ navigation }) {
 	}, []);
 
 	useEffect(() => {
-		const filterUsers = () => {
-			if (selectedMembershipStatus === "All") {
-				setFilteredUsers(users);
-			} else {
-				setFilteredUsers(
-					users.filter(
-						(user) => user.membership_status_id === selectedMembershipStatus
-					)
-				);
-			}
-		};
+		// const filterUsers = () => {
+		// 	if (selectedMembershipStatus === "All") {
+		// 		setFilteredUsers(users);
+		// 	} else {
+		// 		setFilteredUsers(
+		// 			users.filter(
+		// 				(user) => user.membership_status_id === selectedMembershipStatus
+		// 			)
+		// 		);
+		// 	}
+		// };
 		filterUsers();
 	}, [selectedMembershipStatus, users]);
 
@@ -142,27 +181,18 @@ export default function Users({ navigation }) {
 		}
 	}, [updateFilter]);
 
+	useEffect(() => {
+		console.log("searchQuery", searchQuery);
+		filterUsers();
+	}, [searchQuery, selectedRole]);
+
 	return (
 		<View style={styles.container}>
-			{isPickerVisible && (
+			{isPickerVisible ? (
 				<>
 					<View style={styles.header}>
-						<SearchBar
-							value={searchQuery}
-							onChangeText={setSearchQuery}
-							onSubmitEditing={filterUsers}
-							onPress={filterUsers}
-						/>
-
-						<ClearFilterButton
-							onPress={() => {
-								setSearchQuery("");
-								setSelectedMembershipStatus("All");
-								setFilteredUsers(users);
-							}}
-						/>
-						<Text>Membership Status</Text>
-
+						<Text style={styles.title}>Filter by membership:</Text>
+						{console.log("users", users)}
 						<View style={{ zIndex: 2000 }}>
 							<DropDownPicker
 								open={open}
@@ -180,11 +210,66 @@ export default function Users({ navigation }) {
 								dropDownContainerStyle={{
 									position: "relative",
 									top: 0,
+									backgroundColor: "#91C4D9",
 								}}
+								style={{ backgroundColor: "#91C4D9" }}
+							/>
+						</View>
+						<View
+							style={{
+								flexDirection: "row",
+								gap: 20,
+								justifyContent: "center",
+							}}>
+							{roles.map((role, index) => (
+								<TouchableOpacity
+									key={index}
+									onPress={() => handleSelectRole(role.role_id)}
+									style={{
+										backgroundColor:
+											selectedRole === role.role_id ? "#A5E0B7" : "#0A0B0D",
+										padding: 10,
+										marginVertical: 5,
+										borderRadius: 5,
+										borderWidth: 1,
+										borderColor: "#ccc",
+										width: 100,
+										alignItems: "center",
+										color: "#fff",
+									}}>
+									<Text
+										style={{
+											color: "#fff",
+										}}>
+										{`${role.role_id}s`}
+									</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+						<View
+							style={{
+								flexDirection: "row",
+								marginVertical: 10,
+								paddingHorizontal: 20,
+							}}>
+							<SearchBar
+								value={searchQuery}
+								onChangeText={(query) => {
+									handleSearchQuery(query);
+									filterUsers(searchQuery);
+								}}
+								onSubmitEditing={handleSearchSubmit}
+								color={"#91C4D9"}
+								// backgroundColor="#4A738C"
+							/>
+							<ClearFilterButton
+								onPress={handleClearFilter}
+								color={"#91C4D9"}
 							/>
 						</View>
 					</View>
-					<FlatList style={styles.list}
+					<FlatList
+						style={styles.list}
 						data={filteredUsers}
 						keyExtractor={(item) => `${item.user_id}`}
 						renderItem={({ item }) => (
@@ -196,12 +281,21 @@ export default function Users({ navigation }) {
 											handleRefresh: handlePageRefresh,
 										})
 									}>
-									<UsersListItem userObj={item}/>
+									<UsersListItem userObj={item} />
 								</TouchableOpacity>
 							</View>
 						)}
 					/>
 				</>
+			) : (
+				<View style={styles.container}>
+					<ActivityIndicator
+						size="large"
+						color="#0000ff"
+						animating={true}
+						style={styles.activityIndicator}
+					/>
+				</View>
 			)}
 		</View>
 	);
@@ -212,10 +306,10 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingLeft: 5,
 		paddingRight: 5,
-		backgroundColor: "#fff",
+		backgroundColor: "#0A0B0D",
 		width: "100%",
-		maxWidth: 400,
-		marginBottom: 5,
+		maxWidth: 380,
+		justifyContent: "center",
 	},
 	header: {
 		flexDirection: "column",
@@ -226,5 +320,10 @@ const styles = StyleSheet.create({
 
 	list: {
 		paddingTop: 10,
+	},
+
+	title: {
+		marginVertical: 10,
+		fontWeight: "bold",
 	},
 });

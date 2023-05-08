@@ -6,6 +6,8 @@ export default function SearchBar({
 	onChangeText,
 	onSubmitEditing,
 	onPress,
+	color = "#000",
+	backgroundColor = "#fff",
 }) {
 	return (
 		<>
@@ -14,7 +16,13 @@ export default function SearchBar({
 				value={value}
 				onChangeText={onChangeText}
 				onSubmitEditing={onSubmitEditing}
-				style={styles.searchBar}
+				style={[
+					styles.searchBar,
+					{
+						color: color,
+						// backgroundColor: backgroundColor
+					},
+				]}
 			/>
 			{/* <Button title="Search" onPress={onPress} /> */}
 			{/* <SearchButton onPress={filterUsers} /> */}
@@ -38,5 +46,6 @@ const styles = StyleSheet.create({
 		paddingBottom: 2,
 		fontSize: 18,
 		borderBottomColor: "#000",
+		width: 300,
 	},
 });

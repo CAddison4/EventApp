@@ -19,7 +19,7 @@ const Tab = createBottomTabNavigator();
 
 export default function PastEvents({ route }) {
 	const { eventObjs, handleRefresh } = route.params;
-	console.log("past eventObjs", eventObjs);
+	// console.log("past eventObjs", eventObjs.attendees);
 
 	return (
 		<Tab.Navigator

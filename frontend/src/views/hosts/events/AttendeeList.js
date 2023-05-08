@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { formatDate, formatDateTime } from "../../../utilities/dates";
 
+//this page could possibly be removed...
 export default function AttendeeList({ navigation, route }) {
 	const attendeeList = route.params.attendeeList;
 	console.log("attendeeList", attendeeList);

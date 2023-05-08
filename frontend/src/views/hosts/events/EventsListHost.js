@@ -16,11 +16,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
+import EventListItem from "../../../components/EventListItem";
 
 export default function EventsListHost({ route }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const { eventObjs, handleRefresh } = route.params;
 	const navigation = useNavigation();
+
+	const [selectedColor, setSelectedColor] = useState("green");
+
+	const colors = [{ color: "green" }, { color: "orange" }];
+
+	const handleSelectColor = (itemValue) => {
+		setSelectedColor(itemValue);
+	};
 
 	const handleSearchQuery = (query) => {
 		setSearchQuery(query);
@@ -34,105 +43,111 @@ export default function EventsListHost({ route }) {
 		setSearchQuery("");
 	};
 
+	//add hasRoom and capacityAvailable params to each eventObj
+	const updatedEventObjs = eventObjs.map((eventObj) => {
+		return {
+			...eventObj,
+			hasRoom: eventObj.attendees.length < eventObj.capacity,
+			capacityAvailable: eventObj.capacity - eventObj.attendees.length,
+			color:
+				eventObj.type === "past"
+					? "red"
+					: eventObj.attendees.length >= eventObj.capacity
+					? "orange"
+					: "green",
+		};
+	});
+
 	return (
-		<>
-			<SearchBar
-				value={searchQuery}
-				onChangeText={handleSearchQuery}
-				onSubmitEditing={handleSearchSubmit}
-				// onPress={handleSearchSubmit}
-			/>
-			<ClearFilterButton onPress={handleClearFilter} />
+		<View style={styles.container}>
+			{eventObjs[0].type === "upcoming" && (
+				<View
+					style={{
+						flexDirection: "row",
+						gap: 20,
+						justifyContent: "center",
+					}}>
+					{colors.map((color, index) => (
+						<TouchableOpacity
+							key={index}
+							onPress={() => handleSelectColor(color.color)}
+							style={{
+								backgroundColor:
+									selectedColor === color.color ? "#4CAF50" : "#fff",
+								padding: 10,
+								marginVertical: 5,
+								borderRadius: 5,
+								borderWidth: 1,
+								borderColor: "#ccc",
+								width: 100,
+								alignItems: "center",
+							}}>
+							<Text
+								style={{
+									color: selectedColor === color.color ? "#fff" : "#000",
+								}}>
+								{`${color.color === "green" ? "Open" : "Full"}`}
+							</Text>
+						</TouchableOpacity>
+					))}
+				</View>
+			)}
+			<View
+				style={{
+					flexDirection: "row",
+					marginVertical: 10,
+					paddingHorizontal: 20,
+				}}>
+				<SearchBar
+					value={searchQuery}
+					onChangeText={handleSearchQuery}
+					onSubmitEditing={handleSearchSubmit}
+					// onPress={handleSearchSubmit}
+				/>
+				<ClearFilterButton onPress={handleClearFilter} />
+			</View>
 
 			<FlatList
-				data={eventObjs.filter((eventObj) =>
-					eventObj.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+				data={updatedEventObjs.filter((eventObj) =>
+					eventObj.type === "upcoming"
+						? eventObj.color === selectedColor &&
+						  eventObj.event_name
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase())
+						: eventObj.event_name
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase())
 				)}
 				renderItem={({ item }) => (
 					<View>
-						<Text style={styles.headerTxt} key={`${item.event_id}`}>
-							{item.event_date}
-						</Text>
-						<Text
+						{console.log("event", item)}
+						{/* something about this is broken - all showing full. */}
+						{/* {console.log("item", item)} */}
+						<TouchableOpacity
 							onPress={() =>
 								navigation.navigate("EventDetailsHost", {
 									upcomingEvent: item,
 									handleRefresh: handleRefresh,
-									// eventView: eventView,
 								})
-							}
-							style={styles.bodyTxt}>
-							{item.event_name}
-						</Text>
-
-						<Text>
-							<Text>
-								Status:{" "}
-								{item.attendees.length >= item.capacity
-									? `Full | Waitlist: ${item.waitlist.length}`
-									: (new Date(item.event_date) < new Date() && "Closed") ||
-									  `Open | Spots Available: ${
-											item.capacity - item.attendees.length
-									  }`}
-							</Text>
-						</Text>
+							}>
+							<EventListItem eventObj={item} />
+						</TouchableOpacity>
 					</View>
 				)}
 			/>
-		</>
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		paddingLeft: 5,
+		paddingRight: 5,
 		backgroundColor: "#fff",
-		alignItems: "center",
+		width: "100%",
+		maxWidth: 400,
 		justifyContent: "center",
-		paddingTop: 80,
-	},
-	tableHeader: {
-		flexDirection: "row",
-		justifyContent: "space-evenly",
-		alignItems: "center",
-		backgroundColor: "#37C2D0",
-		borderTopEndRadius: 10,
-		borderTopStartRadius: 10,
-		height: 50,
-	},
-	tableRow: {
-		flexDirection: "row",
-		height: 40,
-		alignItems: "center",
-	},
-	columnHeader: {
-		// width: "20%",
-		justifyContent: "space-evenly",
-		alignItems: "center",
-	},
-	columnHeaderTxt: {
-		color: "white",
-		fontWeight: "bold",
-	},
-	columnRowTxt: {
-		width: "30%",
-		justifyContent: "space-evenly",
-		textAlign: "left",
-	},
-
-	headerTxt: {
-		fontSize: 20,
-		fontWeight: "bold",
-	},
-
-	bodyTxt: {
-		fontSize: 16,
-		fontWeight: "regular",
-	},
-
-	listItemLayout: {
-		display: "flex",
-		flexDirection: "column",
 	},
 });
 
