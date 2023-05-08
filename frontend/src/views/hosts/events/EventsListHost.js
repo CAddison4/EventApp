@@ -6,12 +6,13 @@ import {
 	FlatList,
 	Keyboard,
 	ActivityIndicator,
+	TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect, memo } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-import { TouchableOpacity } from "react-native-gesture-handler";
+// import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
@@ -82,6 +83,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 								borderColor: "#ccc",
 								width: 100,
 								alignItems: "center",
+								// zIndex: 2000,
 							}}>
 							<Text
 								style={{
@@ -120,8 +122,8 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 								.includes(searchQuery.toLowerCase())
 				)}
 				renderItem={({ item }) => (
+					// <View style={{ zIndex: 2000 }}>
 					<View>
-						{console.log("event", item)}
 						{/* something about this is broken - all showing full. */}
 						{/* {console.log("item", item)} */}
 						<TouchableOpacity
