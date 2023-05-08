@@ -1,5 +1,5 @@
 import { getCapacity, editAttendeeStatus, createAttendee,
-         editEventCapacity } from "@backend-event-app/core/database";
+         editEventCapacity, createWaitlist } from "@backend-event-app/core/database";
 
 export async function main(event) {
 
@@ -19,7 +19,10 @@ export async function main(event) {
         // check if event is full. If it is, add user to waitlist for this event
         const remaining = await getCapacity(eventId);
 
-        if (remaining <= 0) {
+        if (parseInt(remaining) <= 0) {
+        // Event is full, create waitlist record for this user
+            attendee = await createWaitlist(eventId, userId);
+            console.log("attendee", attendee);
             return {
                 statusCode: 202,
                 body: JSON.stringify({ message: 'Sorry, event is now full', status: 202 })

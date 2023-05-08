@@ -128,7 +128,7 @@ const Navigation = () => {
 							const userAuth = await Auth.currentSession();
 							const userEmail = userAuth.idToken.payload.email;
 							const userData = await getUserData(userEmail, dispatch);
-
+							console.log("userData", userData);
 							if (userData.success == true) {
 								const userToken = await AsyncStorage.getItem("accessToken");
 								axios.defaults.headers.common[

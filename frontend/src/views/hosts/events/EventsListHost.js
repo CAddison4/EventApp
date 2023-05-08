@@ -6,12 +6,12 @@ import {
 	FlatList,
 	Keyboard,
 	ActivityIndicator,
+	TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect, memo } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
