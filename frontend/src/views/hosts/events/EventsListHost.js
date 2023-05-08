@@ -18,9 +18,10 @@ import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 import EventListItem from "../../../components/EventListItem";
 
-export default function EventsListHost({ route }) {
+// export default function EventsListHost({ route })
+export default function EventsListHost({ eventObjs, handleRefresh }) {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { eventObjs, handleRefresh } = route.params;
+	// const { eventObjs, handleRefresh } = route.params;
 	const navigation = useNavigation();
 
 	const [selectedColor, setSelectedColor] = useState("green");
@@ -47,12 +48,12 @@ export default function EventsListHost({ route }) {
 	const updatedEventObjs = eventObjs.map((eventObj) => {
 		return {
 			...eventObj,
-			hasRoom: eventObj.numberOfAttendees > eventObj.capacity ? false : true,
+			hasRoom: eventObj.numberOfAttendees >= eventObj.capacity ? false : true,
 			capacityAvailable: eventObj.capacity - eventObj.numberOfAttendees,
 			color:
 				eventObj.type === "past"
 					? "red"
-					: eventObj.capacityAvailable === 0
+					: eventObj.capacity - eventObj.numberOfAttendees <= 0
 					? "orange"
 					: "green",
 		};
@@ -148,6 +149,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		maxWidth: 400,
 		justifyContent: "center",
+		paddingTop: 20,
 	},
 });
 

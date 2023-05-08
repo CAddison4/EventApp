@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import AttendeeList from "./AttendeeList";
-import { formatLongDate, formatTime } from "../../../utilities/dates";
+import {
+	formatLongDate,
+	formatTime,
+	formatDate,
+} from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;

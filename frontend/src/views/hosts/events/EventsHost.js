@@ -6,13 +6,16 @@ import {
 	ActivityIndicator,
 } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import UpcomingEvents from "./UpcomingEvents";
 import PastEvents from "./PastEvents";
 import EventsCalHost from "./EventsCalHost";
 import { useEffect, useState } from "react";
 import { getEventsWithAttendees } from "../HostComponents";
+import { Ionicons } from "@expo/vector-icons";
 
-const Tab = createMaterialTopTabNavigator();
+// const Tab = createMaterialTopTabNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function EventsHost({ navigation }) {
 	const [refresh, setRefresh] = useState(false);
@@ -21,7 +24,6 @@ export default function EventsHost({ navigation }) {
 	const [pastEvents, setPastEvents] = useState([]);
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [eventsCalObjs, setEventsCalObjs] = useState([]);
-
 
 	useEffect(() => {
 		const getData = async () => {
@@ -78,6 +80,21 @@ export default function EventsHost({ navigation }) {
 				<Tab.Navigator
 					initialRouteName="Upcoming"
 					screenOptions={({ route }) => ({
+						tabBarIcon: ({ focused, color, size }) => {
+							let iconName;
+
+							if (route.name === "Upcoming") {
+								iconName = focused ? "caret-up-outline" : "caret-up";
+							}
+							if (route.name === "Past") {
+								iconName = focused ? "caret-down-outline" : "caret-down";
+							}
+
+							if (route.name === "Calendar") {
+								iconName = focused ? "calendar" : "calendar-outline";
+							}
+							return <Ionicons name={iconName} size={size} color={color} />;
+						},
 						tabBarActiveTintColor: "tomato",
 						tabBarInactiveTintColor: "gray",
 						headerShown: false,
@@ -92,18 +109,19 @@ export default function EventsHost({ navigation }) {
 						}}
 					/>
 					<Tab.Screen
+						name="Calendar"
+						component={EventsCalHost}
+						initialParams={{
+							eventObjs: eventsCalObjs,
+							handleRefresh: handleRefresh,
+						}}
+						// options={{ tabBarLabel: "" }}
+					/>
+					<Tab.Screen
 						name="Past"
 						component={PastEvents}
 						initialParams={{
 							eventObjs: pastEvents,
-							handleRefresh: handleRefresh,
-						}}
-					/>
-					<Tab.Screen
-						name="EventsCalHost"
-						component={EventsCalHost}
-						initialParams={{
-							eventObjs: eventsCalObjs,
 							handleRefresh: handleRefresh,
 						}}
 					/>
