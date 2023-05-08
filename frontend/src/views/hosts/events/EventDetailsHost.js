@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import AttendeeList from "./AttendeeList";
+import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;
@@ -142,78 +143,126 @@ export default function EventDetailsHost({ navigation, route }) {
 				</>
 			) : (
 				eventObj && (
-					<>
+					<View style={styles.container}>
 						<Text style={styles.title}>Event Details</Text>
-						<Text>Name: {eventObj.event_name}</Text>
-						<Text>Date: {eventObj.event_date}</Text>
-						<Text>Location: {eventObj.event_location}</Text>
-						<Text>Capacity: {eventObj.capacity}</Text>
-						<Text>Start Time: {eventObj.event_start}</Text>
-						<Text>End Time: {eventObj.event_end}</Text>
-						<Text>Registered: {eventObj.attendees.length}</Text>
-						<Text>Waitlisted: {eventObj.waitlist.length}</Text>
+						<View style={styles.eventInfoContainer}>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Name:</Text>
+								<Text style={styles.value}>{eventObj.event_name}</Text>
+							</View>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Start: </Text>
+								<Text style={styles.value}>
+									{formatLongDate(eventObj.event_start, true)} |{" "}
+									{formatTime(eventObj.event_start)}
+								</Text>
+							</View>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>End: </Text>
+								<Text style={styles.value}>
+									{formatLongDate(eventObj.event_end, true)} |{" "}
+									{formatTime(eventObj.event_end)}
+								</Text>
+							</View>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Location:</Text>
+								<Text style={styles.value}>{eventObj.event_location}</Text>
+							</View>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Capacity:</Text>
+								<Text style={styles.value}>{eventObj.capacity}</Text>
+							</View>
+							{/* <Text>Capacity: {eventObj.capacity}</Text> */}
 
-						{formattedStartDate < currentDate && (
-							<>
-								<Text
-									onPress={() => {
-										navigation.navigate("AttendeeList", {
-											attendeeList: eventObj.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "Attended"
-											),
-											type: "Attended",
-											eventName: eventObj.event_name,
-											eventDate: eventObj.event_date,
-										});
-									}}>
-									Attended:{" "}
-									{
-										eventObj.attendees.filter(
-											(attendee) => attendee.attendance_status_id === "Attended"
-										).length
-									}
-								</Text>
-								<Text
-									onPress={() => {
-										navigation.navigate("AttendeeList", {
-											attendeeList: eventObj.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "No Show"
-											),
-											type: "No Show",
-											eventName: eventObj.event_name,
-											eventDate: eventObj.event_date,
-										});
-									}}>
-									No Show:{" "}
-									{
-										eventObj.attendees.filter(
-											(attendee) => attendee.attendance_status_id === "No Show"
-										).length
-									}
-								</Text>
-								<Text
-									onPress={() => {
-										navigation.navigate("AttendeeList", {
-											attendeeList: eventObj.attendees.filter(
-												(attendee) =>
-													attendee.attendance_status_id === "Unknown"
-											),
-											type: "Unknown",
-											eventName: eventObj.event_name,
-											eventDate: eventObj.event_date,
-										});
-									}}>
-									Unknown:{" "}
-									{
-										eventObj.attendees.filter(
-											(attendee) => attendee.attendance_status_id === "Unknown"
-										).length
-									}
-								</Text>
-							</>
-						)}
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Registered:</Text>
+								<Text style={styles.value}>{eventObj.attendees.length}</Text>
+							</View>
+							<View style={styles.eventInfoItem}>
+								<Text style={styles.label}>Waitlisted:</Text>
+								<Text style={styles.value}>{eventObj.waitlist.length}</Text>
+							</View>
+
+							{formattedStartDate < currentDate && (
+								<>
+									<View style={styles.eventInfoItem}>
+										<Text
+											// onPress={() => {
+											// 	navigation.navigate("AttendeeList", {
+											// 		attendeeList: eventObj.attendees.filter(
+											// 			(attendee) =>
+											// 				attendee.attendance_status_id === "Attended"
+											// 		),
+											// 		type: "Attended",
+											// 		eventName: eventObj.event_name,
+											// 		eventDate: eventObj.event_date,
+											// 	});
+											// }}
+											style={styles.label}>
+											Attended:
+										</Text>
+										<Text style={styles.value}>
+											{
+												eventObj.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "Attended"
+												).length
+											}
+										</Text>
+									</View>
+									<View style={styles.eventInfoItem}>
+										<Text
+											// onPress={() => {
+											// 	navigation.navigate("AttendeeList", {
+											// 		attendeeList: eventObj.attendees.filter(
+											// 			(attendee) =>
+											// 				attendee.attendance_status_id === "No Show"
+											// 		),
+											// 		type: "No Show",
+											// 		eventName: eventObj.event_name,
+											// 		eventDate: eventObj.event_date,
+											// 	});
+											// }}
+											style={styles.label}>
+											No Show:
+										</Text>
+										<Text style={styles.value}>
+											{
+												eventObj.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "No Show"
+												).length
+											}
+										</Text>
+									</View>
+									<View style={styles.eventInfoItem}>
+										<Text
+											// onPress={() => {
+											// 	navigation.navigate("AttendeeList", {
+											// 		attendeeList: eventObj.attendees.filter(
+											// 			(attendee) =>
+											// 				attendee.attendance_status_id === "Unknown"
+											// 		),
+											// 		type: "Unknown",
+											// 		eventName: eventObj.event_name,
+											// 		eventDate: eventObj.event_date,
+											// 	});
+											// }}
+											style={styles.label}>
+											Unknown:
+										</Text>
+										<Text style={styles.value}>
+											{
+												eventObj.attendees.filter(
+													(attendee) =>
+														attendee.attendance_status_id === "Unknown"
+												).length
+											}
+										</Text>
+									</View>
+								</>
+							)}
+						</View>
 
 						{eventObj.type_id === "Guest List" && (
 							<Button
@@ -236,7 +285,7 @@ export default function EventDetailsHost({ navigation, route }) {
 							}}
 							buttonStyle={styles.button}
 						/>
-					</>
+					</View>
 				)
 			)}
 		</View>
@@ -246,22 +295,38 @@ export default function EventDetailsHost({ navigation, route }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 20,
+		flexDirection: "column",
 		backgroundColor: "#fff",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingHorizontal: 20,
 	},
 	title: {
-		fontSize: 20,
+		fontSize: 24,
 		fontWeight: "bold",
-		marginBottom: 10,
+		textAlign: "center",
+		marginBottom: 20,
 	},
-	textInput: {
-		height: 40,
-		borderColor: "gray",
-		borderWidth: 1,
-		marginBottom: 10,
-		paddingHorizontal: 10,
+	eventInfoContainer: {
+		width: "100%",
+		backgroundColor: "#eee",
+		borderRadius: 10,
+		padding: 20,
 	},
-	button: {
-		marginTop: 20,
+	actionButtons: {
+		marginTop: 5,
+		flexDirection: "column",
+		justifyContent: "center",
+		rowGap: 10,
+		width: "100%",
 	},
+	eventInfoItem: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginVertical: 10,
+	},
+	label: {
+		fontWeight: "bold",
+	},
+	value: {},
 });
