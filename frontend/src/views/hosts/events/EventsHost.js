@@ -8,6 +8,7 @@ import {
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import UpcomingEvents from "./UpcomingEvents";
 import PastEvents from "./PastEvents";
+import EventsCalHost from "./EventsCalHost";
 import { useEffect, useState } from "react";
 import { getEventsWithAttendees } from "../HostComponents";
 
@@ -19,6 +20,8 @@ export default function EventsHost({ navigation }) {
 	const [eventObjs, setEventObjs] = useState([]);
 	const [pastEvents, setPastEvents] = useState([]);
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
+	const [eventsCalObjs, setEventsCalObjs] = useState([]);
+
 
 	useEffect(() => {
 		const getData = async () => {
@@ -27,7 +30,7 @@ export default function EventsHost({ navigation }) {
 			const eventData = eventsWithAttendees.sort(
 				(a, b) => new Date(a.event_date) - new Date(b.event_date)
 			);
-
+			setEventsCalObjs(eventData);
 			setEventObjs(eventData);
 			setLoading(false);
 			setRefresh(false);
@@ -93,6 +96,14 @@ export default function EventsHost({ navigation }) {
 						component={PastEvents}
 						initialParams={{
 							eventObjs: pastEvents,
+							handleRefresh: handleRefresh,
+						}}
+					/>
+					<Tab.Screen
+						name="EventsCalHost"
+						component={EventsCalHost}
+						initialParams={{
+							eventObjs: eventsCalObjs,
 							handleRefresh: handleRefresh,
 						}}
 					/>

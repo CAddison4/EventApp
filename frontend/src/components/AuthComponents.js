@@ -11,6 +11,8 @@ import {
 } from "./UserApiComponents";
 
 import { Hub } from "aws-amplify";
+import jwt_decode from "jwt-decode";
+
 
 export const handleSignUp = async (
   email,
@@ -32,11 +34,11 @@ export const handleSignUp = async (
   }
   try {
     const userJwtToken = await generateToken();
-    const response = await fetch(`${API_END_POINT}/users/email/${email}`, {
+    const response = await fetch(`${API_END_POINT}users/email/${email}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userJwtToken}`,
+        Authorization: `Bearer ${userJwtToken.token}`,
       },
     });
     console.log("RESPONSE USER LOOKUP", response);
@@ -92,18 +94,53 @@ export const handleSignUp = async (
   }
 };
 
-export const handleAutoSignIn = async () => {
+export const handleAutoSignIn = async (dispatch) => {
   console.log("HANDLE AUTO SIGN IN")
   try {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
-    if (refreshToken) {
-      console.log("REFRESH TOKEN", refreshToken);
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (accessToken) {
+      const decodedAccessToken = jwt_decode(accessToken);
+      const currentTime = Date.now()/1000;
+      
+      if (decodedAccessToken.exp < currentTime) {   
+           
+        const newTokens = await Auth.currentSession();
+        const newAccessToken = newTokens.getAccessToken().getJwtToken();
+        const newIdToken = newTokens.getIdToken().getJwtToken();
+
+        await AsyncStorage.setItem('accessToken', newAccessToken);
+        await AsyncStorage.setItem('idToken', newIdToken);
+
+        return { 
+          success: true ,
+          message: "tokens Updated",
+        };
+      } else
+      {
+        const idToken =  await AsyncStorage.getItem('idToken');
+        const userData = await getUserData(jwt_decode(idToken).email, dispatch);
+
+        if (!userData.success) {
+          return {
+            success: false,
+            message: userData.message,
+          };
+        }
+
+        return {
+          success: true,
+          message: "Access token valid",
+          userData: userData,
+        };
+      }
+      
+
     }
   } catch (error) {
     console.log("ERROR", error);
     return {
       success: false,
-      message: "Error signing in",
+      message: "",
     };
   }
 };
@@ -113,6 +150,10 @@ export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
     const user = await Auth.signIn(username, password);
+    return {
+      success: true,
+      message: "",
+    }
   } catch (error) {
     let message = "Error signing in: " + error.message;
     if (error.code === "UserNotFoundException") {
@@ -239,6 +280,9 @@ export const handleSignOut = async () => {
   //CLEAR ASYNC STORAGE
   try {
     await Auth.signOut();
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("idToken");
+    await AsyncStorage.removeItem("refreshToken");
     console.log("Successfully signed out");
   } catch (error) {
     console.log("Error signing out:", error);

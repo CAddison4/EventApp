@@ -78,8 +78,8 @@ export function API({ stack }) {
       "GET /event/{eventId}": "packages/functions/src/events/getEvent.main",
       "POST /event": "packages/functions/src/events/postEvent.main",
       "PUT /event/{eventId}": "packages/functions/src/events/putEvent.main",
-      "GET /event/date/{date}":
-        "packages/functions/src/events/getEventWithDate.main",
+      "GET /event/date/{date}": "packages/functions/src/events/getEventWithDate.main",
+      "GET /event/years": "packages/functions/src/events/getEventYears.main",
       // Routes for creating and updating event capacity records
       "POST /event/capacity/{eventId}":
         "packages/functions/src/capacity/postEventCapacity.main",
@@ -124,6 +124,11 @@ export function API({ stack }) {
         "packages/functions/src/utilities/getLoyaltyCount.main",
       "GET /eventcounts/{userId}":
         "packages/functions/src/utilities/getEventCounts.main",
+      // Routes for registering a user for and withdrawing a user from an event
+      "POST /registration/{userId}/{eventId}":
+        "packages/functions/src/attendees/registerForEvent.main",
+      "POST /withdraw/{userId}/{eventId}":
+        "packages/functions/src/attendees/withdrawFromEvent.main",
     },
   });
 

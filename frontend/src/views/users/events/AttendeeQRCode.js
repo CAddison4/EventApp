@@ -2,6 +2,9 @@ import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import { formatLongDate } from "../../../utilities/dates";
+import { generateToken } from "../../../components/UserApiComponents";
+import QRCode from "react-native-qrcode-svg";
+
 
 export default function AttendeeQRCode({ route }) {
 
@@ -11,13 +14,22 @@ export default function AttendeeQRCode({ route }) {
 	const lastName = userData.last_name;
 
 	const eventObj = route.params.eventObj;
-
 	
+	
+	const qrCodeValue = {
+		user_id: user_id,
+		event_id: eventObj.event_id,
+	}
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.qrcode}>
 				{/* <QRCode value="Hello, world!" size={200} /> */}
+				<QRCode 
+				value={eventObj ? JSON.stringify(qrCodeValue) : "Null Event"} 
+				size={200}
+				color="black"
+				backgroundColor="white" />
 			</View>
 			<Text style={styles.title}>{firstName} {lastName}</Text>
 			<Text style={styles.title}>{eventObj.event_name}</Text>
@@ -34,12 +46,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		alignItems: "center",
 		justifyContent: "center",
+
 	},
 	qrcode: {
-		height: 200,
-		width: 200,
 		borderStyle: "solid",
-		borderWidth: 2,
+		borderWidth: 5,
+		borderColor: "white",
 	},
 	title: {
 		fontSize: 18,

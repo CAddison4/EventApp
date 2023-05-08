@@ -168,6 +168,7 @@ const Navigation = () => {
 		}
 	}, [contextUser]);
 
+
 	// const testUserStatus = { membership_status_id: "None" };
 	// const testUserStatus = { membership_status_id: "Gold" };
 

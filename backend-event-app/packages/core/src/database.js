@@ -102,7 +102,7 @@ export async function createEvent(eventName, eventDate, eventStart, eventEnd, ev
   INSERT INTO events (event_name, event_date, event_start, event_end, event_location, capacity, type_id, loyalty_max, cancelled, reason )
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
   RETURNING *
-  `, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, false, ""])
+  `, [eventName, eventDate, eventStart, eventEnd, eventLocation, capacity, typeId, loyaltyMax, false, null])
   return res.rows[0]
 }
 
@@ -183,6 +183,14 @@ export async function editEventCapacity(eventId, functionType) {
     `, [eventId]);  
   }
   return res.rows[0];
+}
+
+// Get all the events years
+export async function getEventYears() {
+  const res = await getPool().query(`
+  SELECT DISTINCT EXTRACT(YEAR FROM event_date) AS years FROM events
+  ORDER BY years DESC`)
+  return res.rows
 }
 
 // Create an attendee record for a particular event and user
@@ -304,7 +312,7 @@ export async function getEventWaitlist(eventId) {
   JOIN events e ON ew.event_id = e.event_id
   JOIN users u ON ew.user_id = u.user_id
   WHERE ew.event_id = $1
-  ORDER BY e.event_date, u.last_name
+  ORDER BY ew.waitlist_date, u.last_name
   `, [eventId])
   return res.rows
 }
@@ -370,5 +378,14 @@ export async function eventCounts(userId) {
   GROUP BY ea.attendee_status_id
   `, [userId])
   return res.rows
+}
+
+// Get remaining capacity for an event
+export async function getCapacity(eventId) {
+  const res = await getPool().query(`
+  SELECT ec.capacity - ec.number_of_attendees AS remaining FROM eventcapacity ec
+  WHERE ec.event_id = $1
+  `, [eventId])
+  return res.rows[0].remaining
 }
 

@@ -7,6 +7,9 @@ import { useEffect } from "react";
 
 import EventsCal from "./EventsCal";
 import EventsList from "./EventsList";
+import { setEvent } from "../../../components/store/eventSlice";
+
+import { useDispatch } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 
@@ -14,9 +17,18 @@ export default function Upcoming( {route} ) {
 
 	const { eventObjs, handleFilterChange, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
 
+	const dispatch = useDispatch();
+
 	useEffect(() => {
         handleSetDisplayTab("Upcoming");
     }, []);
+
+	useEffect(() => {
+		const sendData = async () => {
+			await dispatch(setEvent(eventObjs));
+		}
+		sendData();
+	}, []);
 
 	return (
 		<Tab.Navigator

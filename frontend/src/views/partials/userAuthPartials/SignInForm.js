@@ -41,20 +41,24 @@ const SignInForm = ({ route }) => {
       return;
     }
     try {
-      const { success, message } = await handleSignIn(username, password, dispatch);
-      if (success === false) {
+      const signInAttempt = await handleSignIn(username, password, dispatch);
+      if (signInAttempt.success === false) {
+        console.log("Error signing in:", message, success);
       setFormMessage(message);
+      return;
       }
+      return;
     } catch (error) {
       console.log("Error signing in:", error);
       setFormMessage("Error signing in. Please try again.");
+      return;
     }
   };
 
   const handleAttendeeSignIn = async () => {
     try {
-      const attendeeUserName = "shmglade@gmail.com";
-      const attendeePassword = "P@ssw0rd!";
+      const attendeeUserName = "scott.c19@live.com";
+      const attendeePassword = "td3j5FnhiLHRa$KA";
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
