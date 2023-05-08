@@ -168,7 +168,6 @@ const Navigation = () => {
 		}
 	}, [contextUser]);
 
-
 	// const testUserStatus = { membership_status_id: "None" };
 	// const testUserStatus = { membership_status_id: "Gold" };
 
@@ -177,7 +176,7 @@ const Navigation = () => {
 			<Stack.Navigator
 				screenOptions={{
 					headerStyle: {
-						backgroundColor: "#607D8B",
+						backgroundColor: "#159E31",
 						//    backgroundColor: "#f6d5a7",
 					},
 					headerTintColor: "#fff",
