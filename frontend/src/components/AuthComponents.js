@@ -111,6 +111,8 @@ export const handleAutoSignIn = async (dispatch) => {
         await AsyncStorage.setItem('accessToken', newAccessToken);
         await AsyncStorage.setItem('idToken', newIdToken);
 
+        const idToken =  await AsyncStorage.getItem('idToken');
+        const userData = await getUserData(jwt_decode(idToken).email, dispatch);
         return { 
           success: true ,
           message: "tokens Updated",
@@ -126,7 +128,7 @@ export const handleAutoSignIn = async (dispatch) => {
             message: userData.message,
           };
         }
-
+        
         return {
           success: true,
           message: "Access token valid",
