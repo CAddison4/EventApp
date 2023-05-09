@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   eventTitle: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     margin: 5,
   },
   buttonsContainer: {
@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 16,
@@ -207,7 +208,8 @@ const styles = StyleSheet.create({
   attendanceButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 160,
+    width: 140,
+    marginRight: 10,
   },
   attendedButton: {
     backgroundColor: "#ffffff",
@@ -234,6 +236,7 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignContent: "center",
+    margin: 10,
   },
   submitButtonText: {
     color: "white",

@@ -206,50 +206,49 @@ export default function EventDetailsHost({ navigation, route }) {
 									</View>
 								</>
 							)}
-						</View>
-
-						<View style={styles.actionButtons}>
-							{eventObj.type_id === "Guest List" &&
-						     formattedStartDate >= currentDate && (
-								<TouchableOpacity
-									style={styles.inviteButton}
-									onPress={() => navigation.navigate("InviteList", { eventObj })}>
-									<Text style={styles.buttonText}>Set Invites</Text>
-								</TouchableOpacity>
-							)}
-							<View style={styles.buttonRow}>
-								{formattedStartDate >= currentDate && (
-									<>
-										<TouchableOpacity
-											style={styles.button}
-											onPress={() => setIsEdit(true)}>
-											<Text style={styles.buttonText}>Edit</Text>
-										</TouchableOpacity>
-										<TouchableOpacity
-											onPress={() => handleDelete()}
-											style={styles.button}>
-											<Text style={styles.buttonText}>Delete</Text>
-										</TouchableOpacity>	
-									</>
-								 )}
-							</View>
-							<View style={styles.buttonRow}>
-								<TouchableOpacity
-									onPress={() => {
-										navigation.navigate("Attendance", { eventObj: eventObj });
-									}}
-									style={styles.button}>
-									<Text style={styles.buttonText}>Attendance</Text>
-								</TouchableOpacity>
-								{formattedStartDate >= currentDate && (
+							<View style={styles.actionButtons}>
+								{eventObj.type_id === "Guest List" &&
+								formattedStartDate >= currentDate && (
 									<TouchableOpacity
-										style={styles.button}
-										onPress={() => {
-											navigation.navigate("EventWaitlist", { eventObj: eventObj });
-										}}>
-										<Text style={styles.buttonText}>Waitlist</Text>
+										style={styles.inviteButton}
+										onPress={() => navigation.navigate("InviteList", { eventObj })}>
+										<Text style={styles.buttonText}>Set Invites</Text>
 									</TouchableOpacity>
 								)}
+								<View style={styles.buttonRow}>
+									{formattedStartDate >= currentDate && (
+										<>
+											<TouchableOpacity
+												style={styles.button}
+												onPress={() => setIsEdit(true)}>
+												<Text style={styles.buttonText}>Edit</Text>
+											</TouchableOpacity>
+											<TouchableOpacity
+												onPress={() => handleDelete()}
+												style={styles.button}>
+												<Text style={styles.buttonText}>Delete</Text>
+											</TouchableOpacity>	
+										</>
+									)}
+								</View>
+								<View style={styles.buttonRow}>
+									<TouchableOpacity
+										onPress={() => {
+											navigation.navigate("Attendance", { eventObj: eventObj });
+										}}
+										style={styles.button}>
+										<Text style={styles.buttonText}>Attendance</Text>
+									</TouchableOpacity>
+									{formattedStartDate >= currentDate && (
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => {
+												navigation.navigate("EventWaitlist", { eventObj: eventObj });
+											}}>
+											<Text style={styles.buttonText}>Waitlist</Text>
+										</TouchableOpacity>
+									)}
+								</View>
 							</View>
 						</View>
 					</View>

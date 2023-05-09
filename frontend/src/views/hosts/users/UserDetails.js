@@ -69,13 +69,13 @@ export default function UserDetails({ navigation, route }) {
 			<Text style={styles.title}>
 				{user.first_name} {user.last_name}
 			</Text>
-			<View style={[styles.eventInfoContainer, { zIndex: 2000 }]}>
-				<View style={styles.eventInfoItem}>
+			<View style={[styles.userInfoContainer, { zIndex: 2000 }]}>
+				<View style={styles.userInfoItem}>
 					<Text style={styles.label}>User type:</Text>
 					<Text style={styles.value}>{user.role_id}</Text>
 				</View>
 
-				<View style={styles.eventInfoItem}>
+				<View style={styles.userInfoItem}>
 					<Text style={styles.label}>User since:</Text>
 					<Text style={styles.value}>
 						{formatLongDate(user.date_signed_up, true)}
@@ -104,11 +104,11 @@ export default function UserDetails({ navigation, route }) {
 							<TouchableOpacity
 								style={styles.button}
 								onPress={handleUpdateUserMembershipStatus}>
-								<Text style={styles.buttonLabel}>Update Membership Status</Text>
+								<Text style={styles.buttonText}>Update Membership Status</Text>
 							</TouchableOpacity>
 						</>
 					)}
-					<View style={styles.card}>
+					{/* <View style={styles.card}>
 						<TouchableOpacity
 							style={styles.eventInfoContainer}
 							onPress={() =>
@@ -124,7 +124,16 @@ export default function UserDetails({ navigation, route }) {
 								/>
 							</View>
 						</TouchableOpacity>
-					</View>
+					</View> */}
+					
+					<TouchableOpacity
+						style={styles.button}
+						onPress={() =>
+							navigation.navigate("AttendanceRecords", { user: user })
+						}>
+						<Text style={styles.buttonText}>Event Attendance</Text>
+					</TouchableOpacity>
+
 				</View>
 
 				{/* <View style={{ zIndex: -1 }}>
@@ -143,40 +152,19 @@ const styles = StyleSheet.create({
 		padding: 16,
 		backgroundColor: "#fff",
 	},
-	nameInput: {
-		paddingBottom: 8,
-		fontSize: 24,
-		borderBottomWidth: 1,
-		borderBottomColor: "#000",
-	},
-
 	title: {
 		fontSize: 24,
 		fontWeight: "bold",
 		textAlign: "center",
 		marginBottom: 20,
 	},
-	eventInfoContainer: {
+	userInfoContainer: {
 		width: "100%",
 		backgroundColor: "#eee",
 		borderRadius: 10,
 		padding: 20,
 	},
-	actionButtons: {
-		marginTop: 5,
-		flexDirection: "column",
-		justifyContent: "center",
-		rowGap: 10,
-		width: "100%",
-	},
-	eventItem: {
-		flex: 1,
-		flexDirection: "column",
-		width: "100%",
-		margin: 5,
-		marginLeft: 15,
-	},
-	eventInfoItem: {
+	userInfoItem: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
@@ -185,23 +173,22 @@ const styles = StyleSheet.create({
 	label: {
 		fontWeight: "bold",
 	},
-
-	buttonLabel: {
-		color: "#fff",
-		fontWeight: "bold",
-		textAlign: "center",
-	},
 	value: {},
-
 	underline: {
 		textDecorationLine: "underline",
 	},
 	button: {
 		marginTop: 20,
-		backgroundColor: "#607D8B",
-		padding: 10,
-		borderRadius: 10,
-		textAlign: "center",
-		color: "white",
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+        textAlign:"center",
+		color: "#fff",
 	},
+	buttonText: {
+        color:"white",
+        textAlign:"center",
+        fontWeight:500,
+        fontSize:18,
+    },
 });
