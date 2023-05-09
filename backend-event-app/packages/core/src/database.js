@@ -92,7 +92,7 @@ export async function getUserByEmail(email) {
 export async function getUsers() {
   const res = await getPool().query(`
   SELECT * FROM users
-  ORDER BY last_name`)
+  ORDER BY CONCAT(first_name, ' ', last_name)`)
   return res.rows
 }
 
@@ -369,15 +369,13 @@ export async function loyaltyCount(userId) {
   return res.rows[0].count
 }
 
-// Count how many events a specific user has of each status
-export async function eventCounts(userId) {
+// Count the different attendance statuses for every event
+export async function eventCounts() {
   const res = await getPool().query(`
-  SELECT ea.attendee_status_id, COUNT(*) AS count FROM events e
-  LEFT JOIN eventattendees ea ON ea.event_id = e.event_id
-  AND ea.user_id = $1
-  WHERE e.event_date > now()
-  GROUP BY ea.attendee_status_id
-  `, [userId])
+  SELECT e.event_id, ea.attendance_status_id, COUNT(ea.attendance_status_id) AS count FROM events e
+  LEFT JOIN eventattendees ea ON ea.event_id = e.event_id AND ea.attendee_status_id != 'Invited'
+  GROUP BY ea.attendance_status_id, e.event_id
+  `, [])
   return res.rows
 }
 

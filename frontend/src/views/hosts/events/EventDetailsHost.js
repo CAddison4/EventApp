@@ -1,12 +1,11 @@
-import { View, Text, Button, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 // import AttendeeList from "./EventWaitist";
 import {
-	formatLongDate,
+	formatLongDateShortDay,
 	formatTime,
-	formatDate,
 } from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
@@ -29,9 +28,7 @@ export default function EventDetailsHost({ navigation, route }) {
 		const getData = async () => {
 			const apiURL = API_END_POINT;
 			try {
-				const response = await axios.get(
-					`${API_END_POINT}attendee/users/${eventId}`
-				);
+				const response = await axios.get(`${apiURL}attendee/users/${eventId}`);
 				const data = response.data;
 				console.log("data", data);
 				setAttendees(data);
@@ -110,49 +107,54 @@ export default function EventDetailsHost({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{isEdit ? (
-				<>
+				<View style={styles.editView}>
+					<Text>Event name</Text>
 					<TextInput
 						value={editedName}
 						onChangeText={setEditedName}
 						placeholder="Event name"
 						style={styles.textInput}
 					/>
-
+					<Text>Location</Text>
 					<TextInput
 						value={editedLocation}
 						onChangeText={setEditedLocation}
 						placeholder="Event location"
 						style={styles.textInput}
 					/>
-					<Button
-						title="Cancel"
-						onPress={() => setIsEdit(false)}
-						style={styles.button}></Button>
-					<Button
-						title="Save"
-						onPress={() => handleSubmit()}
-						style={styles.button}></Button>
-				</>
+					<View style={styles.buttonRow}>
+						<TouchableOpacity
+							onPress={() => setIsEdit(false)}
+							style={styles.button}>
+							<Text style={styles.buttonText}>Cancel</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => handleSubmit()}
+							style={styles.button}>
+							<Text style={styles.buttonText}>Save</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
 			) : (
 				eventObj && (
-					<View style={styles.container}>
-						<Text style={styles.title}>Event Details</Text>
-						<View style={styles.eventInfoContainer}>
-							<View style={styles.eventInfoItem}>
-								<Text style={styles.label}>Name:</Text>
-								<Text style={styles.value}>{eventObj.event_name}</Text>
-							</View>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>{eventObj.event_name}</Text>
+                        <View style={styles.eventInfoContainer}>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Start: </Text>
 								<Text style={styles.value}>
-									{formatLongDate(eventObj.event_start, true)} |{" "}
+									{formatLongDateShortDay(eventObj.event_start)}
+								</Text>
+								<Text style={styles.value}>
 									{formatTime(eventObj.event_start)}
 								</Text>
 							</View>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>End: </Text>
 								<Text style={styles.value}>
-									{formatLongDate(eventObj.event_end, true)} |{" "}
+									{formatLongDateShortDay(eventObj.event_end)}
+								</Text>
+								<Text style={styles.value}>
 									{formatTime(eventObj.event_end)}
 								</Text>
 							</View>
@@ -202,81 +204,53 @@ export default function EventDetailsHost({ navigation, route }) {
 											}
 										</Text>
 									</View>
-									<View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "No Show"
-											// 		),
-											// 		type: "No Show",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											No Show:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "No Show"
-												).length
-											}
-										</Text>
-									</View>
-									<View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "Unknown"
-											// 		),
-											// 		type: "Unknown",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											Unknown:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Unknown"
-												).length
-											}
-										</Text>
-									</View>
 								</>
 							)}
+							<View style={styles.actionButtons}>
+								{eventObj.type_id === "Guest List" &&
+								formattedStartDate >= currentDate && (
+									<TouchableOpacity
+										style={styles.inviteButton}
+										onPress={() => navigation.navigate("InviteList", { eventObj })}>
+										<Text style={styles.buttonText}>Set Invites</Text>
+									</TouchableOpacity>
+								)}
+								<View style={styles.buttonRow}>
+									{formattedStartDate >= currentDate && (
+										<>
+											<TouchableOpacity
+												style={styles.button}
+												onPress={() => setIsEdit(true)}>
+												<Text style={styles.buttonText}>Edit</Text>
+											</TouchableOpacity>
+											<TouchableOpacity
+												onPress={() => handleDelete()}
+												style={styles.button}>
+												<Text style={styles.buttonText}>Delete</Text>
+											</TouchableOpacity>	
+										</>
+									)}
+								</View>
+								<View style={styles.buttonRow}>
+									<TouchableOpacity
+										onPress={() => {
+											navigation.navigate("Attendance", { eventObj: eventObj });
+										}}
+										style={styles.button}>
+										<Text style={styles.buttonText}>Attendance</Text>
+									</TouchableOpacity>
+									{formattedStartDate >= currentDate && (
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => {
+												navigation.navigate("EventWaitlist", { eventObj: eventObj });
+											}}>
+											<Text style={styles.buttonText}>Waitlist</Text>
+										</TouchableOpacity>
+									)}
+								</View>
+							</View>
 						</View>
-
-						{eventObj.type_id === "Guest List" && (
-							<Button
-								title="Set Invites"
-								onPress={() => navigation.navigate("InviteList", { eventObj })}
-							/>
-						)}
-						<Button
-							title="Edit"
-							onPress={() => setIsEdit(true)}
-							style={styles.button}></Button>
-						<Button
-							title="Delete"
-							onPress={() => handleDelete()}
-							style={styles.button}></Button>
-						<Button
-							title="Attendance"
-							onPress={() => {
-								navigation.navigate("Attendance", { eventObj: eventObj });
-							}}
-							buttonStyle={styles.button}
-						/>
 					</View>
 				)
 			)}
@@ -289,12 +263,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column",
 		backgroundColor: "#fff",
+		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
-		paddingHorizontal: 20,
+		paddingHorizontal: 10,
 	},
 	title: {
-		fontSize: 24,
+		fontSize: 22,
 		fontWeight: "bold",
 		textAlign: "center",
 		marginBottom: 20,
@@ -306,12 +281,37 @@ const styles = StyleSheet.create({
 		padding: 20,
 	},
 	actionButtons: {
-		marginTop: 5,
+		marginTop: 20,
 		flexDirection: "column",
 		justifyContent: "center",
 		rowGap: 10,
 		width: "100%",
+		alignItems: "center",
 	},
+	inviteButton: {
+		width: 300,
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+	},
+	buttonRow: {
+		flexDirection: "row",
+		justifyContent: "center",
+		columnGap: 10,
+	},
+	button: {
+		width: 145,
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+        textAlign:"center"
+	},
+	buttonText:{
+        color:"white",
+        textAlign:"center",
+        fontWeight:500,
+        fontSize:18,
+    },
 	eventInfoItem: {
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -321,4 +321,17 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	value: {},
+	editView: {
+		flex: 1,
+		flexDirection: "column",
+		marginTop: 150,
+		//justifyContent: "center",
+	},
+	textInput: {
+		paddingBottom: 8,
+		fontSize: 18,
+		borderBottomWidth: 1,
+		borderBottomColor: "#000",
+		marginBottom: 20,
+	},
 });

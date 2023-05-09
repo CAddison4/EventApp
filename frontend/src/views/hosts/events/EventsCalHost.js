@@ -12,16 +12,15 @@ export default function EventsCalHost({ route, navigation }) {
 	// type is the upcoming or past
 	const [loading, setLoading] = useState(true);
 	const [selected, setSelected] = useState("");
-	const [selectedYear, setSelectedYear] = useState( new Date().getFullYear());
-	
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
 	const handleYearSelect = (year) => {
 		setSelectedYear(year);
 		setSelected(year + "-01-01");
-    };
+	};
 
 	// create marked array
 	useEffect(() => {
-
 		// if you want to switch the array to have only the selected year, use this
 		// const filteredEvents = eventObjs.filter((event) => {
 		// 	const eventDate = new Date(event.event_date);
@@ -35,17 +34,24 @@ export default function EventsCalHost({ route, navigation }) {
 				const originalDate = new Date(event.event_date);
 				// format the date to YYYY-MM-DD
 				const formattedDate = originalDate.toISOString().slice(0, 10);
+				let color = "blue";
+				if (event.type === "past") {
+					color = "grey";
+				} else if (event.capacity - event.number_of_attendees <= 0) {
+					color = "orange";
+				} else {
+					color = "green";
+				}
 				// return the formatted date as a key to the markedDates object
 				return {
 					[formattedDate]: {
 						selected: true,
-						selectedColor: "blue",
+						selectedColor: color,
 						disabled: false,
 						eventId: event.event_id,
 					},
 				};
 			}
-
 		});
 		// merge all the markedDates objects into one
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
@@ -58,7 +64,7 @@ export default function EventsCalHost({ route, navigation }) {
 		// show alert that has descriptions of the different colors
 		Alert.alert(
 			"Event Calendar",
-			"Blue: Event exists",
+			"Green: Upcoming event with available capacity\nOrange: Upcoming event with no available capacity\nGrey: Past event",
 			[
 				{
 					text: "OK",
@@ -69,48 +75,52 @@ export default function EventsCalHost({ route, navigation }) {
 		);
 	};
 
-
 	const handleDateSelect = (day) => {
 		// jump to the event details page
 		const selectedDate = day;
 		const { eventId } = markedDates[day];
 		if (eventId) {
-			const selectedEvent = eventObjs.find((event) => event.event_id === eventId);
+			const selectedEvent = eventObjs.find(
+				(event) => event.event_id === eventId
+			);
 			console.log(selectedEvent);
 			navigation.navigate("EventDetailsHost", {
-				upcomingEvent: selectedEvent
+				upcomingEvent: selectedEvent,
 			});
 		}
 	};
-
-
 	return (
-		<><View style={styles.titleContainer}>
-			<Text style={styles.title}>Event Calendar
-				<Ionicons
-					name="information-circle-outline"
-					style={styles.informationIcon}
-					// use infoPressed function to show alert
-					onPress={() => { infoPressed(); }} /></Text>
-		</View>
-        <View style={{zIndex: 5000}}> 
-			<YearPicker onSelect={handleYearSelect} />
-        </View>
+		<>
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}>
+					Calendar{" "}
+					<Ionicons
+						name="information-circle-outline"
+						style={styles.informationIcon}
+						// use infoPressed function to show alert
+						onPress={() => {
+							infoPressed();
+						}}
+					/>
+				</Text>
+			</View>
+			<View style={{ zIndex: 5000 }}>
+				<YearPicker onSelect={handleYearSelect} />
+			</View>
 			{loading ? (
-
 				<ActivityIndicator
 					size="large"
 					color="#0000ff"
 					animating={true}
 					style={styles.activityIndicator}
 				/>
-
 			) : (
 				<View style={styles.calendarContainer}>
-				<Calendar onDateSelect={handleDateSelect} 
-					key={selected }
-					markedDates={markedDates}
-					current={selected}
+					<Calendar
+						onDateSelect={handleDateSelect}
+						key={selected}
+						markedDates={markedDates}
+						current={selected}
 					/>
 				</View>
 			)}
@@ -123,7 +133,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%", // or any other desired height
 		zIndex: 1,
-	  },
+	},
 	// calendarContainer: {
 	// 	marginTop: 10,
 	// 	width: "100%",

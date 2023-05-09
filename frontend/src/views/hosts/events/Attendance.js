@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 
 export default function Attendancce({ navigation, route }) {
   const eventObj = route.params.eventObj;
-  const [attendees, setAttendees] = useState([]);
-  const [attendance, setAttendance] = useState([]);
-  const [editAttendance, setEditAttendance] = useState([]);
-  const [initialLoad, setInitialLoad] = useState(true);  
-
   const today = new Date().toISOString().slice(0, 10);
-  
+  const [attendees, setAttendees] = useState([]);
+  const [editAttendance, setEditAttendance] = useState({});
+  const [loading, setLoading] = useState(true);
+  const attendedColor = "#159E31";
+  const noShowColor = "#E31E1E";
+
   useEffect(() => {
     // get event attendees
     const getAttendees = async () => {
@@ -19,104 +19,177 @@ export default function Attendancce({ navigation, route }) {
         `${API_END_POINT}attendee/users/${eventObj.event_id}`
       );
       const data = response.data;
+      // filter it to only registered attendees
+      const registeredAttendees = data.filter(
+        (attendee) => attendee.attendee_status_id == "Registered"
+      );
 
-      // if the attendance status is Attended, add to attendance array
-      if (data) {
-        data.map((attendee) => {
-          if (attendee.attendance_status_id === "Attended") {
-            setAttendance(prevAttendance => [...prevAttendance, attendee.user_id]);
-            setEditAttendance(prevEditAttendance => [...prevEditAttendance, attendee.user_id]);
-          }
-        })
-        setInitialLoad(false);
-        setAttendees(data);
-      } else {
-        setInitialLoad(false);
+      // if there is registered attendees, set editAttendance object
+      // to have the user_id as key and attendance status as value
+      if (registeredAttendees.length > 0) {
+        const editAttendanceObj = {};
+        registeredAttendees.map((attendee) => {
+          editAttendanceObj[attendee.user_id] = attendee.attendance_status_id;
+        });
+        setEditAttendance(editAttendanceObj);
       }
+      setAttendees(registeredAttendees);
+      setLoading(false);
     };
     getAttendees();
   }, []);
-  
-  const handleAttendance = async (userId) => {
-    if (editAttendance.includes(userId)) {
-        //toggle editAttendance array
-      setEditAttendance(editAttendance.filter((id) => id !== userId));
-    } else {
-      setEditAttendance([...editAttendance, userId]);
-    } 
+
+  // toggle the editAttendance array
+  const handleAttendanceButton = (userId) => {
+    setEditAttendance((editAttendance) => ({
+      ...editAttendance,
+      [userId]: editAttendance[userId] === "Attended" ? "No Show" : "Attended",
+    }));
   };
+
 
   const handleSubmit = async () => {
-    try{
-        // compare editAttendance array to attendance array
-        // if the user is in attendance array but not in editAttendance array, update database to "UnKnown"
-        attendance.map(async (userId) => {
-            if (!editAttendance.includes(userId)) {
-                const response = await axios.put(`${API_END_POINT}attendee/${eventObj.event_id}/${userId}`
-                ,{ attendance_status: "Unknown" });
+    try {
+      // check if there is value in the editattendance array
+      // if there is value, then update the database by put request
+      // if there is no value, then do nothing
+      if (Object.keys(editAttendance).length > 0) {
+        const editAttendanceArray = Object.entries(editAttendance);
+        editAttendanceArray.map(async (attendee) => {
+          const userId = attendee[0];
+          const attendanceStatus = attendee[1];
+          const response = await axios.put(
+            `${API_END_POINT}attendee/${eventObj.event_id}/${userId}`,
+            { attendance_status: attendanceStatus }
+          );
+        });
+
+        // fetch the updated attendees list
+        setTimeout(async () => {
+          setLoading(true);
+          const response = await axios.get(
+            `${API_END_POINT}attendee/users/${eventObj.event_id}`
+          );
+          const attendees = response.data;
+          // add it to the upcomming event object and push it back to detail
+          navigation.navigate("EventDetailsHost", {
+            upcomingEvent: {
+              ...eventObj,
+              attendees,
             }
-        })
-        // // if the user is in editAttendance array but not in attendance array, update database to "Attended"
-        editAttendance.map(async (userId) => {
-            if (!attendance.includes(userId)) {
-                const response = await axios.put(`${API_END_POINT}attendee/${eventObj.event_id}/${userId}`
-                ,{ attendance_status: "Attended" });
-            }
-        })
-        // update attendance array
-        setAttendance(editAttendance);
-        navigation.navigate("EventDetailsHost", { upcomingEvent: eventObj });
+          });
+        }, 500);
+
+      }
+
     }
     catch (error) {
-        console.log(error);
+      console.log(error);
     }
   };
 
+
   return (
-        <>
-        <Text>{eventObj.event_name}</Text>
-        {!initialLoad && attendees &&
-            attendees.map((attendee) => (
-            <View style={styles.item} key={attendee.user_id}>
+
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <View style={styles.eventInfoContainer}>
+          <Text style={styles.eventTitle}>{eventObj.event_name}</Text>
+          <View style={styles.labelContainer}>
+            <Text style={styles.title}>Attendees</Text>
+            <View style={styles.statusContainer}>
+              <Text style={styles.label}>ATTENDED</Text>
+              <Text style={styles.label}>NO SHOW</Text>
+            </View>
+          </View>
+        </View>
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            animating={true}
+            style={styles.activityIndicator}
+          />
+        ) : (
+          <FlatList
+            data={attendees}
+            keyExtractor={(attendee) => attendee.user_id.toString()}
+            renderItem={({ item: attendee }) => (
+              <View style={styles.item} key={attendee.user_id}>
                 <Text style={styles.itemText}>
-                  {attendee.first_name} {attendee.last_name}  {attendee.attendance_status_id}
+                  {attendee.first_name} {attendee.last_name}
                 </Text>
                 {eventObj.event_date <= today && (
-                  <Button
-                    title={
-                        editAttendance.includes(attendee.user_id.toString()) ? "NO SHOW" : "ATTENDED"
-                    }
-                    onPress={() => {
-                        handleAttendance(attendee.user_id);
-                    }}
-                    buttonStyle={styles.button}
-                  />
+                  <View style={styles.attendanceButtons}>
+                    <TouchableOpacity
+                      style={[
+                        styles.attendedButton,
+                        editAttendance[attendee.user_id] === "Attended" && styles.attended,
+                      ]}
+                      onPress={() => handleAttendanceButton(attendee.user_id)}
+                    ></TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.noshowButton,
+                        editAttendance[attendee.user_id] === "No Show" && styles.noShow,
+                      ]}
+                      onPress={() => handleAttendanceButton(attendee.user_id)}
+                    ></TouchableOpacity>
+                  </View>
                 )}
-            </View>
-            ))}
-        <Button title="Save" onPress={handleSubmit} />
-        </>
+              </View>
+            )}
+          />
+        )}
+        {eventObj.event_date <= today && (
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={handleSubmit} >
+          <Text style={styles.submitButtonText}> Save </Text>
+        </TouchableOpacity>
+        )}
+      </View>
+    </View>
 
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  container: {
+    margin: 5,
+  },
+  eventInfoContainer: {
+    justifyContent: "center",
+    height: 100,
+  },
+  eventTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  labelContainer: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    margin: 10,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 20,
+    marginLeft: 5,
   },
-  button: {
-    backgroundColor: "#f194ff",
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    margin: 10,
+  statusContainer: {
+    width: 180,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  label: {
+    fontSize: 14,
+    margin: 5,
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -127,13 +200,56 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   item: {
-    padding: 20,
-    marginVertical: 8,
+    marginVertical: 3,
     marginHorizontal: 16,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 16,
+  },
+  attendanceButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 140,
+    marginRight: 10,
+  },
+  attendedButton: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    padding: 15,
+    elevation: 2,
+    margin: 10,
+    borderWidth: 1,
+    borderColor: "#159E31",
+  },
+  noshowButton: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    padding: 15,
+    elevation: 2,
+    margin: 10,
+    borderWidth: 1,
+    borderColor: "#E31E1E",
+  },
+  attended: {
+    backgroundColor: "#159E31",
+  },
+  noShow: {
+    backgroundColor: "#E31E1E",
+  },
+  submitButton: {
+    backgroundColor: "#159E31",
+    height: 50,
+    justifyContent: "center",
+    alignContent: "center",
+    margin: 10,
+  },
+  submitButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

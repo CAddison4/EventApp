@@ -115,14 +115,14 @@ export function API({ stack }) {
         "packages/functions/src/waitlist/getUserWaitlist.main",
       "GET /waitlist/inwaitlist/{eventId}/{userId}":
         "packages/functions/src/waitlist/getUserEventWaitlist.main",
-      // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously for loyalty events, get upcoming events with counts for a particular user
+      // Routes for finding a user's position in a waitlist, checking if any capacity remains in an event, getting the count of events a user has attended previously for loyalty events, get attendance counts for all events
       "GET /waitlistposition/{eventId}/{userId}":
         "packages/functions/src/utilities/getWaitlistPosition.main",
       "GET /anycapacity/{eventId}":
         "packages/functions/src/utilities/getAnyCapacity.main",
       "GET /loyalty/{userId}":
         "packages/functions/src/utilities/getLoyaltyCount.main",
-      "GET /eventcounts/{userId}":
+      "GET /eventcounts":
         "packages/functions/src/utilities/getEventCounts.main",
       // Routes for registering a user for and withdrawing a user from an event
       "POST /registration/{userId}/{eventId}":
