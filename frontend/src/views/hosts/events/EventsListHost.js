@@ -23,6 +23,8 @@ import EventListItem from "../../../components/EventListItem";
 export default function EventsListHost({ eventObjs, handleRefresh }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	// const { eventObjs, handleRefresh } = route.params;
+	const [icon, setIcon] = useState("close-circle-outline");
+
 	const navigation = useNavigation();
 
 	const [selectedColor, setSelectedColor] = useState("green");
@@ -34,6 +36,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 	};
 
 	const handleSearchQuery = (query) => {
+		setIcon("close-circle");
 		setSearchQuery(query);
 	};
 
@@ -43,6 +46,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 
 	const handleClearFilter = () => {
 		setSearchQuery("");
+		setIcon("close-circle-outline");
 	};
 
 	//add hasRoom and capacityAvailable params to each eventObj
@@ -107,7 +111,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 					onSubmitEditing={handleSearchSubmit}
 					// onPress={handleSearchSubmit}
 				/>
-				<ClearFilterButton onPress={handleClearFilter} />
+				<ClearFilterButton onPress={handleClearFilter} icon={icon} />
 			</View>
 
 			<FlatList
@@ -134,6 +138,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 								})
 							}>
 							<EventListItem eventObj={item} />
+							{console.log("item", item)}
 						</TouchableOpacity>
 					</View>
 				)}
