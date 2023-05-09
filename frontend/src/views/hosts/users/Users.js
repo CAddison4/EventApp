@@ -46,6 +46,7 @@ export default function Users({ navigation }) {
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [updateFilter, setUpdateFilter] = useState(false);
 	const [selectedRole, setSelectedRole] = useState("Attendee");
+	const [icon, setIcon] = useState("close-circle-outline");
 
 	const roles = [{ role_id: "Attendee" }, { role_id: "Host" }];
 
@@ -54,10 +55,12 @@ export default function Users({ navigation }) {
 		setUsers(newUsers);
 		setSelectedMembershipStatus("All");
 		setSearchQuery("");
+		setIcon("close-circle-outline");
 	};
 
 	const handleSearchQuery = (query) => {
 		setSearchQuery(query);
+		setIcon("close-circle");
 	};
 
 	const handleSearchSubmit = () => {
@@ -67,6 +70,7 @@ export default function Users({ navigation }) {
 	const handleClearFilter = () => {
 		setSearchQuery("");
 		setSelectedMembershipStatus("All");
+		setIcon("close-circle-outline");
 	};
 
 	const handleSelectRole = (itemValue) => {
@@ -89,6 +93,7 @@ export default function Users({ navigation }) {
 				)
 			);
 		} else {
+			setIcon("close-circle");
 			setFilteredUsers(
 				users.filter(
 					(user) =>
@@ -259,6 +264,7 @@ export default function Users({ navigation }) {
 							/>
 							<ClearFilterButton
 								onPress={handleClearFilter}
+								icon={icon}
 								// color={"#91C4D9"}
 							/>
 						</View>
@@ -326,7 +332,6 @@ const styles = StyleSheet.create({
 	radioButton: {
 		padding: 10,
 		marginVertical: 5,
-		borderRadius: 5,
 		borderWidth: 1,
 		borderColor: "#ccc",
 		width: 100,

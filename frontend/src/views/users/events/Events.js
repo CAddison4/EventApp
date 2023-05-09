@@ -104,8 +104,9 @@ export default function Events({ navigation }) {
 				break;
 		}
 		// Check if there is any capacity available in the event
-		eventObj.hasRoom = eventObj.number_of_attendees < eventObj.capacity ? true : false;
-		eventObj.capacityAvailable = eventObj.capacity - eventObj.number_of_attendees;
+		eventObj.hasRoom = parseInt(eventObj.number_of_attendees) < parseInt(eventObj.capacity) ? true : false;
+
+		eventObj.capacityAvailable = parseInt(eventObj.capacity) - parseInt(eventObj.number_of_attendees);
 		
 		// User is already attending if status is "Registered"
 		eventObj.isAttending = eventObj.attendee_status_id === "Registered"  ? true : false;
@@ -115,12 +116,12 @@ export default function Events({ navigation }) {
     // this user exceeds the count required for this event.
     // If none of these conditions are met, the user is eligible if their
     // membership status qualifies for this tier.
-    eventObj.loyaltyCount = loyaltyCount;
-    if (
-      eventObj.attendee_status_id === "Invited" ||
+
+    eventObj.loyaltyCount = parseInt(loyaltyCount);
+    if (eventObj.attendee_status_id === "Invited" ||
       (eventObj.type_id === "Guest List" &&
         eventObj.attendee_status_id === "Registered") ||
-      (eventObj.type_id === "Loyalty" && loyaltyCount >= eventObj.loyalty_max)
+      (eventObj.type_id === "Loyalty" && eventObj.loyaltyCount >= parseInt(eventObj.loyalty_max))
     ) {
       eventObj.isEligible = true;
     } else {
