@@ -201,56 +201,6 @@ export default function EventDetailsHost({ navigation, route }) {
 											}
 										</Text>
 									</View>
-									{/* <View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "No Show"
-											// 		),
-											// 		type: "No Show",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											No Show:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "No Show"
-												).length
-											}
-										</Text>
-									</View>
-									<View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "Unknown"
-											// 		),
-											// 		type: "Unknown",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											Unknown:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Unknown"
-												).length
-											}
-										</Text>
-									</View> */}
 								</>
 							)}
 						</View>
