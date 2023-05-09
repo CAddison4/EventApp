@@ -34,7 +34,7 @@ export default function EventListItem({ eventObj }) {
 				style={styles.eventItem}
 				key={`${eventObj.event_id}${eventObj.user_id}`}>
 				<Text style={[styles.boldText]}>{eventObj.event_name}</Text>
-				<Text>{`${formatLongDate(eventObj.event_date, true)}`}</Text>
+				<Text>{`${formatLongDate(eventObj.event_start, true)}`}</Text>
 				<View style={styles.textline}>
 					<Text>
 						{eventObj.type_id}

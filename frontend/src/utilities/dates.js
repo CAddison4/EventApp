@@ -1,6 +1,10 @@
 export function formatDate(dateStr) {
     // create a Date object from the date string
-    const date = new Date(dateStr);
+    const dateDb = new Date(dateStr);
+
+    // get the timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const date = new Date(dateDb.getTime() - (timezoneOffset * 60 * 1000));
   
     // extract the month, day, and year values
     const month = date.getMonth() + 1; // months are zero-indexed
@@ -15,7 +19,11 @@ export function formatDate(dateStr) {
 
   export function formatDateTime(dateTimeStr) {
     // create a Date object from the date string
-    const date = new Date(dateTimeStr);
+    const dateDb = new Date(dateTimeStr);
+
+    // get the timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const date = new Date(dateDb.getTime() - (timezoneOffset * 60 * 1000));
   
     // extract the month, day, and year values
     const month = date.getMonth() + 1; // months are zero-indexed
@@ -32,7 +40,11 @@ export function formatDate(dateStr) {
 
   export function formatTime(dateTimeStr) {
     // create a Date object from the date string
-    const date = new Date(dateTimeStr);
+    const dateDb = new Date(dateTimeStr);
+
+    // get the timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const date = new Date(dateDb.getTime() - (timezoneOffset * 60 * 1000));
   
     const hours = date.getHours();
     const mins = date.getMinutes();
@@ -46,7 +58,11 @@ export function formatDate(dateStr) {
 
   export function formatLongDate(dateStr, dayName) {
     // create a Date object from the date string
-    const date = new Date(dateStr);
+    const dateDb = new Date(dateStr);
+
+    // get the timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const date = new Date(dateDb.getTime() - (timezoneOffset * 60 * 1000));
   
     function getOrdinalSuffix(day) {
       if (day >= 11 && day <= 13) {
