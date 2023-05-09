@@ -13,15 +13,16 @@ export default function EventListItem({ eventObj }) {
 	const iconName = colorToIconNameMap[eventObj.color] || "alert-circle-outline";
 
 	var eventDescription = "";
+	var loyaltyDescription = "";
 
 	if (eventObj.type_id === "Loyalty") {
-		eventDescription = `Minimum past events required: ${eventObj.loyalty_max}`;
+		loyaltyDescription = ` (minimum ${eventObj.loyalty_max})`;
+	}	
+	
+	if (!eventObj.hasRoom) {
+		eventDescription = `FULL`;
 	} else {
-		if (!eventObj.hasRoom) {
-			eventDescription = `Capacity: ${eventObj.capacity}, event is FULL`;
-		} else {
-			eventDescription = `Capacity: ${eventObj.capacity}, spots available: ${eventObj.capacityAvailable}`;
-		}
+		eventDescription = `${eventObj.number_of_attendees} / ${eventObj.capacity}`
 	}
 
 	return (
@@ -33,9 +34,14 @@ export default function EventListItem({ eventObj }) {
 				style={styles.eventItem}
 				key={`${eventObj.event_id}${eventObj.user_id}`}>
 				<Text style={[styles.boldText]}>{eventObj.event_name}</Text>
-				<Text>{`${formatLongDate(eventObj.event_date, true)}`}</Text>
-				<Text>{eventObj.type_id}</Text>
-				<Text>{eventDescription}</Text>
+				<Text>{`${formatLongDate(eventObj.event_start, true)}`}</Text>
+				<View style={styles.textline}>
+					<Text>
+						{eventObj.type_id}
+						{loyaltyDescription}
+					</Text>
+					<Text>{eventDescription}</Text>
+				</View>
 			</View>
 			<View>
 				<Ionicons name="chevron-forward-outline" size={24} color="grey" />
@@ -73,4 +79,10 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		fontSize: 16,
 	},
+	textline: {
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginRight: 20,
+	}
 });

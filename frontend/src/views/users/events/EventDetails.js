@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
@@ -107,7 +107,7 @@ export default function EventDetails({ navigation, route }) {
 			<View style={styles.eventInfoContainer}>
 				<View style={styles.eventInfoItem}>
 					<Text style={styles.label}>Event date:</Text>
-					<Text style={styles.value}>{formatLongDate(eventObj.event_date, true)}</Text>
+					<Text style={styles.value}>{formatLongDate(eventObj.event_start, true)}</Text>
 				</View>
 				<View style={styles.eventInfoItem}>
 					<Text style={styles.label}>Event start:</Text>
