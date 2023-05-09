@@ -97,8 +97,6 @@ export default function CreateEvent({ navigation }) {
 			const response_capacity = await axios.post(`${apiURL}/event/capacity/${response.data.event.event_id}`, {
 				capacity: inpEvnMax,
 			});
-
-
 			// Reset the state
 			setInpEvnName("");
 			setInpEvnMax("");
