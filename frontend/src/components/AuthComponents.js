@@ -107,10 +107,9 @@ export const handleAutoSignIn = async (dispatch) => {
 
         const idToken = await AsyncStorage.getItem("idToken");
         const userData = await getUserData(jwt_decode(idToken).email, dispatch);
-        console.log("AUTO LOGIN");
         return {
           success: true,
-          message: "tokens Updated",
+          message: "Auto Signed In",
         };
       } else {
         const idToken = await AsyncStorage.getItem("idToken");

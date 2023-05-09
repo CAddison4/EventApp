@@ -153,7 +153,6 @@ export const getUserData = async (username, dispatch) => {
         Authorization: `Bearer ${userJwtToken.token}`,
       },
     });
-
     // console.log("API Response", apiResponse);
     if (!apiResponse.ok) {
       return {
@@ -182,7 +181,7 @@ export const getUserData = async (username, dispatch) => {
       ...loyaltyJson,
     };
 
-    // console.log("MERGED USER DATA", mergedUserData);
+    console.log("MERGED USER DATA", mergedUserData);
     dispatch(setUser(mergedUserData));
 
     const tokens = await getCognitoTokens();
@@ -193,7 +192,7 @@ export const getUserData = async (username, dispatch) => {
       message: "Successfully signed in",
     };
   } catch (error) {
-    // console.log("ERROR IN GET USER DATA", error);
+
     let message = "Error signing in: " + error.message;
     return {
       success: false,
