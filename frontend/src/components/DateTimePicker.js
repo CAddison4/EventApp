@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Platform } from 'react-native'; // Platformをインポート
+import { Button, Platform, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle }) {
@@ -18,13 +18,17 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
 
   return (
     <>
-      <Button title={buttonTitle} onPress={handlePress} />
+      <TouchableOpacity onPress={handlePress}
+        style={styles.button}>
+        <Text style={styles.buttonText}>{buttonTitle}</Text>
+      </TouchableOpacity>
       {show && mode === 'date' && (
         <DateTimePicker
+          style={{ backgroundColor: "green" }}
           mode="date"
           value={date}
           onChange={handleDateChange}
-          display={Platform.OS === 'ios' ? 'compact' : 'default'} 
+          display={Platform.OS === 'ios' ? 'compact' : 'default'}
         />
       )}
       {show && mode === 'time' && (
@@ -32,9 +36,23 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
           mode="time"
           value={date}
           onChange={handleDateChange}
-          display={Platform.OS === 'ios' ? 'compact' : 'default'} 
+          display={Platform.OS === 'ios' ? 'compact' : 'default'}
         />
       )}
     </>
   );
 }
+styles = StyleSheet.create({
+  button: {
+    justifyContent: 'center',
+    backgroundColor: '#159E31',
+    height: 35,
+    width:130,
+  },
+  buttonText: {
+    fontSize: 16,
+    color: 'white',
+    textAlign: 'center',
+  },
+
+});

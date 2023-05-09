@@ -6,6 +6,8 @@ import {
 	TextInput,
 	KeyboardAvoidingView,
 	FlatList,
+	ActivityIndicator,
+	TouchableOpacity,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import axios from "axios";
@@ -28,10 +30,11 @@ export default function CreateEvent({ navigation }) {
 	const [endDate, setEndDate] = useState(new Date());
 	const [endTime, setEndTime] = useState(new Date());
 	const [startDateTime, setStartDateTime] = useState(new Date());
-	const [endDateTime,setEndDateTime] = useState(new Date());
+	const [endDateTime, setEndDateTime] = useState(new Date());
 	const apiURL = API_END_POINT;
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState({});
+	const [loading, setLoading] = useState(false);
 
 	const handleDateTimeChange = (selectedDateTime, identifier) => {
 		if (identifier === "startDate") {
@@ -66,7 +69,7 @@ export default function CreateEvent({ navigation }) {
 
 	const handleCreateEvent = async () => {
 		// error handling for inputs
-		console.log(inpEvnName)
+		setLoading(true);
 		const errors = await ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, selectedEventType, loyaltyMinimum, startDateTime, endDateTime);
 		console.log(errors);
 		// error occured
@@ -97,18 +100,18 @@ export default function CreateEvent({ navigation }) {
 
 
 			// Reset the state
-				setInpEvnName("");
-				setInpEvnMax("");
-				setInpEvnLocation("");
-				setLoyaltyMinimum(0);
-				setStartDate(new Date());
-				setStartTime(new Date());
-				setEndDate(new Date());
-				setEndTime(new Date());
-				setStartDateTime(new Date());
-				setEndDateTime(new Date());
-				setSelectedEventType(defaultValue);
-				setErrors({});
+			setInpEvnName("");
+			setInpEvnMax("");
+			setInpEvnLocation("");
+			setLoyaltyMinimum(0);
+			setStartDate(new Date());
+			setStartTime(new Date());
+			setEndDate(new Date());
+			setEndTime(new Date());
+			setStartDateTime(new Date());
+			setEndDateTime(new Date());
+			setSelectedEventType(defaultValue);
+			setErrors({});
 
 			// Navigate to InviteList screen if event type is Guest List
 			if (selectedEventType == "Guest List") {
@@ -130,16 +133,26 @@ export default function CreateEvent({ navigation }) {
 		}
 	}
 
+	if (loading) {
+		return (
+			<ActivityIndicator
+				size="large"
+				color="#0000ff"
+				animating={true}
+				style={styles.activityIndicator}
+			/>)
+	}
 	return (
-		<KeyboardAvoidingView behavior={"padding"} enabled>
+		<KeyboardAvoidingView behavior={"padding"} enabled style={styles.wrapper}>
 			<FlatList
+				style={styles.container}
 				data={[{ key: 'eventForm' }]}
 				renderItem={({ item }) => (
 					<View style={styles.container}>
 						{isPickerVisible && (
 							<>
 								<Text>Event Type</Text>
-								<View style={{ zIndex: 2000 }}>
+								<View style={{ zIndex: 2000, marginBottom: 20, marginTop: 10 }}>
 									<DropDownPicker
 										open={open}
 										value={selectedEventType}
@@ -186,7 +199,8 @@ export default function CreateEvent({ navigation }) {
 										<Text>Start Date:</Text>
 										<View>
 											<MyDateTimePicker
-											    value={startDate}
+												style={styles.dateTimePicker}
+												value={startDate}
 												buttonTitle="Change Date"
 												mode={"date"}
 												date={startDate}
@@ -198,7 +212,8 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.timeContainer}>
 										<Text>Start Time:</Text>
 										<MyDateTimePicker
-										    value={startDateTime}
+											style={styles.dateTimePicker}
+											value={startDateTime}
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={startDateTime}
@@ -216,7 +231,8 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.dateContainer}>
 										<Text>End Date:</Text>
 										<MyDateTimePicker
-										    value={endDate}
+											style={styles.dateTimePicker}
+											value={endDate}
 											buttonTitle="Change Date"
 											mode={"date"}
 											date={endDate}
@@ -227,7 +243,8 @@ export default function CreateEvent({ navigation }) {
 									<View style={styles.timeContainer}>
 										<Text>End Time:</Text>
 										<MyDateTimePicker
-										    value={endDateTime}
+											style={styles.dateTimePicker}
+											value={endDateTime}
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={endDateTime}
@@ -244,24 +261,33 @@ export default function CreateEvent({ navigation }) {
 								{errors.inpEvnLocation && <Text style={{ color: "red" }}>{errors.inpEvnLocation}</Text>}
 								<Text>Location</Text>
 								<TextInput
-								    value={inpEvnLocation}
+									value={inpEvnLocation}
 									style={styles.nameInput}
 									onChangeText={(inpEvnLocation) =>
 										setInpEvnLocation(inpEvnLocation)
 									}
 								/>
 								{errors.sameDate && <Text style={{ color: "red" }}>{errors.sameDate}</Text>}
-								<Button title="Create" onPress={handleCreateEvent} />
+								<TouchableOpacity
+									style={styles.submitButton}
+									onPress={handleCreateEvent}>
+									<Text
+										style={styles.submitText}> Create </Text>
+								</TouchableOpacity>
 							</>
 						)}
 					</View>
-
 				)}
 			/>
 		</KeyboardAvoidingView>
 	);
 }
+
 const styles = StyleSheet.create({
+	wrapper: {
+		height: "100%",
+		flex: 1, // Add this line
+	},
 	container: {
 		flex: 1,
 		padding: 16,
@@ -292,4 +318,24 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 	},
+	activityIndicator: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		height: 80
+	},
+	dateTimePicker: {
+		backgroundColor: "#159E31",
+	},
+	submitButton: {
+		marginTop: 20,
+		alignItems: "center",
+		backgroundColor: "#159E31",
+		height: 50,
+	},
+	submitText: {
+		color: "white",
+		fontSize: 20,
+		padding: 10,
+	}
 });
