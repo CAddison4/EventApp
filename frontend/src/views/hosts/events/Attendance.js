@@ -9,6 +9,8 @@ export default function Attendancce({ navigation, route }) {
   const [attendees, setAttendees] = useState([]);
   const [editAttendance, setEditAttendance] = useState({});
   const [loading, setLoading] = useState(true);
+  const attendedColor = "#159E31";
+  const noShowColor = "#E31E1E";
 
   useEffect(() => {
     // get event attendees
@@ -139,11 +141,13 @@ export default function Attendancce({ navigation, route }) {
             )}
           />
         )}
+        {eventObj.event_date <= today && (
         <TouchableOpacity
           style={styles.submitButton}
           onPress={handleSubmit} >
           <Text style={styles.submitButtonText}> Save </Text>
         </TouchableOpacity>
+        )}
       </View>
     </View>
 
@@ -215,6 +219,8 @@ const styles = StyleSheet.create({
     padding: 15,
     elevation: 2,
     margin: 10,
+    borderWidth: 1,
+    borderColor: "#159E31",
   },
   noshowButton: {
     backgroundColor: "#ffffff",
@@ -222,6 +228,8 @@ const styles = StyleSheet.create({
     padding: 15,
     elevation: 2,
     margin: 10,
+    borderWidth: 1,
+    borderColor: "#E31E1E",
   },
   attended: {
     backgroundColor: "#159E31",
