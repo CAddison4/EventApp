@@ -1,12 +1,11 @@
-import { View, Text, Button, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 // import AttendeeList from "./EventWaitist";
 import {
-	formatLongDate,
+	formatLongDateShortDay,
 	formatTime,
-	formatDate,
 } from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
@@ -135,24 +134,24 @@ export default function EventDetailsHost({ navigation, route }) {
 				</>
 			) : (
 				eventObj && (
-					<View style={styles.container}>
-						<Text style={styles.title}>Event Details</Text>
-						<View style={styles.eventInfoContainer}>
-							<View style={styles.eventInfoItem}>
-								<Text style={styles.label}>Name:</Text>
-								<Text style={styles.value}>{eventObj.event_name}</Text>
-							</View>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>{eventObj.event_name}</Text>
+                        <View style={styles.eventInfoContainer}>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Start: </Text>
 								<Text style={styles.value}>
-									{formatLongDate(eventObj.event_start, true)} |{" "}
+									{formatLongDateShortDay(eventObj.event_start)}
+								</Text>
+								<Text style={styles.value}>
 									{formatTime(eventObj.event_start)}
 								</Text>
 							</View>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>End: </Text>
 								<Text style={styles.value}>
-									{formatLongDate(eventObj.event_end, true)} |{" "}
+									{formatLongDateShortDay(eventObj.event_end)}
+								</Text>
+								<Text style={styles.value}>
 									{formatTime(eventObj.event_end)}
 								</Text>
 							</View>
@@ -256,27 +255,43 @@ export default function EventDetailsHost({ navigation, route }) {
 							)}
 						</View>
 
-						{eventObj.type_id === "Guest List" && (
-							<Button
-								title="Set Invites"
-								onPress={() => navigation.navigate("InviteList", { eventObj })}
-							/>
-						)}
-						<Button
-							title="Edit"
-							onPress={() => setIsEdit(true)}
-							style={styles.button}></Button>
-						<Button
-							title="Delete"
-							onPress={() => handleDelete()}
-							style={styles.button}></Button>
-						<Button
-							title="Attendance"
-							onPress={() => {
-								navigation.navigate("Attendance", { eventObj: eventObj });
-							}}
-							buttonStyle={styles.button}
-						/>
+						<View style={styles.actionButtons}>
+							{eventObj.type_id === "Guest List" && (
+								<TouchableOpacity
+									style={styles.inviteButton}
+									onPress={() => navigation.navigate("InviteList", { eventObj })}>
+									<Text style={styles.buttonText}>Set Invites</Text>
+								</TouchableOpacity>
+							)}
+							<View style={styles.buttonRow}>
+								<TouchableOpacity
+									style={styles.button}
+									onPress={() => setIsEdit(true)}>
+									<Text style={styles.buttonText}>Edit</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => handleDelete()}
+									style={styles.button}>
+									<Text style={styles.buttonText}>Delete</Text>
+								</TouchableOpacity>	
+							</View>
+							<View style={styles.buttonRow}>
+								<TouchableOpacity
+									onPress={() => {
+										navigation.navigate("Attendance", { eventObj: eventObj });
+									}}
+									style={styles.button}>
+									<Text style={styles.buttonText}>Attendance</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.button}
+									/* onPress={() => {
+										navigation.navigate("Waitlist", { eventObj: eventObj });
+									}} */>
+									<Text style={styles.buttonText}>Waitlist</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
 					</View>
 				)
 			)}
@@ -289,12 +304,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column",
 		backgroundColor: "#fff",
+		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
-		paddingHorizontal: 20,
+		paddingHorizontal: 10,
 	},
 	title: {
-		fontSize: 24,
+		fontSize: 22,
 		fontWeight: "bold",
 		textAlign: "center",
 		marginBottom: 20,
@@ -306,12 +322,37 @@ const styles = StyleSheet.create({
 		padding: 20,
 	},
 	actionButtons: {
-		marginTop: 5,
+		marginTop: 20,
 		flexDirection: "column",
 		justifyContent: "center",
 		rowGap: 10,
 		width: "100%",
+		alignItems: "center",
 	},
+	inviteButton: {
+		width: 300,
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+	},
+	buttonRow: {
+		flexDirection: "row",
+		justifyContent: "center",
+		columnGap: 10,
+	},
+	button: {
+		width: 145,
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+        textAlign:"center"
+	},
+	buttonText:{
+        color:"white",
+        textAlign:"center",
+        fontWeight:500,
+        fontSize:18,
+    },
 	eventInfoItem: {
 		flexDirection: "row",
 		justifyContent: "space-between",
