@@ -21,10 +21,17 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
     <>
 
       <TouchableOpacity onPress={handlePress} style={styles.button}>
-        <View style={styles.iconContainer}>
-          <Ionicons size={50} name="calendar"  color="green" />
-        </View>
+        {mode === 'date' ? (
+          <View style={styles.iconContainer}>
+            <Ionicons size={50} name="calendar"  color="green" />
+          </View>
+        ) : (
+          <View style={styles.iconContainer}>
+            <Ionicons size={50} name="time"  color="green" />
+          </View>
+        )}
       </TouchableOpacity>
+
 
       {show && mode === 'date' && (
         <DateTimePicker

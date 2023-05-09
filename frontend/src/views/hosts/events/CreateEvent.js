@@ -150,7 +150,7 @@ export default function CreateEvent({ navigation }) {
 					<View style={styles.container}>
 						{isPickerVisible && (
 							<>
-								<Text syle={styles.label}>Event Type</Text>
+								<Text syle={styles.labelText}>Event Type</Text>
 								<View style={{ zIndex: 2000, marginBottom: 20, marginTop: 10 }}>
 									<DropDownPicker
 										open={open}
@@ -166,7 +166,7 @@ export default function CreateEvent({ navigation }) {
 								{selectedEventType == "Loyalty" && (
 									<>
 										{errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
-										<Text syle={styles.label}>Loyalty Minimum:</Text>
+										<Text syle={styles.labelText}>Loyalty Minimum:</Text>
 										<TextInput
 											value={loyaltyMinimum.toString()}
 											style={styles.nameInput}
@@ -178,14 +178,14 @@ export default function CreateEvent({ navigation }) {
 									</>
 								)}
 								{errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
-								<Text syle={styles.label}>Event name</Text>
+								<Text syle={styles.labelText}>Event name</Text>
 								<TextInput
 									value={inpEvnName}
 									style={styles.nameInput}
 									onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 								/>
 								{errors.inpEvnMax && <Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>}
-								<Text syle={styles.label}>Max Participants</Text>
+								<Text syle={styles.labelText}>Max Participants</Text>
 								<TextInput
 									value={inpEvnMax}
 									style={styles.nameInput}
@@ -193,9 +193,10 @@ export default function CreateEvent({ navigation }) {
 									keyboardType="numeric"
 								/>
 								<View style={styles.dateTimeContainer}>
+
 									<View style={styles.dateContainer}>
+										<Text style={styles.labelText}>Start</Text>
 										{errors.startDateTime && <Text style={{ color: "red" }}>{errors.startDateTime}</Text>}
-										<Text>Start Date:</Text>
 										<View>
 											<MyDateTimePicker
 												style={styles.dateTimePicker}
@@ -206,29 +207,11 @@ export default function CreateEvent({ navigation }) {
 												onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, "startDate")}
 											/>
 										</View>
-										<Text>{startDateTime.toDateString()}</Text>
+										<Text style={styles.selectedDateTimeText}>{startDateTime.toDateString()}</Text>
 									</View>
-									<View style={styles.timeContainer}>
-										<Text>Time</Text>
-										<MyDateTimePicker
-											style={styles.dateTimePicker}
-											value={startDateTime}
-											buttonTitle="Change Time"
-											mode={"time"}
-											date={startDateTime}
-											onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, "startTime")}
-										/>
-										<Text>
-											{startDateTime.toLocaleTimeString("en-US", {
-												hour: "2-digit",
-												minute: "2-digit",
-											})}
-										</Text>
-									</View>
-								</View>
-								<View style={styles.dateTimeContainer}>
+
 									<View style={styles.dateContainer}>
-										<Text>End Date:</Text>
+										<Text style={styles.labelText}>End</Text>
 										<MyDateTimePicker
 											style={styles.dateTimePicker}
 											value={endDate}
@@ -237,10 +220,29 @@ export default function CreateEvent({ navigation }) {
 											date={endDate}
 											onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, "endDate")}
 										/>
-										<Text>{endDateTime.toDateString()}</Text>
+										<Text style={styles.selectedDateTimeText}>{endDateTime.toDateString()}</Text>
 									</View>
+
+								</View>
+								<View style={styles.dateTimeContainer}>
 									<View style={styles.timeContainer}>
-										<Text>Time:</Text>
+										<MyDateTimePicker
+											style={styles.dateTimePicker}
+											value={startDateTime}
+											buttonTitle="Change Time"
+											mode={"time"}
+											date={startDateTime}
+											onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, "startTime")}
+										/>
+										<Text style={styles.selectedDateTimeText}>
+											{startDateTime.toLocaleTimeString("en-US", {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
+										</Text>
+									</View>
+
+									<View style={styles.timeContainer}>
 										<MyDateTimePicker
 											style={styles.dateTimePicker}
 											value={endDateTime}
@@ -249,7 +251,7 @@ export default function CreateEvent({ navigation }) {
 											date={endDateTime}
 											onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, "endTime")}
 										/>
-										<Text>
+										<Text style={styles.selectedDateTimeText}>
 											{endDateTime.toLocaleTimeString("en-US", {
 												hour: "2-digit",
 												minute: "2-digit",
@@ -289,23 +291,20 @@ const styles = StyleSheet.create({
 	},
 	container: {
 		flex: 1,
-		padding: 16,
+		padding: 15,
+		paddingTop: 30,
 		backgroundColor: "#fff",
 	},
-	label:{
-		fontSize: 20,
+	labelText: {
+		fontSize: 18,
+		marginLeft: -10,
+		marginBottom: 5,
 	},
 	nameInput: {
 		paddingBottom: 8,
 		fontSize: 24,
 		borderBottomWidth: 1,
 		borderBottomColor: "#000",
-	},
-	picker: {
-		backgroundColor: "#fafafa",
-		width: 180,
-		height: 50,
-		marginBottom: 20,
 	},
 	dateTimeContainer: {
 		flexDirection: "row",
@@ -339,5 +338,11 @@ const styles = StyleSheet.create({
 		color: "white",
 		fontSize: 20,
 		padding: 10,
+	},
+	selectedDateTimeText: {
+		alignItems: "center",
+		fontSize: 16,
+		justifyContent: "center",
+		marginLeft: -7,
 	}
 });
