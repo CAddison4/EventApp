@@ -221,7 +221,7 @@ const Navigation = () => {
 										name="HostMenu"
 										component={HostMenu}
 										options={{
-											title: "Event App",
+											title: "Menu",
 											// headerRight: () => <ProfileNavButton />,
 										}}
 									/>
@@ -229,50 +229,111 @@ const Navigation = () => {
 									<Stack.Screen
 										name="Events"
 										component={Events}
-										options={{
-											title: "Event App",
-											// headerRight: () => <ProfileNavButton />,
-										}}
+										// options={{
+										// 	title: "Event App",
+										// }}
 									/>
 								)}
 								{/* Attendee Screens */}
 								<Stack.Screen
 									name="MainProfile"
 									component={MainProfile}
-									options={{ headerRight: () => "" }}
+									options={
+										({ headerRight: () => "" }, { title: "User Profile" })
+									}
 								/>
-								<Stack.Screen name="EventsList" component={EventsList} />
-								<Stack.Screen name="EventsCal" component={EventsCal} />
+								<Stack.Screen
+									name="EventsList"
+									component={EventsList}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsCal"
+									component={EventsCal}
+									options={{
+										title: "Calendar",
+									}}
+								/>
 								<Stack.Screen name="EventListItem" component={EventListItem} />
-								<Stack.Screen name="EventDetails" component={EventDetails} />
+								<Stack.Screen
+									name="EventDetails"
+									component={EventDetails}
+									options={{
+										title: "Event Details",
+									}}
+								/>
 								<Stack.Screen name="Confirmation" component={Confirmation} />
 								<Stack.Screen
 									name="AttendeeQRCode"
 									component={AttendeeQRCode}
+									options={{
+										title: "QR Code",
+									}}
 								/>
 								<Stack.Screen
 									name="ProfileNavButton"
 									component={ProfileNavButton}
 								/>
 								{/* Host Screens */}
-								<Stack.Screen name="CreateEvent" component={CreateEvent} />
-								<Stack.Screen name="EventsHost" component={EventsHost} />
+								<Stack.Screen
+									name="CreateEvent"
+									component={CreateEvent}
+									options={{
+										title: "Create Event",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsHost"
+									component={EventsHost}
+									options={{
+										title: "Events",
+									}}
+								/>
 								<Stack.Screen
 									name="EventDetailsHost"
 									component={EventDetailsHost}
+									options={{
+										title: "Event Details",
+									}}
 								/>
 								<Stack.Screen
 									name="EventsListHost"
 									component={EventsListHost}
+									options={{
+										title: "Events",
+									}}
 								/>
-								<Stack.Screen name="InviteList" component={InviteList} />
+								<Stack.Screen
+									name="InviteList"
+									component={InviteList}
+									options={{
+										title: "Event Invitations",
+									}}
+								/>
 								<Stack.Screen name="Users" component={Users} />
-								<Stack.Screen name="UserDetails" component={UserDetails} />
+								<Stack.Screen
+									name="UserDetails"
+									component={UserDetails}
+									options={{
+										title: "User Details",
+									}}
+								/>
 								<Stack.Screen name="EventWaitlist" component={EventWaitlist} />
-								<Stack.Screen name="Attendance" component={Attendance} />
+								<Stack.Screen
+									name="Attendance"
+									component={Attendance}
+									options={{
+										title: "Event Attendance",
+									}}
+								/>
 								<Stack.Screen
 									name="AttendanceRecords"
 									component={AttendanceRecords}
+									options={{
+										title: "Event Attendance",
+									}}
 								/>
 							</>
 						)}

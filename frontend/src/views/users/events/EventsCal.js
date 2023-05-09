@@ -10,17 +10,27 @@ export default function EventsCal({ navigation, route }) {
 	// set today for selected
 	const user = useSelector((state) => state.user);
 	const { user_id, ...userData } = user;
-	const { eventObjs, handleFilterChange, type, filterValueU, filterValueM, handleRefresh, handleSetDisplayTab } = route.params;
-	const [selected, setSelected] = useState( new Date().toISOString().slice(0, 10));
+	const {
+		eventObjs,
+		handleFilterChange,
+		type,
+		filterValueU,
+		filterValueM,
+		handleRefresh,
+		handleSetDisplayTab,
+	} = route.params;
+	const [selected, setSelected] = useState(
+		new Date().toISOString().slice(0, 10)
+	);
 	const [events, setEvents] = useState([]);
 	const [markedDates, setMarkedDates] = useState({});
 	const contextEvent = useSelector((state) => state.event);
 	let dateColor = "blue";
 	const [loading, setLoading] = useState(true);
 
-	useEffect(()=>{
+	useEffect(() => {
 		setEvents(eventObjs);
-	},[])
+	}, []);
 
 	useEffect(() => {
 		const eventDatesArray = events.map((event) => {
@@ -69,7 +79,7 @@ export default function EventsCal({ navigation, route }) {
 				navigation: navigation,
 				handleRefresh: handleRefresh,
 				type: type,
-				handleSetDisplayTab: handleSetDisplayTab
+				handleSetDisplayTab: handleSetDisplayTab,
 			});
 		}
 	};
@@ -90,37 +100,40 @@ export default function EventsCal({ navigation, route }) {
 	};
 
 	return (
-		<><View style={styles.titleContainer}>
-			<Text style={styles.title}>Event Calendar
-				<Ionicons
-					name="information-circle-outline"
-					style={styles.informationIcon}
-					// use infoPressed function to show alert
-					onPress={() => { infoPressed(); }} /></Text>
-		</View>
-
-
-				{loading ? (
-
-					<ActivityIndicator
-						size="large"
-						color="#0000ff"
-						animating={true}
-						style={styles.activityIndicator}
+		<>
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}>
+					Calendar{" "}
+					<Ionicons
+						name="information-circle-outline"
+						style={styles.informationIcon}
+						// use infoPressed function to show alert
+						onPress={() => {
+							infoPressed();
+						}}
 					/>
+				</Text>
+			</View>
 
-				) : (
-					<View style={styles.calendarContainer}>
-					<Calendar onDateSelect={handleDateSelect} 
-					key={selected }
-					markedDates={markedDates}
-					current={selected}
+			{loading ? (
+				<ActivityIndicator
+					size="large"
+					color="#0000ff"
+					animating={true}
+					style={styles.activityIndicator}
+				/>
+			) : (
+				<View style={styles.calendarContainer}>
+					<Calendar
+						onDateSelect={handleDateSelect}
+						key={selected}
+						markedDates={markedDates}
+						current={selected}
 					/>
-					</View>
+				</View>
 			)}
 		</>
 	);
-
 }
 
 const styles = StyleSheet.create({

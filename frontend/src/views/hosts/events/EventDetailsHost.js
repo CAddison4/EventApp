@@ -28,9 +28,7 @@ export default function EventDetailsHost({ navigation, route }) {
 		const getData = async () => {
 			const apiURL = API_END_POINT;
 			try {
-				const response = await axios.get(
-					`${API_END_POINT}attendee/users/${eventId}`
-				);
+				const response = await axios.get(`${apiURL}attendee/users/${eventId}`);
 				const data = response.data;
 				console.log("data", data);
 				setAttendees(data);
@@ -201,7 +199,7 @@ export default function EventDetailsHost({ navigation, route }) {
 											}
 										</Text>
 									</View>
-									<View style={styles.eventInfoItem}>
+									{/* <View style={styles.eventInfoItem}>
 										<Text
 											// onPress={() => {
 											// 	navigation.navigate("AttendeeList", {
@@ -250,13 +248,14 @@ export default function EventDetailsHost({ navigation, route }) {
 												).length
 											}
 										</Text>
-									</View>
+									</View> */}
 								</>
 							)}
 						</View>
 
 						<View style={styles.actionButtons}>
-							{eventObj.type_id === "Guest List" && (
+							{eventObj.type_id === "Guest List" &&
+						     formattedStartDate >= currentDate && (
 								<TouchableOpacity
 									style={styles.inviteButton}
 									onPress={() => navigation.navigate("InviteList", { eventObj })}>
@@ -264,16 +263,20 @@ export default function EventDetailsHost({ navigation, route }) {
 								</TouchableOpacity>
 							)}
 							<View style={styles.buttonRow}>
-								<TouchableOpacity
-									style={styles.button}
-									onPress={() => setIsEdit(true)}>
-									<Text style={styles.buttonText}>Edit</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() => handleDelete()}
-									style={styles.button}>
-									<Text style={styles.buttonText}>Delete</Text>
-								</TouchableOpacity>	
+								{formattedStartDate >= currentDate && (
+									<>
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => setIsEdit(true)}>
+											<Text style={styles.buttonText}>Edit</Text>
+										</TouchableOpacity>
+										<TouchableOpacity
+											onPress={() => handleDelete()}
+											style={styles.button}>
+											<Text style={styles.buttonText}>Delete</Text>
+										</TouchableOpacity>	
+									</>
+								 )}
 							</View>
 							<View style={styles.buttonRow}>
 								<TouchableOpacity
@@ -283,13 +286,15 @@ export default function EventDetailsHost({ navigation, route }) {
 									style={styles.button}>
 									<Text style={styles.buttonText}>Attendance</Text>
 								</TouchableOpacity>
-								<TouchableOpacity
-									style={styles.button}
-									/* onPress={() => {
-										navigation.navigate("Waitlist", { eventObj: eventObj });
-									}} */>
-									<Text style={styles.buttonText}>Waitlist</Text>
-								</TouchableOpacity>
+								{formattedStartDate >= currentDate && (
+									<TouchableOpacity
+										style={styles.button}
+										/* onPress={() => {
+											navigation.navigate("Waitlist", { eventObj: eventObj });
+										}} */>
+										<Text style={styles.buttonText}>Waitlist</Text>
+									</TouchableOpacity>
+								)}
 							</View>
 						</View>
 					</View>
