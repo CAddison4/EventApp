@@ -23,33 +23,41 @@ export default function InviteList({ navigation, route }) {
 	const [open, setOpen] = useState(false);
 	const [memberships, setMemberships] = useState([]);
 
-	const filtersUsers = () => {
-		const filteredUsers = users.filter((user) =>
-		  user.first_name.toLowerCase().includes(searchQuery.toLowerCase())
-		  || user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
-		  || user.email.toLowerCase().includes(searchQuery.toLowerCase())
-		);
-		setFilteredUsers(filteredUsers);
-	  };
 
-	// filter users based on search query
-	  const filterMembership = () => {
-		console.log("filtering membership")
-		filtersUsers();
-		if (selectedMembershipStatus != "All") {
-		  const dropdownFiltered = filteredUsers.filter(
-			(user) => user.membership_status_id === selectedMembershipStatus
-		  );
-		  setFilteredUsers(dropdownFiltered);
+
+	const filterUsers = () => {
+		const filteredUsers = users.filter((user) =>
+			user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.email.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+		return filteredUsers;
+	};
+
+	const filterMembership = async (status) => {
+		// filter users based on search query
+		const filteredUsersByQuery = filterUsers();
+		if (status !== "All") {
+			const dropdownFiltered = filteredUsersByQuery.filter(
+				user => user.membership_status_id === status
+			);
+			setFilteredUsers(dropdownFiltered);
+		} else {
+			setFilteredUsers(filteredUsersByQuery);
 		}
-	}
+	};
+
 	const handleSearchPress = () => {
-		filterMembership();
+		filterMembership(selectedMembershipStatus);
 	};
 
 	const handleMembershipFilterChange = (item) => {
 		setSelectedMembershipStatus(item);
 	};
+
+	useEffect(() => {
+		filterMembership(selectedMembershipStatus);
+	}, [selectedMembershipStatus]);
 
 	// fetch all the users and also fetch the list of users that are already invited
 	// check if the userid is in the list of invited users
@@ -59,25 +67,24 @@ export default function InviteList({ navigation, route }) {
 			const response = await axios.get(`${apiURL}/users`);
 			const data = response.data;
 			// get rid of Rejected and None users and host
-			const filteredData = await data.filter((user) => user.membership_status_id !== "Rejected" 
-														&& user.membership_status_id !== "None" 
-														&& user.role_id === "Attendee");
+			const filteredData = await data.filter((user) => user.membership_status_id !== "Rejected"
+				&& user.membership_status_id !== "None"
+				&& user.role_id === "Attendee");
 			setUsers(filteredData);
 			setFilteredUsers(filteredData);
-		  };
-		  
+		};
+
 		const getFilteredMemberships = async () => {
 			const apiURL = API_END_POINT;
 			const membershipsResponse = await axios.get(`${apiURL}membership`);
 			const membershipStatuses = membershipsResponse.data.membershipStatuses;
 			// get rid of Rejected and None and add All
 			const removed = membershipStatuses.filter((membership) => membership.membership_status_id !== "Rejected"
-																&& membership.membership_status_id !== "None");
+				&& membership.membership_status_id !== "None");
 			const edited = [{ membership_status_id: "All" }, ...removed];
 			setMemberships(edited);
-			console.log(edited)
 		};
-		
+
 		const getInvitedUsers = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/attendee/users/${eventId}`);
@@ -87,12 +94,12 @@ export default function InviteList({ navigation, route }) {
 			if (users) {
 				setSelected(users);
 				setoriginalSelected(users);
-			}else{
+			} else {
 				setSelected([]);
 				setoriginalSelected([]);
 			}
 		};
-	
+
 		getUsers();
 		getFilteredMemberships();
 		getInvitedUsers();
@@ -138,7 +145,7 @@ export default function InviteList({ navigation, route }) {
 				});
 			});
 		}
-		
+
 		// navigate back to the event details page
 		const attendeesResponse = await axios.get(
 			`${apiURL}attendee/users/${eventObj.event_id}`
@@ -150,132 +157,163 @@ export default function InviteList({ navigation, route }) {
 		const waitlist = waitlistResponse.data;
 		navigation.navigate("EventDetailsHost", {
 			upcomingEvent: {
-			  ...eventObj,
-			  attendees,
-			  waitlist,
+				...eventObj,
+				attendees,
+				waitlist,
 			}
-		  });
-		};
+		});
+	};
 
 	// if users or eventObj is not loaded, show loading indicator
-	if(loading){
-		return(
+	if (loading) {
+		return (
 			<ActivityIndicator
-			size="large"
-			color="#0000ff"
-			animating={true}
-			style={styles.activityIndicator}
-		/>
+				size="large"
+				color="#0000ff"
+				animating={true}
+				style={styles.activityIndicator}
+			/>
 		)
 	}
 
 	return (
 		<View style={styles.container}>
-		  {isPickerVisible && (
-			<View style={styles.header}>
+			{isPickerVisible && (
+				<View style={styles.header}>
+					<Text style={styles.filterTitle}>Filter & Search </Text>
 
-			<Text>Membership Status</Text>
-			<View style={{ zIndex: 2000 }}>
-				<DropDownPicker
-				  open={open}
-				  value={selectedMembershipStatus}
-				  items={memberships.map((item) => ({
-					label: item.membership_status_id,
-					value: item.membership_status_id,
-				  }))}
-				  setOpen={setOpen}
-				  setValue={handleMembershipFilterChange}
-				  listMode="SCROLLVIEW"
-				  scrollViewProps={{
-					nestedScrollEnabled: true,
-				  }}
-				  dropDownContainerStyle={{
-					position: "relative",
-					top: 0,
-				  }}
-				/>
-			  </View>
-			  <SearchBar
-				value={searchQuery}
-				onChangeText={setSearchQuery}
-				onSubmitEditing={handleSearchPress}
-				onPress={handleSearchPress}
-			  />
-	  
-			  <ClearFilterButton
-				onPress={() => {
-				  setSearchQuery("");
-				  setSelectedMembershipStatus("All");
-				  setFilteredUsers(users);
-				}}
-			  />
-			</View>
-		  )}
-		  <Text style={styles.title}>Please make an invite list</Text>
-		  <Text style={styles.eventInfo}>Event - {eventObj.event_name}</Text>
-		  <Text style={styles.eventInfo}>Max Capacity - {eventObj.capacity}</Text>
-		  <Text style={styles.eventInfo}>Selected - {numSelected}</Text>
-		  <FlatList
-			data={filteredUsers}
-			renderItem={({ item }) => (
-			  <View style={styles.userContainer}>
-				<Text
-				  onPress={() =>
-					navigation.navigate("UserDetails", { user: item })
-				  }
-				  style={styles.userName}
-				>
-				  {item.first_name} {item.last_name} - {item.email}
-				  {item.membership_status_id}
-				</Text>
-				<Checkbox
-				  value={selected.includes(item.user_id)}
-				  onValueChange={() => handleSelect(item.user_id)}
-				  style={styles.checkbox}
-				/>
-			  </View>
+					<Text style={styles.title}>Membership Status</Text>
+					<View style={{ zIndex: 2000 }}>
+						<DropDownPicker
+							style={styles.dropdown}
+							open={open}
+							value={selectedMembershipStatus}
+							items={memberships.map((item) => ({
+								label: item.membership_status_id,
+								value: item.membership_status_id,
+							}))}
+							setOpen={setOpen}
+							setValue={handleMembershipFilterChange}
+							listMode="SCROLLVIEW"
+							scrollViewProps={{
+								nestedScrollEnabled: true,
+							}}
+							dropDownContainerStyle={{
+								position: "relative",
+								top: 0,
+							}}
+						/>
+					</View>
+
+
+
+					<SearchBar
+						value={searchQuery}
+						onChangeText={setSearchQuery}
+						onSubmitEditing={handleSearchPress}
+						onPress={handleSearchPress}
+					/>
+
+					<ClearFilterButton
+						onPress={() => {
+							setSearchQuery("");
+							setSelectedMembershipStatus("All");
+							setFilteredUsers(users);
+						}}
+					/>
+				</View>
 			)}
-		  />
-		  <View style={styles.buttonContainer}>
-			<Button title="Save" onPress={handleSubmit} />
-		  </View>
+
+			<View style={styles.eventInfoContainer}>
+				<Text style={styles.eventTitle}>Event - {eventObj.event_name}</Text>
+				<Text style={styles.listNums}>Slected  {numSelected} / Max Capacity - {eventObj.capacity}</Text>
+			</View>
+
+			<Text style={styles.title}>Please make an invite list</Text>
+			<FlatList
+				data={filteredUsers}
+				renderItem={({ item }) => (
+					<View style={styles.userContainer}>
+						<Text
+							onPress={() =>
+								navigation.navigate("UserDetails", { user: item })
+							}
+							style={styles.userName}
+						>
+							{item.first_name} {item.last_name} - {item.email}
+							{item.membership_status_id}
+						</Text>
+						<Checkbox
+							value={selected.includes(item.user_id)}
+							onValueChange={() => handleSelect(item.user_id)}
+							style={styles.checkbox}
+						/>
+					</View>
+				)}
+			/>
+			<View style={styles.buttonContainer}>
+				<Button title="Save" onPress={handleSubmit} />
+			</View>
 		</View>
-	  );
-	  
+	);
+
 }
 
 const styles = StyleSheet.create({
 	container: {
-	  flex: 1,
-	  backgroundColor: '#fff',
-	  paddingHorizontal: 20,
-	  paddingTop: 40,
+		flex: 1,
+		backgroundColor: '#fff',
+		paddingHorizontal: 20,
+		paddingTop: 40,
+	},
+
+	filterTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		marginBottom: 20,
+	},
+	memberShipContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginBottom: 10,
 	},
 	title: {
-	  fontSize: 24,
-	  fontWeight: 'bold',
-	  marginBottom: 20,
+		fontSize: 16,
+		fontWeight: 'bold',
+		marginBottom: 20,
 	},
-	eventInfo: {
-	  fontSize: 18,
-	  marginBottom: 10,
+	dropdown: {
+		width: 150,
 	},
+	eventInfoContainer: {
+		marginBottom: 20,
+	},
+	eventTitle: {
+		fontSize: 20,
+		fontWeight: 'bold',	
+	},
+	listNums: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		marginBottom: 20,
+	},
+	
 	userContainer: {
-	  flexDirection: 'row',
-	  alignItems: 'center',
-	  marginBottom: 10,
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginBottom: 10,
 	},
 	userName: {
-	  flex: 1,
-	  fontSize: 18,
+		flex: 1,
+		fontSize: 18,
 	},
 	checkbox: {
-	  marginRight: 10,
+		marginRight: 10,
 	},
 	buttonContainer: {
-	  marginTop: 20,
+		marginTop: 20,
 	},
 	header: {
-	  marginBottom: 20,
+		marginBottom: 20,
 	},
-  });
+});
