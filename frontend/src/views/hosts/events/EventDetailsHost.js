@@ -28,9 +28,7 @@ export default function EventDetailsHost({ navigation, route }) {
 		const getData = async () => {
 			const apiURL = API_END_POINT;
 			try {
-				const response = await axios.get(
-					`${API_END_POINT}attendee/users/${eventId}`
-				);
+				const response = await axios.get(`${apiURL}attendee/users/${eventId}`);
 				const data = response.data;
 				console.log("data", data);
 				setAttendees(data);
