@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, View, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Button, Alert } from "react-native";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
@@ -137,8 +137,8 @@ export default function EventDetails({ navigation, route }) {
 					{/* If eligible and in the waitlist,
 					button should say "Remove" */}
 					{eventObj.isEligible && eventObj.isInWaitlist && (
-						<Button
-							title="Remove from Waitlist"
+						<TouchableOpacity
+							style={styles.button}
 							onPress={async () => {
 								displayProgressAlert("Remove", eventObj);
 								await removeFromEventWaitlist(eventObj, userId);
@@ -146,16 +146,16 @@ export default function EventDetails({ navigation, route }) {
 								handleSetDisplayTab(type);
 								handleRefresh();
 								navigation.goBack();
-							}}
-							
-						/>
+							}}>
+							<Text style={styles.buttonText}>Remove from Waitlist</Text>
+						</TouchableOpacity>
 					)}
 					{/* If eligible and already attending and not in waitlist,
 					button should say "Withdraw", also show QR code button */}
 					{eventObj.isEligible && eventObj.isAttending && !eventObj.isInWaitlist && (
 						<>
-							<Button
-								title="Withdraw"
+							<TouchableOpacity
+								style={styles.button}
 								onPress={async () => {
 									displayProgressAlert("Withdraw", eventObj);
 									await withdrawFromEvent(eventObj, userId);
@@ -163,24 +163,26 @@ export default function EventDetails({ navigation, route }) {
 									handleSetDisplayTab(type);
 									handleRefresh();
 									navigation.goBack();
-								}}
-							/>
-							<Button
-								title="QR Code"
+								}}>
+								<Text style={styles.buttonText}>Withdraw</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.button}
 								onPress={() =>
 									//Will also need to pass the user information through to this screen.
 									navigation.navigate("AttendeeQRCode", {
 										eventObj: eventObj,
 									})
-								}
-							/>
+								}>
+								<Text style={styles.buttonText}>QR Code</Text>
+							</TouchableOpacity>
 						</>
 					)}
 					{/* If eligible and not already attending and event has room,
 					button should say "Register" */}
 					{eventObj.isEligible && !eventObj.isAttending && eventObj.hasRoom && (
-						<Button
-							title="Register"
+						<TouchableOpacity
+							style={styles.button}
 							onPress={async () => {
 								displayProgressAlert("Register", eventObj);
 								let msg = await registerForEvent(eventObj, userId);
@@ -188,14 +190,15 @@ export default function EventDetails({ navigation, route }) {
 								handleSetDisplayTab(type);
 								handleRefresh();
 								navigation.goBack();
-							}}
-						/>
+							}}>
+							<Text style={styles.buttonText}>Register</Text>
+						</TouchableOpacity>
 					)}
 					{/* If eligible and not already attending and event has no room,
 					button should say "Waitlist" */}
 					{eventObj.isEligible && !eventObj.isAttending && !eventObj.hasRoom && !eventObj.isInWaitlist && (
-						<Button
-							title="Waitlist"
+						<TouchableOpacity
+							style={styles.button}
 							onPress={async () => {
 								displayProgressAlert("Waitlist", eventObj);
 								await waitlistForEvent(eventObj, userId);
@@ -203,8 +206,9 @@ export default function EventDetails({ navigation, route }) {
 								handleSetDisplayTab(type);
 								handleRefresh();
 								navigation.goBack();
-							}}
-						/>
+							}}>
+							<Text style={styles.buttonText}>Waitlist</Text>
+						</TouchableOpacity>
 					)}
 				</View>
 			</View>
@@ -237,9 +241,23 @@ const styles = StyleSheet.create({
 		marginTop: 5,
 		flexDirection: "column",
 		justifyContent: "center",
+		alignItems: "center",
 		rowGap: 10,
 		width: "100%",
 	},
+	button: {
+		width: 300,
+        height: 60,
+        backgroundColor: "#159E31",
+        justifyContent:"center",
+        textAlign:"center"
+	},
+	buttonText:{
+        color:"white",
+        textAlign:"center",
+        fontWeight:500,
+        fontSize:18,
+    },
 	eventInfoItem: {
 		flexDirection: "row",
 		justifyContent: "space-between",

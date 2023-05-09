@@ -1,8 +1,8 @@
 import { View, Text, Button, TextInput, StyleSheet, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-import AttendeeList from "./AttendeeList";
+// import AttendeeList from "./EventWaitist";
 import {
 	formatLongDate,
 	formatTime,
@@ -20,9 +20,27 @@ export default function EventDetailsHost({ navigation, route }) {
 	const [editedEndDate, setEditedEndDate] = useState(eventObj.event_end);
 	const [editedLocation, setEditedLocation] = useState(eventObj.event_location);
 	const [editedCapacity, setEditedCapacity] = useState(eventObj.capacity);
+	const [attendees, setAttendees] = useState([]);
 
 	const formattedStartDate = new Date(eventObj.event_start);
 	const currentDate = new Date();
+
+	useEffect(() => {
+		const getData = async () => {
+			const apiURL = API_END_POINT;
+			try {
+				const response = await axios.get(
+					`${API_END_POINT}attendee/users/${eventId}`
+				);
+				const data = response.data;
+				console.log("data", data);
+				setAttendees(data);
+			} catch (error) {
+				console.error("Error getting attendees:", error);
+			}
+		};
+		getData();
+	}, [eventId]);
 
 	const handleSubmit = async () => {
 		// formart setInpEvnStartDatetime with just date
@@ -45,14 +63,14 @@ export default function EventDetailsHost({ navigation, route }) {
 			const data = response.data;
 			setIsEdit(false);
 			// push to event details page
-			const attendees = eventObj.attendees;
+			// const attendees = eventObj.attendees;
 			const waitlist = eventObj.waitlist;
 			handleRefresh();
 			Alert.alert("Event Updated");
 			navigation.goBack({
 				upcomingEvent: {
 					...data,
-					attendees,
+					// attendees,
 					waitlist,
 				},
 			});
@@ -89,36 +107,6 @@ export default function EventDetailsHost({ navigation, route }) {
 			console.log("Error cancelling event:", error.message);
 		}
 	};
-
-	//Where should I call this?
-	// const filterPastAttendance = (item, status) => {
-	// 	switch (status) {
-	// 		case "Attended":
-	// 			setAttendeeList(
-	// 				item.attendees.filter(
-	// 					(attendee) => attendee.attendance_status_id === "Attended"
-	// 				)
-	// 			);
-	// 			return;
-	// 		case "No Show":
-	// 			setAttendeeList(
-	// 				item.attendees.filter(
-	// 					(attendee) => attendee.attendance_status_id === "No Show"
-	// 				)
-	// 			);
-	// 			return;
-	// 		case "Unknown":
-	// 			setAttendeeList(
-	// 				item.attendees.filter(
-	// 					(attendee) => attendee.attendance_status_id === "Unknown"
-	// 				)
-	// 			);
-	// 			return;
-	// 		default:
-	// 			setAttendeeList(item.attendees);
-	// 			return;
-	// 	}
-	// };
 	return (
 		<View style={styles.container}>
 			{isEdit ? (
@@ -180,7 +168,7 @@ export default function EventDetailsHost({ navigation, route }) {
 
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Registered:</Text>
-								<Text style={styles.value}>{eventObj.attendees.length}</Text>
+								<Text style={styles.value}>{eventObj.number_of_attendees}</Text>
 							</View>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Waitlisted:</Text>
@@ -207,7 +195,7 @@ export default function EventDetailsHost({ navigation, route }) {
 										</Text>
 										<Text style={styles.value}>
 											{
-												eventObj.attendees.filter(
+												attendees.filter(
 													(attendee) =>
 														attendee.attendance_status_id === "Attended"
 												).length
@@ -232,7 +220,7 @@ export default function EventDetailsHost({ navigation, route }) {
 										</Text>
 										<Text style={styles.value}>
 											{
-												eventObj.attendees.filter(
+												attendees.filter(
 													(attendee) =>
 														attendee.attendance_status_id === "No Show"
 												).length
@@ -257,7 +245,7 @@ export default function EventDetailsHost({ navigation, route }) {
 										</Text>
 										<Text style={styles.value}>
 											{
-												eventObj.attendees.filter(
+												attendees.filter(
 													(attendee) =>
 														attendee.attendance_status_id === "Unknown"
 												).length

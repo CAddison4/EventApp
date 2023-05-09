@@ -210,9 +210,9 @@ export default function Users({ navigation }) {
 								dropDownContainerStyle={{
 									position: "relative",
 									top: 0,
-									backgroundColor: "#91C4D9",
+									// backgroundColor: "#91C4D9",
 								}}
-								style={{ backgroundColor: "#91C4D9" }}
+								// style={{ backgroundColor: "#91C4D9" }}
 							/>
 						</View>
 						<View
@@ -229,12 +229,12 @@ export default function Users({ navigation }) {
 										styles.radioButton,
 										{
 											backgroundColor:
-												selectedRole === role.role_id ? "#A5E0B7" : "#0A0B0D",
+												selectedRole === role.role_id ? "#4CAF50" : "#fff",
 										},
 									]}>
 									<Text
 										style={{
-											color: "#fff",
+											color: selectedRole === role.role_id ? "#fff" : "#000",
 										}}>
 										{`${role.role_id}s`}
 									</Text>
@@ -254,12 +254,12 @@ export default function Users({ navigation }) {
 									filterUsers(searchQuery);
 								}}
 								onSubmitEditing={handleSearchSubmit}
-								color={"#91C4D9"}
+								// color={"#91C4D9"}
 								// backgroundColor="#4A738C"
 							/>
 							<ClearFilterButton
 								onPress={handleClearFilter}
-								color={"#91C4D9"}
+								// color={"#91C4D9"}
 							/>
 						</View>
 					</View>
@@ -301,10 +301,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingLeft: 5,
 		paddingRight: 5,
-		backgroundColor: "#0A0B0D",
+		backgroundColor: "#fff",
 		width: "100%",
-		maxWidth: 380,
+		maxWidth: 400,
 		justifyContent: "center",
+		paddingTop: 20,
 	},
 	header: {
 		flexDirection: "column",

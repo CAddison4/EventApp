@@ -12,18 +12,14 @@ export const getEventsWithAttendees = async () => {
 		// Make separate request for attendees of each event
 		const eventsWithAttendees = await Promise.all(
 			events.map(async (event) => {
-				const attendeesResponse = await axios.get(
-					`${apiURL}attendee/users/${event.event_id}`
-				);
+				// const attendeesResponse = await axios.get(
+				// 	`${apiURL}attendee/users/${event.event_id}`
+				// );
 				const waitlistResponse = await axios.get(
 					`${apiURL}waitlist/users/${event.event_id}`
 				);
-				const capacityResponse = await axios.get(
-					`${apiURL}anycapacity/${event.event_id}`
-				);
-				const attendees = attendeesResponse.data;
+				// const attendees = attendeesResponse.data;
 				const waitlist = waitlistResponse.data;
-				const numberOfAttendees = capacityResponse.data.numberOfAttendees;
 				const today = new Date();
 				const eventDate = new Date(event.event_date);
 				const type = eventDate >= today ? "upcoming" : "past";
@@ -32,8 +28,7 @@ export const getEventsWithAttendees = async () => {
 				// eventObj.capacityAvailable = eventObj.capacity - eventObj.number_of_attendees;
 				return {
 					...event,
-					numberOfAttendees,
-					attendees,
+					// attendees,
 					waitlist,
 					type,
 				};
