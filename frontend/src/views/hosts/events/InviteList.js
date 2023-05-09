@@ -15,17 +15,13 @@ export default function InviteList({ navigation, route }) {
 	const [selected, setSelected] = useState([]);
 	const [originalSelected, setoriginalSelected] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedMembershipStatus, setSelectedMembershipStatus] =
-	useState("All");
+	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState("All");
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [updateFilter, setUpdateFilter] = useState(false);
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [open, setOpen] = useState(false);
 	const [memberships, setMemberships] = useState([]);
-
-
-
 
 	const filtersUsers = () => {
 		const filteredUsers = users.filter((user) =>
@@ -54,7 +50,6 @@ export default function InviteList({ navigation, route }) {
 	const handleMembershipFilterChange = (item) => {
 		setSelectedMembershipStatus(item);
 	};
-
 
 	// fetch all the users and also fetch the list of users that are already invited
 	// check if the userid is in the list of invited users
