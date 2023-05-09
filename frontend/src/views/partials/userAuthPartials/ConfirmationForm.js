@@ -17,7 +17,8 @@ import { useNavigation } from "@react-navigation/native";
 
 const ConfirmationForm = ({ route }) => {
   const navigation = useNavigation();
-  const { initialUsername, initialMessage } = route.params;
+  const { initialUsername, initialMessage, confirmationMessage } = route.params;
+  const [confirmation , setConfirmation] = useState(confirmationMessage ? confirmationMessage : "");
   const [username, setUsername] = useState(initialUsername ? initialUsername : "");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [formMessage, setFormMessage] = useState(initialMessage ? initialMessage : "");
@@ -44,7 +45,7 @@ const ConfirmationForm = ({ route }) => {
       onPress={Keyboard.dismiss}
     >
       <SafeAreaView>
-          <Text style={styles.title}>Confirmation Code</Text>
+          <Text style={styles.title}></Text>
           {formMessage ? (
             <Text style={styles.errorMessage}>{formMessage}</Text>
           ) : null}

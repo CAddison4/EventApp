@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { handleResetPassword } from "../../../components/AuthComponents";
@@ -49,7 +49,7 @@ const ResetPasswordForm = ({ route }) => {
       onPress={Keyboard.dismiss}
     >
       <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Reset Password</Text>
+        <Text style={styles.title}></Text>
         {message ? <Text style={styles.errorMessage}>{message}</Text> : null}
         <TextInput
           style={styles.input}
@@ -79,12 +79,13 @@ const ResetPasswordForm = ({ route }) => {
           secureTextEntry
         />
         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate("SignInForm")}>
           <Text
-            onPress={() => navigation.navigate("SignInForm")}
             style={styles.secondaryButton}
           >
             Back to Sign In
           </Text>
+          </TouchableOpacity>
           <Button title="Reset Password" onPress={handleSubmit} />
         </View>
       </SafeAreaView>
@@ -104,6 +105,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginTop: 20,
+    marginBottom: 20,
   },
   inputContainer: {
     marginBottom: 40,
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   secondaryButton: {
-    alignSelf: "center",
+    justifyContent: "center",
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",

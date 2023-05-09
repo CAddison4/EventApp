@@ -1,58 +1,3 @@
-<<<<<<< HEAD
-import { Auth } from 'aws-amplify';
-
-export const handleSignUp = async (email, password) => {
-    try {
-      await Auth.signUp({
-        username: email,
-        password: password,
-        attributes: {
-          email: email,
-        },
-      });
-      console.log('Successfully signed up');
-    } catch (error) {
-      console.log('Error signing up:', error);
-    }
-  };
-
-export const handleSignIn = async (username, password) => {
-    try {
-      await Auth.signIn(username, password);
-      console.log('Successfully signed in');
-    } catch (error) {
-      console.log('Error signing in:', error);
-    }
-  };
-  
-  export const handleConfirmation = async (username, confirmationCode) => {
-    try {
-      await Auth.confirmSignUp(username, confirmationCode);
-      console.log('Successfully confirmed sign up');
-    } catch (error) {
-      console.log('Error confirming sign up:', error);
-    }
-  };
-  
-  export const handleForgotPassword = async (username) => {
-    try {
-      await Auth.forgotPassword(username);
-      console.log('Forgot password request successfully sent');
-    } catch (error) {
-      console.log('Error sending forgot password request:', error);
-    }
-  };
-  
-  export const handleSignOut = async () => {
-    try {
-      await Auth.signOut();
-      console.log('Successfully signed out');
-    } catch (error) {
-      console.log('Error signing out:', error);
-    }
-  };
-  
-=======
 import { Auth } from "aws-amplify";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
@@ -96,9 +41,11 @@ export const handleSignUp = async (
         Authorization: `Bearer ${userJwtToken.token}`,
       },
     });
-    console.log("RESPONSE USER LOOKUP", response);
   } catch (error) {
-    console.log("ERROR", error);
+    return {
+      success: false,
+      message: "Error retrieving tokens",
+    };
   }
   try {
     await Auth.signUp({
@@ -108,7 +55,6 @@ export const handleSignUp = async (
         email: email,
       },
     });
-
     const cockroachEmail = email.toLowerCase();
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();
@@ -118,7 +64,6 @@ export const handleSignUp = async (
       cockroachFirstName,
       cockroachLastName
     );
-    console.log("API RESPONSE", apiResponse);
 
     if (!apiResponse.success) {
       return {
@@ -132,16 +77,13 @@ export const handleSignUp = async (
     };
   } catch (error) {
     let message = "Error signing up: " + error.message;
-
     if (error.code === "UsernameExistsException") {
       message = "This email address is already in use";
     }
-
     if (error.code === "InvalidPasswordException") {
       message =
         "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
     }
-
     return {
       success: false,
       message: message,
@@ -150,7 +92,7 @@ export const handleSignUp = async (
 };
 
 export const handleAutoSignIn = async (dispatch) => {
-  console.log("HANDLE AUTO SIGN IN")
+
   try {
     const accessToken = await AsyncStorage.getItem('accessToken');
     if (accessToken) {
@@ -168,6 +110,7 @@ export const handleAutoSignIn = async (dispatch) => {
 
         const idToken =  await AsyncStorage.getItem('idToken');
         const userData = await getUserData(jwt_decode(idToken).email, dispatch);
+        console.log("AUTO LOGIN")
         return { 
           success: true ,
           message: "tokens Updated",
@@ -225,6 +168,11 @@ export const handleSignIn = async (username, password, dispatch) => {
       // Auth.resendSignUp(username);
       message =
         "This account has not been confirmed. Please check your email for a confirmation link.";
+        return {
+          success: false,
+          message: message,
+          confirmation: false
+        }
     }
     return {
       success: false,
@@ -272,8 +220,7 @@ export const handleForgotPassword = async (username) => {
       message: "Forgot password request successfully sent",
     };
   } catch (error) {
-    console.log("Error requesting new password:", error);
-    let message = "There was an error sending the password reset request.";
+    let message = "There was an error sending the password reset request. Please try again or contact support.";
 
     if (error.code === "UserNotFoundException") {
       message = "User not found. Please check your email and try again.";
@@ -345,4 +292,3 @@ export const handleSignOut = async () => {
     console.log("Error signing out:", error);
   }
 };
->>>>>>> 7f014411315ea860cfe34ff50256e01929ab7b90
