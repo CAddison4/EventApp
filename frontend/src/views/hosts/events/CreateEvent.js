@@ -69,7 +69,6 @@ export default function CreateEvent({ navigation }) {
 
 	const handleCreateEvent = async () => {
 		// error handling for inputs
-		setLoading(true);
 		const errors = await ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, selectedEventType, loyaltyMinimum, startDateTime, endDateTime);
 		console.log(errors);
 		// error occured
@@ -91,6 +90,7 @@ export default function CreateEvent({ navigation }) {
 				loyaltyMax: selectedEventType == "Loyalty" ? loyaltyMinimum : 0,
 				reason_cancelled: "NULL",
 			};
+			setLoading(true);
 			const response = await axios.post(`${apiURL}/event`, postEventObj);
 
 			// create event capacity
@@ -113,6 +113,7 @@ export default function CreateEvent({ navigation }) {
 			setSelectedEventType(defaultValue);
 			setErrors({});
 
+			setLoading(false);
 			// Navigate to InviteList screen if event type is Guest List
 			if (selectedEventType == "Guest List") {
 				// Navigate to InviteList screen

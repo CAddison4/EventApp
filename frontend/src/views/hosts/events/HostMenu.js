@@ -11,6 +11,7 @@ export default function HostMenu({ navigation }) {
 	const [errors, setErrors] = useState([]);
 
 	useEffect(() => {
+		// get the event for today
 		const getEvents = async () => {
 			try {
 				const response = await axios.get(
@@ -20,10 +21,7 @@ export default function HostMenu({ navigation }) {
 				if (response.status === 200) {
 					const eventExists = response.data.eventExists;
 					if (eventExists) {
-						setErrors((errors) => [
-							...errors,
-							"Another event already starts on that date! Please choose another date and try again.",
-						]);
+						setEventObj(response.data.eventExists);
 					}
 				}
 			} catch (error) {
@@ -36,7 +34,6 @@ export default function HostMenu({ navigation }) {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Host Menu</Text>
 			<View style={styles.buttonsContainer}>
 				<View style={styles.buttonWrapper}>
 					{eventObj ? (
