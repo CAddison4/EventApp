@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";

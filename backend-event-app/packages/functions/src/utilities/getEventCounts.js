@@ -4,16 +4,7 @@ export async function main(event) {
 
   try {
 
-    const userId = event.pathParameters.userId;
-
-    if (!userId) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing or invalid parameters' })
-      };
-    }
-
-    const counts = await eventCounts(userId);
+    const counts = await eventCounts();
     return {
       statusCode: 200,
       body: JSON.stringify(counts),
