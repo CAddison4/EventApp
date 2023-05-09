@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Platform, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { Button, Platform, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle }) {
   const [show, setShow] = useState(false);
@@ -18,10 +19,13 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
 
   return (
     <>
-      <TouchableOpacity onPress={handlePress}
-        style={styles.button}>
-        <Text style={styles.buttonText}>{buttonTitle}</Text>
+
+      <TouchableOpacity onPress={handlePress} style={styles.button}>
+        <View style={styles.iconContainer}>
+          <Ionicons size={50} name="calendar"  color="green" />
+        </View>
       </TouchableOpacity>
+
       {show && mode === 'date' && (
         <DateTimePicker
           style={{ backgroundColor: "green" }}
@@ -42,17 +46,10 @@ export default function MyDateTimePicker({ mode, date, onDateChange, buttonTitle
     </>
   );
 }
-styles = StyleSheet.create({
-  button: {
-    justifyContent: 'center',
-    backgroundColor: '#159E31',
-    height: 35,
-    width:130,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
-  },
+const styles = StyleSheet.create({
 
+  iconContainer: {
+    marginRight: 10,
+    height: 50,
+  },
 });

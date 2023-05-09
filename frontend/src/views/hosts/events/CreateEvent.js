@@ -150,7 +150,7 @@ export default function CreateEvent({ navigation }) {
 					<View style={styles.container}>
 						{isPickerVisible && (
 							<>
-								<Text>Event Type</Text>
+								<Text syle={styles.label}>Event Type</Text>
 								<View style={{ zIndex: 2000, marginBottom: 20, marginTop: 10 }}>
 									<DropDownPicker
 										open={open}
@@ -166,7 +166,7 @@ export default function CreateEvent({ navigation }) {
 								{selectedEventType == "Loyalty" && (
 									<>
 										{errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
-										<Text>Loyalty Minimum:</Text>
+										<Text syle={styles.label}>Loyalty Minimum:</Text>
 										<TextInput
 											value={loyaltyMinimum.toString()}
 											style={styles.nameInput}
@@ -178,14 +178,14 @@ export default function CreateEvent({ navigation }) {
 									</>
 								)}
 								{errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
-								<Text>Event name</Text>
+								<Text syle={styles.label}>Event name</Text>
 								<TextInput
 									value={inpEvnName}
 									style={styles.nameInput}
 									onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 								/>
 								{errors.inpEvnMax && <Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>}
-								<Text>Max Participants</Text>
+								<Text syle={styles.label}>Max Participants</Text>
 								<TextInput
 									value={inpEvnMax}
 									style={styles.nameInput}
@@ -209,7 +209,7 @@ export default function CreateEvent({ navigation }) {
 										<Text>{startDateTime.toDateString()}</Text>
 									</View>
 									<View style={styles.timeContainer}>
-										<Text>Start Time:</Text>
+										<Text>Time</Text>
 										<MyDateTimePicker
 											style={styles.dateTimePicker}
 											value={startDateTime}
@@ -240,7 +240,7 @@ export default function CreateEvent({ navigation }) {
 										<Text>{endDateTime.toDateString()}</Text>
 									</View>
 									<View style={styles.timeContainer}>
-										<Text>End Time:</Text>
+										<Text>Time:</Text>
 										<MyDateTimePicker
 											style={styles.dateTimePicker}
 											value={endDateTime}
@@ -291,6 +291,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 16,
 		backgroundColor: "#fff",
+	},
+	label:{
+		fontSize: 20,
 	},
 	nameInput: {
 		paddingBottom: 8,

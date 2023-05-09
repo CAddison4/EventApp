@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: "#000",
 	},
-
 	searchBar: {
 		paddingBottom: 2,
 		fontSize: 18,
