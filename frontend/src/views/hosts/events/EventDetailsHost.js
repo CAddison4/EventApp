@@ -107,29 +107,34 @@ export default function EventDetailsHost({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{isEdit ? (
-				<>
+				<View style={styles.editView}>
+					<Text>Event name</Text>
 					<TextInput
 						value={editedName}
 						onChangeText={setEditedName}
 						placeholder="Event name"
 						style={styles.textInput}
 					/>
-
+					<Text>Location</Text>
 					<TextInput
 						value={editedLocation}
 						onChangeText={setEditedLocation}
 						placeholder="Event location"
 						style={styles.textInput}
 					/>
-					<Button
-						title="Cancel"
-						onPress={() => setIsEdit(false)}
-						style={styles.button}></Button>
-					<Button
-						title="Save"
-						onPress={() => handleSubmit()}
-						style={styles.button}></Button>
-				</>
+					<View style={styles.buttonRow}>
+						<TouchableOpacity
+							onPress={() => setIsEdit(false)}
+							style={styles.button}>
+							<Text style={styles.buttonText}>Cancel</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => handleSubmit()}
+							style={styles.button}>
+							<Text style={styles.buttonText}>Save</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
 			) : (
 				eventObj && (
                     <View style={styles.container}>
@@ -199,56 +204,6 @@ export default function EventDetailsHost({ navigation, route }) {
 											}
 										</Text>
 									</View>
-									{/* <View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "No Show"
-											// 		),
-											// 		type: "No Show",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											No Show:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "No Show"
-												).length
-											}
-										</Text>
-									</View>
-									<View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "Unknown"
-											// 		),
-											// 		type: "Unknown",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											Unknown:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Unknown"
-												).length
-											}
-										</Text>
-									</View> */}
 								</>
 							)}
 						</View>
@@ -289,9 +244,9 @@ export default function EventDetailsHost({ navigation, route }) {
 								{formattedStartDate >= currentDate && (
 									<TouchableOpacity
 										style={styles.button}
-										/* onPress={() => {
-											navigation.navigate("Waitlist", { eventObj: eventObj });
-										}} */>
+										onPress={() => {
+											navigation.navigate("EventWaitlist", { eventObj: eventObj });
+										}}>
 										<Text style={styles.buttonText}>Waitlist</Text>
 									</TouchableOpacity>
 								)}
@@ -367,4 +322,17 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	value: {},
+	editView: {
+		flex: 1,
+		flexDirection: "column",
+		marginTop: 150,
+		//justifyContent: "center",
+	},
+	textInput: {
+		paddingBottom: 8,
+		fontSize: 18,
+		borderBottomWidth: 1,
+		borderBottomColor: "#000",
+		marginBottom: 20,
+	},
 });
