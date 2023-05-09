@@ -56,9 +56,6 @@ export default function Attendancce({ navigation, route }) {
         editAttendanceArray.map(async (attendee) => {
           const userId = attendee[0];
           const attendanceStatus = attendee[1];
-
-          console.log(userId, attendanceStatus);
-
           const response = await axios.put(
             `${API_END_POINT}attendee/${eventObj.event_id}/${userId}`,
             { attendance_status: attendanceStatus }
@@ -72,7 +69,6 @@ export default function Attendancce({ navigation, route }) {
             `${API_END_POINT}attendee/users/${eventObj.event_id}`
           );
           const attendees = response.data;
-          console.log(attendees);
           // add it to the upcomming event object and push it back to detail
           navigation.navigate("EventDetailsHost", {
             upcomingEvent: {
