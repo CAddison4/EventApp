@@ -180,7 +180,7 @@ export default function InviteList({ navigation, route }) {
 		<View style={styles.container}>
 			{isPickerVisible && (
 				<View style={styles.header}>
-					<Text style={styles.filterTitle}>Filter & Search </Text>
+					{/* <Text style={styles.filterTitle}>Filter & Search </Text> */}
 
 					<Text style={styles.title}>Membership Status</Text>
 					<View style={{ zIndex: 2000 }}>
@@ -206,30 +206,31 @@ export default function InviteList({ navigation, route }) {
 					</View>
 
 
+					<View style={styles.searchBar}>
+						<SearchBar
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+							onSubmitEditing={handleSearchPress}
+							onPress={handleSearchPress}
+						/>
 
-					<SearchBar
-						value={searchQuery}
-						onChangeText={setSearchQuery}
-						onSubmitEditing={handleSearchPress}
-						onPress={handleSearchPress}
-					/>
-
-					<ClearFilterButton
-						onPress={() => {
-							setSearchQuery("");
-							setSelectedMembershipStatus("All");
-							setFilteredUsers(users);
-						}}
-					/>
+						<ClearFilterButton
+							onPress={() => {
+								setSearchQuery("");
+								setSelectedMembershipStatus("All");
+								setFilteredUsers(users);
+							}}
+						/>
+					</View>
 				</View>
 			)}
 
 			<View style={styles.eventInfoContainer}>
-				<Text style={styles.eventTitle}>Event - {eventObj.event_name}</Text>
-				<Text style={styles.listNums}>Slected  {numSelected} / Max Capacity - {eventObj.capacity}</Text>
+				<Text style={styles.eventTitle}>{eventObj.event_name}</Text>
+				<Text style={styles.listNums}>Capacity  {numSelected}/{eventObj.capacity}</Text>
 			</View>
 
-			<Text style={styles.title}>Please make an invite list</Text>
+			<Text style={styles.title}>Invite the following:</Text>
 			<FlatList
 				data={filteredUsers}
 				renderItem={({ item }) => (
@@ -240,8 +241,7 @@ export default function InviteList({ navigation, route }) {
 							}
 							style={styles.userName}
 						>
-							{item.first_name} {item.last_name} - {item.email}
-							{item.membership_status_id}
+							{item.first_name} {item.last_name}
 						</Text>
 						<Checkbox
 							value={selected.includes(item.user_id)}
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#fff',
 		paddingHorizontal: 20,
-		paddingTop: 40,
+		paddingTop: 20,
 	},
 
 	filterTitle: {
@@ -280,13 +280,20 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		marginBottom: 20,
+		marginBottom: 5,
 	},
 	dropdown: {
 		width: 150,
+		marginBottom: 5,
+	},
+	searchBar: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginVertical: 5,
+		marginRight: 10,
 	},
 	eventInfoContainer: {
-		marginBottom: 20,
+		marginBottom: 5,
 	},
 	eventTitle: {
 		fontSize: 20,
@@ -301,11 +308,12 @@ const styles = StyleSheet.create({
 	userContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'space-between',
 		marginBottom: 10,
 	},
 	userName: {
 		flex: 1,
-		fontSize: 18,
+		fontSize: 16,
 	},
 	checkbox: {
 		marginRight: 10,
