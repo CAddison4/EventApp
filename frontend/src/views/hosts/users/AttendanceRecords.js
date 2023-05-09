@@ -4,13 +4,14 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 import DropDownPicker from "react-native-dropdown-picker";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
+//Add event attendance list
 
 export default function AttendanceRecords({
 	// navigation,
 	route,
 }) {
 	const [eventObjs, setEventObjs] = useState([]);
-	const [selectedFilter, setSelectedFilter] = useState("");
+	const [selectedFilter, setSelectedFilter] = useState("Upcoming");
 	const [filteredEventObjs, setFilteredEventObjs] = useState([]);
 	const [open, setOpen] = useState(false);
 	const user = route.params.user;
