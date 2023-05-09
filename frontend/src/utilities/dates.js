@@ -101,3 +101,49 @@ export function formatDate(dateStr) {
     return dayName ? `${weekday} ${day}${suffix} ${month} ${year}` : `${day}${suffix} ${month} ${year}`;
     
   }
+
+  export function formatLongDateShortDay(dateStr) {
+    // create a Date object from the date string
+    const dateDb = new Date(dateStr);
+
+    // get the timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const date = new Date(dateDb.getTime() - (timezoneOffset * 60 * 1000));
+  
+    function getOrdinalSuffix(day) {
+      if (day >= 11 && day <= 13) {
+        return 'th';
+      }
+      switch (day % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    }
+    
+    // Array of weekday names
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Get the weekday name and day of the month
+    const weekday = weekdays[date.getDay()];
+    const day = date.getDate();
+    
+    // Get the ordinal suffix for the day
+    const suffix = getOrdinalSuffix(day);
+    
+    // Array of month names
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    // Get the month name and year
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    // Construct the formatted date string
+    return `${weekday} ${day}${suffix} ${month} ${year}`;
+    
+  }
