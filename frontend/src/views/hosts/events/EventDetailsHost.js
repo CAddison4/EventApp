@@ -201,7 +201,7 @@ export default function EventDetailsHost({ navigation, route }) {
 											}
 										</Text>
 									</View>
-									<View style={styles.eventInfoItem}>
+									{/* <View style={styles.eventInfoItem}>
 										<Text
 											// onPress={() => {
 											// 	navigation.navigate("AttendeeList", {
@@ -250,13 +250,14 @@ export default function EventDetailsHost({ navigation, route }) {
 												).length
 											}
 										</Text>
-									</View>
+									</View> */}
 								</>
 							)}
 						</View>
 
 						<View style={styles.actionButtons}>
-							{eventObj.type_id === "Guest List" && (
+							{eventObj.type_id === "Guest List" &&
+						     formattedStartDate >= currentDate && (
 								<TouchableOpacity
 									style={styles.inviteButton}
 									onPress={() => navigation.navigate("InviteList", { eventObj })}>
@@ -264,16 +265,20 @@ export default function EventDetailsHost({ navigation, route }) {
 								</TouchableOpacity>
 							)}
 							<View style={styles.buttonRow}>
-								<TouchableOpacity
-									style={styles.button}
-									onPress={() => setIsEdit(true)}>
-									<Text style={styles.buttonText}>Edit</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() => handleDelete()}
-									style={styles.button}>
-									<Text style={styles.buttonText}>Delete</Text>
-								</TouchableOpacity>	
+								{formattedStartDate >= currentDate && (
+									<>
+										<TouchableOpacity
+											style={styles.button}
+											onPress={() => setIsEdit(true)}>
+											<Text style={styles.buttonText}>Edit</Text>
+										</TouchableOpacity>
+										<TouchableOpacity
+											onPress={() => handleDelete()}
+											style={styles.button}>
+											<Text style={styles.buttonText}>Delete</Text>
+										</TouchableOpacity>	
+									</>
+								 )}
 							</View>
 							<View style={styles.buttonRow}>
 								<TouchableOpacity
@@ -283,13 +288,15 @@ export default function EventDetailsHost({ navigation, route }) {
 									style={styles.button}>
 									<Text style={styles.buttonText}>Attendance</Text>
 								</TouchableOpacity>
-								<TouchableOpacity
-									style={styles.button}
-									/* onPress={() => {
-										navigation.navigate("Waitlist", { eventObj: eventObj });
-									}} */>
-									<Text style={styles.buttonText}>Waitlist</Text>
-								</TouchableOpacity>
+								{formattedStartDate >= currentDate && (
+									<TouchableOpacity
+										style={styles.button}
+										/* onPress={() => {
+											navigation.navigate("Waitlist", { eventObj: eventObj });
+										}} */>
+										<Text style={styles.buttonText}>Waitlist</Text>
+									</TouchableOpacity>
+								)}
 							</View>
 						</View>
 					</View>
