@@ -12,12 +12,12 @@ export default function EventsCalHost({ route, navigation }) {
 	// type is the upcoming or past
 	const [loading, setLoading] = useState(true);
 	const [selected, setSelected] = useState("");
-	const [selectedYear, setSelectedYear] = useState( new Date().getFullYear());
-	
+	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
 	const handleYearSelect = (year) => {
 		setSelectedYear(year);
 		setSelected(year + "-01-01");
-    };
+	};
 
 	// create marked array
 	useEffect(() => {
@@ -35,17 +35,24 @@ export default function EventsCalHost({ route, navigation }) {
 				const originalDate = new Date(event.event_date);
 				// format the date to YYYY-MM-DD
 				const formattedDate = originalDate.toISOString().slice(0, 10);
+				let color = "blue";
+				if (event.type === "past") {
+					color = "grey"
+				} else if (event.capacity - event.number_of_attendees <= 0) {
+					color = "orange"
+				} else {
+					color = "green"
+				}
 				// return the formatted date as a key to the markedDates object
 				return {
 					[formattedDate]: {
 						selected: true,
-						selectedColor: "blue",
+						selectedColor: color,
 						disabled: false,
 						eventId: event.event_id,
 					},
 				};
 			}
-
 		});
 		// merge all the markedDates objects into one
 		const mergedMarkedDates = Object.assign({}, ...eventDatesArray);
@@ -58,7 +65,7 @@ export default function EventsCalHost({ route, navigation }) {
 		// show alert that has descriptions of the different colors
 		Alert.alert(
 			"Event Calendar",
-			"Blue: Event exists",
+			"Green: Upcoming event with available capacity\nOrange: Upcoming event with no available capacity\nGrey: Past event",
 			[
 				{
 					text: "OK",
@@ -68,7 +75,6 @@ export default function EventsCalHost({ route, navigation }) {
 			{ cancelable: false }
 		);
 	};
-
 
 	const handleDateSelect = (day) => {
 		// jump to the event details page
@@ -82,8 +88,6 @@ export default function EventsCalHost({ route, navigation }) {
 			});
 		}
 	};
-
-
 	return (
 		<><View style={styles.titleContainer}>
 			<Text style={styles.title}>Event Calendar
@@ -93,9 +97,9 @@ export default function EventsCalHost({ route, navigation }) {
 					// use infoPressed function to show alert
 					onPress={() => { infoPressed(); }} /></Text>
 		</View>
-        <View style={{zIndex: 5000}}> 
-			<YearPicker onSelect={handleYearSelect} />
-        </View>
+			<View style={{ zIndex: 5000 }}>
+				<YearPicker onSelect={handleYearSelect} />
+			</View>
 			{loading ? (
 
 				<ActivityIndicator
@@ -107,10 +111,10 @@ export default function EventsCalHost({ route, navigation }) {
 
 			) : (
 				<View style={styles.calendarContainer}>
-				<Calendar onDateSelect={handleDateSelect} 
-					key={selected }
-					markedDates={markedDates}
-					current={selected}
+					<Calendar onDateSelect={handleDateSelect}
+						key={selected}
+						markedDates={markedDates}
+						current={selected}
 					/>
 				</View>
 			)}
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%", // or any other desired height
 		zIndex: 1,
-	  },
+	},
 	// calendarContainer: {
 	// 	marginTop: 10,
 	// 	width: "100%",
