@@ -21,7 +21,6 @@ export default function EventsCalHost({ route, navigation }) {
 
 	// create marked array
 	useEffect(() => {
-
 		// if you want to switch the array to have only the selected year, use this
 		// const filteredEvents = eventObjs.filter((event) => {
 		// 	const eventDate = new Date(event.event_date);
@@ -37,11 +36,11 @@ export default function EventsCalHost({ route, navigation }) {
 				const formattedDate = originalDate.toISOString().slice(0, 10);
 				let color = "blue";
 				if (event.type === "past") {
-					color = "grey"
+					color = "grey";
 				} else if (event.capacity - event.number_of_attendees <= 0) {
-					color = "orange"
+					color = "orange";
 				} else {
-					color = "green"
+					color = "green";
 				}
 				// return the formatted date as a key to the markedDates object
 				return {
@@ -81,37 +80,44 @@ export default function EventsCalHost({ route, navigation }) {
 		const selectedDate = day;
 		const { eventId } = markedDates[day];
 		if (eventId) {
-			const selectedEvent = eventObjs.find((event) => event.event_id === eventId);
+			const selectedEvent = eventObjs.find(
+				(event) => event.event_id === eventId
+			);
 			console.log(selectedEvent);
 			navigation.navigate("EventDetailsHost", {
-				upcomingEvent: selectedEvent
+				upcomingEvent: selectedEvent,
 			});
 		}
 	};
 	return (
-		<><View style={styles.titleContainer}>
-			<Text style={styles.title}>Event Calendar
-				<Ionicons
-					name="information-circle-outline"
-					style={styles.informationIcon}
-					// use infoPressed function to show alert
-					onPress={() => { infoPressed(); }} /></Text>
-		</View>
+		<>
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}>
+					Calendar{" "}
+					<Ionicons
+						name="information-circle-outline"
+						style={styles.informationIcon}
+						// use infoPressed function to show alert
+						onPress={() => {
+							infoPressed();
+						}}
+					/>
+				</Text>
+			</View>
 			<View style={{ zIndex: 5000 }}>
 				<YearPicker onSelect={handleYearSelect} />
 			</View>
 			{loading ? (
-
 				<ActivityIndicator
 					size="large"
 					color="#0000ff"
 					animating={true}
 					style={styles.activityIndicator}
 				/>
-
 			) : (
 				<View style={styles.calendarContainer}>
-					<Calendar onDateSelect={handleDateSelect}
+					<Calendar
+						onDateSelect={handleDateSelect}
 						key={selected}
 						markedDates={markedDates}
 						current={selected}
