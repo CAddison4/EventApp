@@ -1,6 +1,14 @@
 import Checkbox from "expo-checkbox";
 import axios from "axios";
-import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import {
+	View,
+	Text,
+	Button,
+	FlatList,
+	StyleSheet,
+	ActivityIndicator,
+	TouchableOpacity,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { API_END_POINT } from "@env";
 import SearchBar from "../../partials/hostPartials/SearchBar";
@@ -15,22 +23,24 @@ export default function InviteList({ navigation, route }) {
 	const [selected, setSelected] = useState([]);
 	const [originalSelected, setoriginalSelected] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState("All");
+	const [selectedMembershipStatus, setSelectedMembershipStatus] =
+		useState("All");
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [updateFilter, setUpdateFilter] = useState(false);
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [open, setOpen] = useState(false);
 	const [memberships, setMemberships] = useState([]);
-
-
+	const [icon, setIcon] = useState("close-circle-outline");
 
 	const filterUsers = () => {
-		const filteredUsers = users.filter((user) =>
-			user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.email.toLowerCase().includes(searchQuery.toLowerCase())
+		const filteredUsers = users.filter(
+			(user) =>
+				user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+			// user.email.toLowerCase().includes(searchQuery.toLowerCase())
 		);
+
 		return filteredUsers;
 	};
 
@@ -39,7 +49,7 @@ export default function InviteList({ navigation, route }) {
 		const filteredUsersByQuery = filterUsers();
 		if (status !== "All") {
 			const dropdownFiltered = filteredUsersByQuery.filter(
-				user => user.membership_status_id === status
+				(user) => user.membership_status_id === status
 			);
 			setFilteredUsers(dropdownFiltered);
 		} else {
@@ -49,15 +59,26 @@ export default function InviteList({ navigation, route }) {
 
 	const handleSearchPress = () => {
 		filterMembership(selectedMembershipStatus);
+		setIcon("close-circle");
+	};
+
+	const handleSearchQuery = (query) => {
+		setSearchQuery(query);
+		setIcon("close-circle");
+	};
+
+	const handleSearchSubmit = () => {
+		Keyboard.dismiss();
 	};
 
 	const handleMembershipFilterChange = (item) => {
 		setSelectedMembershipStatus(item);
+		setIcon("close-circle");
 	};
 
 	useEffect(() => {
 		filterMembership(selectedMembershipStatus);
-	}, [selectedMembershipStatus]);
+	}, [selectedMembershipStatus, searchQuery]);
 
 	// fetch all the users and also fetch the list of users that are already invited
 	// check if the userid is in the list of invited users
@@ -67,9 +88,12 @@ export default function InviteList({ navigation, route }) {
 			const response = await axios.get(`${apiURL}/users`);
 			const data = response.data;
 			// get rid of Rejected and None users and host
-			const filteredData = await data.filter((user) => user.membership_status_id !== "Rejected"
-				&& user.membership_status_id !== "None"
-				&& user.role_id === "Attendee");
+			const filteredData = await data.filter(
+				(user) =>
+					user.membership_status_id !== "Rejected" &&
+					user.membership_status_id !== "None" &&
+					user.role_id === "Attendee"
+			);
 			setUsers(filteredData);
 			setFilteredUsers(filteredData);
 		};
@@ -79,8 +103,11 @@ export default function InviteList({ navigation, route }) {
 			const membershipsResponse = await axios.get(`${apiURL}membership`);
 			const membershipStatuses = membershipsResponse.data.membershipStatuses;
 			// get rid of Rejected and None and add All
-			const removed = membershipStatuses.filter((membership) => membership.membership_status_id !== "Rejected"
-				&& membership.membership_status_id !== "None");
+			const removed = membershipStatuses.filter(
+				(membership) =>
+					membership.membership_status_id !== "Rejected" &&
+					membership.membership_status_id !== "None"
+			);
 			const edited = [{ membership_status_id: "All" }, ...removed];
 			setMemberships(edited);
 		};
@@ -160,7 +187,7 @@ export default function InviteList({ navigation, route }) {
 				...eventObj,
 				attendees,
 				waitlist,
-			}
+			},
 		});
 	};
 
@@ -173,7 +200,7 @@ export default function InviteList({ navigation, route }) {
 				animating={true}
 				style={styles.activityIndicator}
 			/>
-		)
+		);
 	}
 
 	return (
@@ -205,13 +232,16 @@ export default function InviteList({ navigation, route }) {
 						/>
 					</View>
 
-
 					<View style={styles.searchBar}>
 						<SearchBar
 							value={searchQuery}
-							onChangeText={setSearchQuery}
+							onChangeText={(query) => {
+								handleSearchQuery(query);
+								filterUsers(searchQuery);
+								handleSearchPress();
+							}}
 							onSubmitEditing={handleSearchPress}
-							onPress={handleSearchPress}
+							// onPress={handleSearchPress}
 						/>
 
 						<ClearFilterButton
@@ -219,7 +249,9 @@ export default function InviteList({ navigation, route }) {
 								setSearchQuery("");
 								setSelectedMembershipStatus("All");
 								setFilteredUsers(users);
+								setIcon("close-circle-outline");
 							}}
+							icon={icon}
 						/>
 					</View>
 				</View>
@@ -227,7 +259,9 @@ export default function InviteList({ navigation, route }) {
 
 			<View style={styles.eventInfoContainer}>
 				<Text style={styles.eventTitle}>{eventObj.event_name}</Text>
-				<Text style={styles.listNums}>Capacity  {numSelected}/{eventObj.capacity}</Text>
+				<Text style={styles.listNums}>
+					Capacity {numSelected}/{eventObj.capacity}
+				</Text>
 			</View>
 
 			<Text style={styles.title}>Invite the following:</Text>
@@ -236,11 +270,8 @@ export default function InviteList({ navigation, route }) {
 				renderItem={({ item }) => (
 					<View style={styles.userContainer}>
 						<Text
-							onPress={() =>
-								navigation.navigate("UserDetails", { user: item })
-							}
-							style={styles.userName}
-						>
+							onPress={() => navigation.navigate("UserDetails", { user: item })}
+							style={styles.userName}>
 							{item.first_name} {item.last_name}
 						</Text>
 						<Checkbox
@@ -252,34 +283,36 @@ export default function InviteList({ navigation, route }) {
 				)}
 			/>
 			<View style={styles.buttonContainer}>
-				<Button title="Save" onPress={handleSubmit} />
+				{/* <Button title="Save" onPress={handleSubmit} /> */}
+				<TouchableOpacity onPress={handleSubmit} style={styles.button}>
+					<Text style={styles.buttonText}>Save</Text>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
-
 }
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#fff',
+		backgroundColor: "#fff",
 		paddingHorizontal: 20,
 		paddingTop: 20,
 	},
 
 	filterTitle: {
 		fontSize: 16,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 		marginBottom: 20,
 	},
 	memberShipContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
+		flexDirection: "row",
+		alignItems: "center",
 		marginBottom: 10,
 	},
 	title: {
 		fontSize: 16,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 		marginBottom: 5,
 	},
 	dropdown: {
@@ -297,18 +330,18 @@ const styles = StyleSheet.create({
 	},
 	eventTitle: {
 		fontSize: 20,
-		fontWeight: 'bold',	
+		fontWeight: "bold",
 	},
 	listNums: {
 		fontSize: 16,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 		marginBottom: 20,
 	},
-	
+
 	userContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
 		marginBottom: 10,
 	},
 	userName: {
@@ -323,5 +356,20 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		marginBottom: 20,
+	},
+
+	button: {
+		// width: 300,
+		height: 60,
+		backgroundColor: "#159E31",
+		justifyContent: "center",
+		textAlign: "center",
+		marginBottom: 20,
+	},
+	buttonText: {
+		color: "white",
+		textAlign: "center",
+		fontWeight: 500,
+		fontSize: 18,
 	},
 });
