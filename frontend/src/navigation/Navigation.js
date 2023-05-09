@@ -73,7 +73,6 @@ const Navigation = () => {
       let expiration = 0;
       // Do something before request is sent
       const userToken = await AsyncStorage.getItem("accessToken");
-	  console.log("userToken", userToken);
       if (userToken) {
         try {
           expiration = await jwt_decode(userToken).exp;

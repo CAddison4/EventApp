@@ -49,6 +49,14 @@ const SignInForm = ({ route }) => {
         position: -200,
       });
       const signInAttempt = await handleSignIn(username, password, dispatch);
+      if (signInAttempt.success === false && signInAttempt.confirmation === false ){
+        navigation.navigate("ConfirmationForm", {
+          initialUsername: username,
+          confirmationMessage: signInAttempt.message,
+        });
+        return;
+      }
+
       if (signInAttempt.success === false) {
         setFormMessage(signInAttempt.message);
         return;

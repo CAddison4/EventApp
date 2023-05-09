@@ -1,7 +1,7 @@
 import { Auth } from "aws-amplify";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/userSlice";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
 import {
@@ -13,14 +13,13 @@ import {
 import { Hub } from "aws-amplify";
 import jwt_decode from "jwt-decode";
 
-
 export const handleSignUp = async (
   email,
   password,
   password_confirmation,
   firstName,
   lastName
-  ) => {
+) => {
   String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
@@ -92,32 +91,29 @@ export const handleSignUp = async (
 };
 
 export const handleAutoSignIn = async (dispatch) => {
-
   try {
-    const accessToken = await AsyncStorage.getItem('accessToken');
+    const accessToken = await AsyncStorage.getItem("accessToken");
     if (accessToken) {
       const decodedAccessToken = jwt_decode(accessToken);
-      const currentTime = Date.now()/1000;
-      
-      if (decodedAccessToken.exp < currentTime) {   
-           
+      const currentTime = Date.now() / 1000;
+
+      if (decodedAccessToken.exp < currentTime) {
         const newTokens = await Auth.currentSession();
         const newAccessToken = newTokens.getAccessToken().getJwtToken();
         const newIdToken = newTokens.getIdToken().getJwtToken();
 
-        await AsyncStorage.setItem('accessToken', newAccessToken);
-        await AsyncStorage.setItem('idToken', newIdToken);
+        await AsyncStorage.setItem("accessToken", newAccessToken);
+        await AsyncStorage.setItem("idToken", newIdToken);
 
-        const idToken =  await AsyncStorage.getItem('idToken');
+        const idToken = await AsyncStorage.getItem("idToken");
         const userData = await getUserData(jwt_decode(idToken).email, dispatch);
-        console.log("AUTO LOGIN")
-        return { 
-          success: true ,
+        console.log("AUTO LOGIN");
+        return {
+          success: true,
           message: "tokens Updated",
         };
-      } else
-      {
-        const idToken =  await AsyncStorage.getItem('idToken');
+      } else {
+        const idToken = await AsyncStorage.getItem("idToken");
         const userData = await getUserData(jwt_decode(idToken).email, dispatch);
 
         if (!userData.success) {
@@ -126,15 +122,13 @@ export const handleAutoSignIn = async (dispatch) => {
             message: userData.message,
           };
         }
-        
+
         return {
           success: true,
           message: "Access token valid",
           userData: userData,
         };
       }
-      
-
     }
   } catch (error) {
     console.log("ERROR", error);
@@ -145,7 +139,6 @@ export const handleAutoSignIn = async (dispatch) => {
   }
 };
 
-
 export const handleSignIn = async (username, password, dispatch) => {
   try {
     username = username.toLowerCase();
@@ -153,7 +146,7 @@ export const handleSignIn = async (username, password, dispatch) => {
     return {
       success: true,
       message: "",
-    }
+    };
   } catch (error) {
     let message = "Error signing in: " + error.message;
     if (error.code === "UserNotFoundException") {
@@ -168,11 +161,11 @@ export const handleSignIn = async (username, password, dispatch) => {
       // Auth.resendSignUp(username);
       message =
         "This account has not been confirmed. Please check your email for a confirmation link.";
-        return {
-          success: false,
-          message: message,
-          confirmation: false
-        }
+      return {
+        success: false,
+        message: message,
+        confirmation: false,
+      };
     }
     return {
       success: false,
@@ -183,22 +176,34 @@ export const handleSignIn = async (username, password, dispatch) => {
 
 export const handleConfirmation = async (username, code) => {
   try {
-    await Auth.confirmSignUp(username, code);
+    const confirmation = await Auth.confirmSignUp(username, code);
     return {
       success: true,
       message: "Successfully confirmed account",
     };
   } catch (error) {
-    console.log("Error confirming sign up:", error);
+    let message = "Error confirming account: " + error.message;
 
-    let message = "Error confirming sign up: " + error.message;
+    if (error.name === "AuthError") {
+      message = "Error confirming account: " + error.message;
+    }
 
     if (error.code === "CodeMismatchException") {
-      message = "Confirmation code does not match";
+      message =
+        "Confirmation code does not match, please check the code and try again.";
     }
 
     if (error.code === "ExpiredCodeException") {
-      message = "Confirmation code has expired. Please request a new one.";
+      try {
+        await Auth.resendSignUp(username);
+        return {
+          success: false,
+          message:
+            "Confirmation code has expired. A new one has been sent to your email.",
+        };
+      } catch (err) {
+        message = "Error resending confirmation code: " + err.message;
+      }
     }
 
     if (error.code === "UserNotFoundException") {
@@ -217,10 +222,12 @@ export const handleForgotPassword = async (username) => {
     await Auth.forgotPassword(username);
     return {
       success: true,
-      message: "Forgot password request successfully sent",
+      message: "Forgot password code successfully sent",
     };
   } catch (error) {
-    let message = "There was an error sending the password reset request. Please try again or contact support.";
+    // console.log("ERROR", error)
+    let message =
+      "There was an error sending the password reset request. Please try again or contact support.";
 
     if (error.code === "UserNotFoundException") {
       message = "User not found. Please check your email and try again.";
@@ -265,14 +272,25 @@ export const handleResetPassword = async (
     }
 
     if (error.code === "ExpiredCodeException") {
-      message =
-        "The confirmation code you entered has expired. Please request a new one.";
+      try {
+        const newResetCode = handleForgotPassword(username);
+        if (newResetCode.success) {
+          message =
+            "Confirmation code has expired. A new one has been sent to your email.";
+          return {
+            success: false,
+            message: message,
+          };
+        } else {
+          message = "Error resending confirmation code: " + err.message;
+        }
+      } catch (err) {
+        message = "Error resending confirmation code: " + err.message;
+      }
     }
-
     if (error.code === "UserNotFoundException") {
       message = "User not found. Please check your email and try again.";
     }
-
     return {
       success: false,
       message: message,

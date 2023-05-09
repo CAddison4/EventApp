@@ -72,7 +72,6 @@ const SignUpForm = ({}) => {
     } else {
       setFormMessage(message);
     }
-    // Handle sign-up error here
   };
 
   const onFocus = () => {

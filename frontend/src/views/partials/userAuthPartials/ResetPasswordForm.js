@@ -27,6 +27,13 @@ const ResetPasswordForm = ({ route }) => {
   const [message, setMessage] = useState(initialMessage ? initialMessage : "");
 
   const handleSubmit = async () => {
+    setMessage("");
+    Keyboard.dismiss();
+
+    if (!username || !code || !password || !passwordConfirmation) {
+      setMessage("Please fill out all fields");
+      return;
+    }
     const { success, message } = await handleResetPassword(
       username,
       code,
@@ -86,7 +93,11 @@ const ResetPasswordForm = ({ route }) => {
             Back to Sign In
           </Text>
           </TouchableOpacity>
-          <Button title="Reset Password" onPress={handleSubmit} />
+          {/* <Button title="Reset Password" onPress={handleSubmit} /> */}
+          <TouchableOpacity onPress={handleSubmit}>
+          <Text style={styles.primaryButton}>Reset Password</Text>
+          </TouchableOpacity>
+
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -125,8 +136,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   primaryButton: {
-    width: 150,
-    fontSize: 16,
+    fontSize: 15,
+    color: "#fff",
+    backgroundColor: "#159E31",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   secondaryButton: {
     justifyContent: "center",
