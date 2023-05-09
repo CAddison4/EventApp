@@ -36,7 +36,6 @@ export default function UsersListItem({ userObj }) {
 				</Text>
 				<Text style={styles.text}>{userObj.email}</Text>
 				<Text style={styles.text}>Status: {userObj.membership_status_id}</Text>
-				<Text style={styles.text}>Type: {userObj.role_id}</Text>
 				<Text style={styles.text}>
 					Member since: {`${formatLongDate(userObj.date_signed_up, false)}`}
 				</Text>

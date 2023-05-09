@@ -92,7 +92,7 @@ export async function getUserByEmail(email) {
 export async function getUsers() {
   const res = await getPool().query(`
   SELECT * FROM users
-  ORDER BY last_name`)
+  ORDER BY CONCAT(first_name, ' ', last_name)`)
   return res.rows
 }
 
