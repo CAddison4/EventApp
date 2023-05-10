@@ -95,16 +95,7 @@ export default function AttendanceRecords({
 					renderItem={({ item }) => (
 						<View style={styles.card}>
 							<View style={styles.eventItem} key={`${item.event_id}`}>
-								<Text
-									style={styles.boldText}
-									// onPress={() => {
-									// 	navigation.navigate("EventsListHost", {
-									// 		searchItem: item.event_name,
-									// 	});
-									// }}
-								>
-									{item.event_name}
-								</Text>
+								<Text style={styles.boldText}>{item.event_name}</Text>
 								<Text>{`${formatLongDate(item.event_date, true)}`}</Text>
 								<Text>
 									{item.attendance_status_id === "Unknown"
@@ -114,13 +105,6 @@ export default function AttendanceRecords({
 							</View>
 						</View>
 					)}
-					// ListHeaderComponent={
-					// 	<Text style={styles.header}>
-					// 		{selectedFilter === "Upcoming"
-					// 			? "Upcoming Events"
-					// 			: `${selectedFilter} Events`}
-					// 	</Text>
-					// }
 					style={{ paddingTop: 20 }}
 				/>
 			</View>

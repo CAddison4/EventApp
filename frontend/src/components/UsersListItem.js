@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { formatLongDate } from "../utilities/dates";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function UsersListItem({ userObj }) {
+export default function UsersListItem({ userObj, showArrow = true }) {
 	const statusToIconNameMap = {
 		Gold: "checkmark-circle-outline",
 		Silver: "checkmark-circle-outline",
@@ -41,9 +41,11 @@ export default function UsersListItem({ userObj }) {
 				</Text>
 				{/* Add Loyalty? */}
 			</View>
-			<View>
-				<Ionicons name="chevron-forward-outline" size={24} color="grey" />
-			</View>
+			{showArrow === true && (
+				<View>
+					<Ionicons name="chevron-forward-outline" size={24} color="grey" />
+				</View>
+			)}
 		</View>
 	);
 }
