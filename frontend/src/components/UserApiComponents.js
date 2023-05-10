@@ -54,8 +54,6 @@ export const generateToken = async (email) => {
     iat: Math.floor(Date.now() / 1000),
     email: email,
   };
-
-  // console.log("PAYLOAD", payload);
   try {
     const token = JWT.encode(payload, key);
 
@@ -74,7 +72,7 @@ export const generateToken = async (email) => {
 
 export const handleSignUpApi = async (email, firstName, lastName) => {
   try {
-    const bearerToken = await generateToken();
+    const bearerToken = await generateToken(email);
     if (!bearerToken.success) {
       return {
         success: false,
@@ -82,22 +80,22 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
       };
     }
 
-    const apiEndpoint = `${API_END_POINT}/user`;
+    const userData = JSON.stringify({
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      roleId: "Attendee",
+      membershipStatusId: "None",
+    });
+    const apiEndpoint = `${API_END_POINT}user`;
     const apiResponse = await fetch(apiEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${bearerToken.token}`,
       },
-      body: JSON.stringify({
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        roleId: "Attendee",
-        membershipStatusId: "None",
-      }),
+      body: userData
     });
-
     return {
       success: true,
       message: "Successfully signed up",
@@ -117,14 +115,11 @@ export const getCognitoTokens = async () => {
     const accessToken = await session.getAccessToken().getJwtToken();
     const idToken = await session.getIdToken().getJwtToken();
 
-    // console.log("refreshToken", refreshToken);
-    // console.log("accessToken", accessToken);
-    // console.log("idToken", idToken);
-
     //ASYNC STORAGE
     AsyncStorage.setItem("refreshToken", refreshToken);
     AsyncStorage.setItem("accessToken", accessToken);
     AsyncStorage.setItem("idToken", idToken);
+      
     return {
       success: true,
       message: "Successfully stored tokens",
@@ -146,9 +141,8 @@ export const getUserData = async (username, dispatch) => {
         message: "Failed to retrieve user data, Check your email and try again",
       };
     }
-
     const accessToken = await AsyncStorage.getItem("accessToken");
-    // console.log("ACCESS TOKEN", accessToken);
+    console.log("ACCESS TOKEN", accessToken);
 
     // console.log("USER JWT TOKEN", userJwtToken);
     const apiEndpoint = `${API_END_POINT}user/email/${username}`;
@@ -159,7 +153,6 @@ export const getUserData = async (username, dispatch) => {
         Authorization: `Bearer ${userJwtToken.token}`,
       },
     });
-
     // console.log("API Response", apiResponse);
     if (!apiResponse.ok) {
       return {
@@ -188,7 +181,7 @@ export const getUserData = async (username, dispatch) => {
       ...loyaltyJson,
     };
 
-    // console.log("MERGED USER DATA", mergedUserData);
+    console.log("MERGED USER DATA", mergedUserData);
     dispatch(setUser(mergedUserData));
 
     const tokens = await getCognitoTokens();
@@ -199,7 +192,7 @@ export const getUserData = async (username, dispatch) => {
       message: "Successfully signed in",
     };
   } catch (error) {
-    // console.log("ERROR IN GET USER DATA", error);
+
     let message = "Error signing in: " + error.message;
     return {
       success: false,

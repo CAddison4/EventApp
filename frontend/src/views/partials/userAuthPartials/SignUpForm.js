@@ -9,11 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  TouchableWithoutFeedback,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { handleSignUp } from "../../../components/AuthComponents";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-root-toast";
 
 const SignUpForm = ({}) => {
   const navigation = useNavigation();
@@ -25,6 +26,8 @@ const SignUpForm = ({}) => {
   const [lastName, setLastName] = useState("");
 
   const handleSubmit = async () => {
+    setFormMessage("");
+    Keyboard.dismiss();
     if (
       !email ||
       !password ||
@@ -40,11 +43,15 @@ const SignUpForm = ({}) => {
       setFormMessage("First name should only contain alphabetic characters");
       return;
     }
-  
+
     if (!/^[a-zA-Z]+$/.test(lastName)) {
       setFormMessage("Last name should only contain alphabetic characters");
       return;
     }
+    Toast.show("Signing Up...", {
+      duration: Toast.durations.SHORT,
+      position: -200,
+    });
 
     const { success, message } = await handleSignUp(
       email,
@@ -55,16 +62,29 @@ const SignUpForm = ({}) => {
     );
 
     if (success === true) {
-      console.log("Successfully signed up");
       // Handle successful sign-up here
-      navigation.navigate("ConfirmationForm", { initialUsername: email , initialMessage: "Account created. Please enter confirmation code found in your email."});
-    } else
-     {
-      console.log(`Error signing up: ${message}`);
+      navigation.navigate("ConfirmationForm", {
+        initialUsername: email,
+        confirmationMessage:
+          "Account created. Please enter confirmation code found in your email.",
+        initialMessage: "",
+      });
+    } else {
       setFormMessage(message);
     }
-      // Handle sign-up error here
   };
+
+  const onFocus = () => {
+    this.setState({
+        backgroundColor: 'green'
+    })
+  }
+
+  const onblur = () => {
+    this.setState({
+      backgroundColor: '#ededed'
+    })
+  }
 
   return (
     <KeyboardAvoidingView
@@ -73,13 +93,15 @@ const SignUpForm = ({}) => {
       enabled={true}
       onPress={Keyboard.dismiss}
     >
-        <SafeAreaView>
+      <SafeAreaView>
         <ScrollView style={styles.scrollView}>
           <View style={styles.inner}>
-            <Text style={styles.title}>Sign Up</Text>
-            {formMessage ? (
-              <Text style={styles.errorMessage}>{formMessage}</Text>
-            ) : null}
+            <Text style={styles.title}></Text>
+
+            <Text style={styles.errorMessage}>
+              {formMessage ? formMessage : ""}
+            </Text>
+
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -116,27 +138,23 @@ const SignUpForm = ({}) => {
               secureTextEntry
             />
             <View style={styles.buttonContainer}>
-              <Button
-                title="Sign Up"
-                onPress={handleSubmit}
-                style={styles.primaryButton}
-              />
-            </View>
-            <View style={styles.secondaryButtonContainer}>
-              <Text style={{ textAlign: "center" }}>
-                Already have an account?
-              </Text>
-              <Button
-                title="Back to Sign In"
+              <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("SignInForm", { initialUsername: email })
+                  navigation.navigate("SignInForm", { initialUsername: "" })
                 }
-                style={styles.secondaryButton}
-              />
+              >
+                <Text style={styles.secondaryButton}>
+                  Already have an account?
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text style={styles.primaryButton}>Sign Up</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
-        </SafeAreaView>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
@@ -144,6 +162,8 @@ const SignUpForm = ({}) => {
 export default SignUpForm;
 
 const styles = StyleSheet.create({
+
+
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -156,7 +176,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
   },
-  
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -178,24 +198,26 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
   },
   primaryButton: {
-    width: 150,
     fontSize: 16,
-  },
-  secondaryButtonContainer: {
-    marginTop: 25,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    color: "#fff",
+    backgroundColor: "#00A600",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
   },
 
+
   secondaryButton: {
-    width: "50%",
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",
+    paddingVertical: 10,
+
+    borderRadius: 5,
+
   },
   errorMessage: {
     color: "red",

@@ -9,27 +9,41 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   ScrollView,
+  Touchable,
 } from "react-native";
 import { handleConfirmation } from "../../../components/AuthComponents";
 import { useNavigation } from "@react-navigation/native";
 
+
 const ConfirmationForm = ({ route }) => {
   const navigation = useNavigation();
-  const { initialUsername, initialMessage } = route.params;
+  const { initialUsername, initialMessage, confirmationMessage } = route.params;
+  const [confirmation , setConfirmation] = useState(confirmationMessage ? confirmationMessage : "");
   const [username, setUsername] = useState(initialUsername ? initialUsername : "");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [formMessage, setFormMessage] = useState(initialMessage ? initialMessage : "");
 
   const handleSubmit = async () => {
+
+    Keyboard.dismiss();
+    setFormMessage("");
+
+    if (!username || !confirmationCode) {
+      setFormMessage("Please enter a username and confirmation code");
+      return;
+    }
+    
       const { success, message } = await handleConfirmation(username, confirmationCode);
+      
       if (success === true) {
         console.log("Successfully confirmed user");
         // Handle successful confirmation here
         navigation.navigate("SignInForm", {
           initialUsername: username,
-          initialMessage: "Account confirmed. Please sign in."
+          initialMessage: "Account confirmed. Please sign in.",
+
         });
         return;
       }
@@ -44,10 +58,9 @@ const ConfirmationForm = ({ route }) => {
       onPress={Keyboard.dismiss}
     >
       <SafeAreaView>
-          <Text style={styles.title}>Confirmation Code</Text>
-          {formMessage ? (
-            <Text style={styles.errorMessage}>{formMessage}</Text>
-          ) : null}
+          <Text style={styles.title}></Text>
+            <Text style={styles.errorMessage}>{formMessage ? formMessage : ""}</Text>
+            <Text style={styles.errorMessage}>{confirmation ? confirmation : ""}</Text>
           <TextInput
             defaultValue={username}
             onChangeText={setUsername}
@@ -62,16 +75,17 @@ const ConfirmationForm = ({ route }) => {
             style={styles.input}
           />
           <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate("SignInForm")}>
             <Text
-              onPress={() => navigation.navigate("SignInForm")}
               style={styles.secondaryButton}
             >
               Back to Sign In
             </Text>
-            <Button
-              title="Confirm"
-              onPress={handleSubmit}
-            />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSubmit}>
+              <Text style={styles.primaryButton}>Confirm</Text>
+            </TouchableOpacity>
+
           </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -105,22 +119,22 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 30,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   primaryButton: {
-    width: 150,
-    fontSize: 16,
+    fontSize: 15,
+    color: "#fff",
+    backgroundColor: "#159E31",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   secondaryButton: {
-    fontSize: 13,
+    fontSize: 15,
     textDecorationLine: "underline",
     color: "#888",
-  },
-  button: {
-    fontSize: 32,
-    color: "#fff",
   },
   errorMessage: {
     color : "red",

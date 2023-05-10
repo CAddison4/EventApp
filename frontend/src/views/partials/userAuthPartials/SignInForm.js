@@ -10,24 +10,25 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import { handleSignIn } from "../../../components/AuthComponents";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import Toast from 'react-native-root-toast';
 
 const SignInForm = ({ route }) => {
-  
   const { initialUsername, initialMessage } = route?.params ?? {};
 
   const [password, setPassword] = useState("");
-  
+
   const [username, setUsername] = useState(initialUsername ?? "");
   const [formMessage, setFormMessage] = useState(initialMessage ?? "");
 
   // const { initialUsername, initialMessage } = route.params;
-  
+
   const dispatch = useDispatch();
-  
+
   // const [password, setPassword] = useState("");
 
   // const [username, setUsername] = useState(initialUsername ? initialUsername : "");
@@ -36,35 +37,45 @@ const SignInForm = ({ route }) => {
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
+    Keyboard.dismiss();
+    setFormMessage("");
     if (!username || !password) {
       setFormMessage("Please enter a username and password");
       return;
     }
     try {
+      Toast.show('Signing In...', {
+        duration: Toast.durations.SHORT,
+        position: -200,
+      });
       const signInAttempt = await handleSignIn(username, password, dispatch);
+      if (signInAttempt.success === false && signInAttempt.confirmation === false ){
+        navigation.navigate("ConfirmationForm", {
+          initialUsername: username,
+          confirmationMessage: signInAttempt.message,
+        });
+        return;
+      }
+
       if (signInAttempt.success === false) {
-        console.log("Error signing in:", message, success);
-      setFormMessage(message);
-      return;
+        setFormMessage(signInAttempt.message);
+        return;
       }
       return;
     } catch (error) {
-      console.log("Error signing in:", error);
-      setFormMessage("Error signing in. Please try again.");
-      return;
     }
   };
 
   const handleAttendeeSignIn = async () => {
     try {
-      const attendeeUserName = "shmglade@gmail.com";
-      const attendeePassword = "P@ssw0rd!";
+      const attendeeUserName = "scott.c19@live.com";
+      const attendeePassword = "td3j5FnhiLHRa$KA";
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
     }
   };
-  
+
   const handleHostSignIn = async () => {
     try {
       const hostUserName = "sholmes47@my.bcit.ca";
@@ -82,52 +93,59 @@ const SignInForm = ({ route }) => {
       enabled={true}
       onPress={Keyboard.dismiss}
     >
-        <SafeAreaView>
-          <View>
-            <Text style={styles.title}>Sign In</Text>
-            <Text style={styles.errorMessage}>
-            {!!formMessage ? (
-              formMessage
-            ) : null}
-            </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                defaultValue={initialUsername ? initialUsername : username}
-                onChangeText={setUsername}
-                placeholder="Email"
-                keyboardType="email-address"
-              />
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                secureTextEntry
-              />
-              <Text
-                onPress={() =>
-                  navigation.navigate("ForgotPasswordForm", {
-                    initialUsername: username,
-                  })
-                }
-                style={styles.secondaryButton}
-              >
-                Forgot Password{" "}
-              </Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Sign Up"
-                onPress={() => navigation.navigate("SignUpForm")}
-              />
-              <Button
-                title="Sign In"
-                onPress={handleSubmit}
-              />
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button
+      <SafeAreaView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.title}></Text>
+          <Text style={styles.errorMessage}>
+            {!!formMessage ? formMessage : null}
+          </Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              defaultValue={initialUsername ? initialUsername : username}
+              onChangeText={setUsername}
+              placeholder="Email"
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry
+            />
+          </View>
+          <View style={[styles.buttonContainer, styles.signInButton]}>
+            <TouchableOpacity
+              onPress={() =>
+                Keyboard.dismiss() &
+                setFormMessage("") &
+                setUsername("") &
+                setPassword("") &
+                navigation.navigate("ForgotPasswordForm", {
+                  initialUsername: username,
+                })
+              }
+            >
+              <Text style={styles.secondaryButton}>Forgot Password </Text>
+            </TouchableOpacity>
+            {/* <Button title="Sign In" onPress={handleSubmit} /> */}
+            <TouchableOpacity onPress={handleSubmit}>
+              <Text style={styles.primaryButton}>Sign In </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.buttonContainer, styles.signUpButton]}>
+            <TouchableOpacity onPress={() => 
+              Keyboard.dismiss() &
+              setFormMessage("") &
+              setUsername("") &
+              setPassword("") &
+              navigation.navigate("SignUpForm")}>
+              <Text style={styles.signUpText}>Don't have an account? </Text>
+            </TouchableOpacity>
+
+          </View>
+            <Button
                 title="Sign In as Attendee"
                 onPress={handleAttendeeSignIn}
               />
@@ -135,9 +153,8 @@ const SignInForm = ({ route }) => {
                 title="Sign In as Host"
                 onPress={handleHostSignIn}
               />
-            </View>
-          </View>
-        </SafeAreaView>
+        </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
@@ -151,6 +168,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 20,
   },
+  viewContainer: {
+    height: "100%",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -158,7 +178,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   inputContainer: {
-    marginBottom: 40,
+    marginBottom: 20,
   },
 
   input: {
@@ -170,16 +190,33 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonContainer: {
-    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+  },
+  signInButton: {
+    justifyContent: "space-between",
+    marginBottom: 40,
+  },
+  signUpText: {
+    fontSize: 16,
+    color: "#888",
+    alignItems: "center",
+    textDecorationLine: "underline",
+  },
+  signUpButton: {
+    justifyContent: "flex-end",
+    marginTop: 20,
   },
   primaryButton: {
-    width: 150,
-    fontSize: 16,
+    fontSize: 15,
+    color: "#fff",
+    backgroundColor: "#159E31",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   secondaryButton: {
-    width: "100%",
     fontSize: 13,
     textDecorationLine: "underline",
     color: "#888",
