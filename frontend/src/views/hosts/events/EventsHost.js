@@ -139,34 +139,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		paddingTop: 80,
 	},
-	tableHeader: {
-		flexDirection: "row",
-		justifyContent: "space-evenly",
-		alignItems: "center",
-		backgroundColor: "#37C2D0",
-		borderTopEndRadius: 10,
-		borderTopStartRadius: 10,
-		height: 50,
-	},
-	tableRow: {
-		flexDirection: "row",
-		height: 40,
-		alignItems: "center",
-	},
-	columnHeader: {
-		// width: "20%",
-		justifyContent: "space-evenly",
-		alignItems: "center",
-	},
-	columnHeaderTxt: {
-		color: "white",
-		fontWeight: "bold",
-	},
-	columnRowTxt: {
-		width: "30%",
-		justifyContent: "space-evenly",
-		textAlign: "left",
-	},
 
 	headerTxt: {
 		fontSize: 20,
