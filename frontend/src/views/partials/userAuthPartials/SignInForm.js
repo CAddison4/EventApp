@@ -145,6 +145,7 @@ const SignInForm = ({ route }) => {
             </TouchableOpacity>
 
           </View>
+          <View style={[styles.buttonContainer, styles.testButtons]}>
             <Button
                 title="Sign In as Attendee"
                 onPress={handleAttendeeSignIn}
@@ -153,6 +154,7 @@ const SignInForm = ({ route }) => {
                 title="Sign In as Host"
                 onPress={handleHostSignIn}
               />
+              </View>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -224,6 +226,10 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: "red",
     marginBottom: 20,
+  },
+
+  testButtons: {
+    flex: 1,
   },
 });
 

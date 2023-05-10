@@ -68,104 +68,110 @@ const Navigation = () => {
 	const [refreshMessage, setRefreshMessage] = React.useState("");
 	const [autoLoginLoading, setAutoLoginLoading] = React.useState(false);
 
-	axios.interceptors.request.use(
-		async (config) => {
-			let expiration = 0;
-			// Do something before request is sent
-			const userToken = await AsyncStorage.getItem("accessToken");
-			if (userToken) {
-				try {
-					expiration = await jwt_decode(userToken).exp;
-					//compare expiration to now If expiration is in 10 minutes or less, refresh token
-					if (
-						(expiration !== 0 && expiration - Date.now() / 1000 < 600) ||
-						expiration - Date.now() / 1000 < 0
-					) {
-						const refreshResult = amplifyRefreshTokens();
-						if (
-							refreshResult.success == false &&
-							refreshResult.message == "NotAuthorizedException"
-						) {
-							removeCognitoTokens();
-							setRefreshMessage(
-								"Your session has expired. Please log in again."
-							);
-							setAuthenticated(false);
-						}
-					}
-				} catch (error) {
-					console.log("ERROR", error);
-				}
-			}
+  axios.interceptors.request.use(
+    async (config) => {
+      let expiration = 0;
+      // Do something before request is sent
+      const userToken = await AsyncStorage.getItem("accessToken");
+      if (userToken) {
+        try {
+          expiration = await jwt_decode(userToken).exp;
+          //compare expiration to now If expiration is in 10 minutes or less, refresh token
+          if (
+            (expiration !== 0 && expiration - Date.now() / 1000 < 600) ||
+            expiration - Date.now() / 1000 < 0
+          ) {
+            const refreshResult = amplifyRefreshTokens();
+            if (
+              refreshResult.success == false &&
+              refreshResult.message == "NotAuthorizedException"
+            ) {
+              removeCognitoTokens();
+              setRefreshMessage(
+                "Your session has expired. Please log in again."
+              );
+              setAuthenticated(false);
+            }
+          }
+        } catch (error) {
+          // console.log("ERROR", error);
+        }
+      }
 
-			return config;
-		},
-		(error) => {
-			console.log("ERROR", error);
-			return Promise.reject(error);
-		}
-	);
+      return config;
+    },
+    (error) => {
+      // console.log("ERROR", error);
+      return Promise.reject(error);
+    }
+  );
 
-	useEffect(() => {
-		// Check if user is signed in async
-		const checkAuth = async () => {
-			try {
-				const autoSignInStatus = await handleAutoSignIn(dispatch);
-				setAutoLoginLoading(true);
-				if (autoSignInStatus.success == true) {
-					const userToken = await AsyncStorage.getItem("accessToken");
-					axios.defaults.headers.common[
-						"Authorization"
-					] = `Bearer ${userToken}`;
-					setAuthenticated(true);
-					setAutoLoginLoading(false);
-				}
-			} catch (e) {
-				console.log("ERROR NAVIGATION", e);
-				setAuthenticated(false);
-				setAutoLoginLoading(false);
-			}
-		};
-		checkAuth();
-		// Listen to "auth" events using Amplify Hub
-		Hub.listen("auth", (data) => {
-			switch (data.payload.event) {
-				case "signIn":
-					// Get user data from database
-					try {
-						const fetchData = async () => {
-							const userAuth = await Auth.currentSession();
-							const userEmail = userAuth.idToken.payload.email;
-							const userData = await getUserData(userEmail, dispatch);
+  useEffect(() => {
+    // Check if user is signed in async
+    const checkAuth = async () => {
+      try {
+        const autoSignInStatus = await handleAutoSignIn(dispatch);
+        setAutoLoginLoading(true);
+        if (!autoSignInStatus) {
+          setAuthenticated(false);
+          setAutoLoginLoading(false);
+          return;
+        }
+        if (autoSignInStatus.success == true) {
+          const userToken = await AsyncStorage.getItem("accessToken");
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${userToken}`;
+          setAuthenticated(true);
+          setAutoLoginLoading(false);
+        }
+      } catch (e) {
+        // console.log("ERROR NAVIGATION", e);
+        setAuthenticated(false);
+        setAutoLoginLoading(false);
+      }
+    };
+    checkAuth();
+    // Listen to "auth" events using Amplify Hub
+    Hub.listen("auth", (data) => {
+      switch (data.payload.event) {
+        case "signIn":
+          // Get user data from database
+          try {
+            const fetchData = async () => {
+              const userAuth = await Auth.currentSession();
+              const userEmail = userAuth.idToken.payload.email;
+              const userData = await getUserData(userEmail, dispatch);
 
-							if (userData.success == true) {
-								const userToken = await AsyncStorage.getItem("accessToken");
-								axios.defaults.headers.common[
-									"Authorization"
-								] = `Bearer ${userToken}`;
-								setAuthenticated(true);
-							} else {
-								setAuthenticated(false);
-								setRefreshMessage(
-									"Error Retrieving User Data. Please try again, Or contact support."
-								);
-							}
-						};
-						fetchData();
-					} catch (e) {
-						console.log("ERROR NAVIGATION", e);
-					}
-					// When user signs in, set authenticated to true
-					break;
-				case "signOut":
-					//CLEAR ASYNC STORAGE
-					removeCognitoTokens();
-					// When user signs out, set authenticated to false
-					setAuthenticated(false);
-					break;
-			}
-		});
-	}, []);
+              if (userData.success == true) {
+                // console.log("userData", userData);
+                const userToken = await AsyncStorage.getItem("accessToken");
+                axios.defaults.headers.common[
+                  "Authorization"
+                ] = `Bearer ${userToken}`;
+                setAuthenticated(true);
+              } else {
+                setAuthenticated(false);
+                setRefreshMessage(
+                  "Error Retrieving User Data. Please try again, Or contact support."
+                );
+              }
+            };
+            fetchData();
+          } catch (e) {
+            // console.log("ERROR NAVIGATION", e);
+          }
+          // When user signs in, set authenticated to true
+          break;
+        case "signOut":
+          //CLEAR ASYNC STORAGE
+          removeCognitoTokens();
+          // When user signs out, set authenticated to false
+          setAuthenticated(false);
+          break;
+      }
+    });
+  }, []);
 
 	const contextUser = useSelector((state) => state.user);
 
