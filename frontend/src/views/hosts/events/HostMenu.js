@@ -52,7 +52,7 @@ export default function HostMenu({ navigation }) {
         {testEventObj ? (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Attendance", { testEventObj: testEventObj });
+              navigation.navigate("Attendance", { eventObj: testEventObj });
             }}
           >
             <View style={styles.card}>
@@ -62,7 +62,7 @@ export default function HostMenu({ navigation }) {
           </TouchableOpacity>
         ) : (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>No event today</Text>
+            <Text style={styles.buttonText}>No event today</Text>
           </View>
         )}
       </View>
@@ -70,7 +70,7 @@ export default function HostMenu({ navigation }) {
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("EventsHost");
+              navigation.navigate("EventsHost", );
             }}
           >
             <View style={styles.listCard}>
