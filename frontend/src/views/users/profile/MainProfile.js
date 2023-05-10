@@ -18,7 +18,6 @@ const MainProfile = () => {
   if (!user) {
     return <Text>Loading...</Text>;
   }
-
   const { user_id, ...userData } = user; // Destructure user_id and spread the remaining user data into userData
 
   return (
@@ -54,16 +53,16 @@ const MainProfile = () => {
             marginVertical: 10,
           }}
         />
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChangePassword")}
-        >
-          <Text style={[styles.label, styles.button]}>Change Password</Text>
-        </TouchableOpacity>
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate("ChangePassword")}
+          >
+            <Text style={[styles.label, styles.button]}>Change Password</Text>
+          </TouchableOpacity> */}
 
         <TouchableOpacity 
           onPress={handleSubmit}
         >
-          <Text style={[ styles.signOut, styles.label,]}>Sign Out</Text>
+          <Text style={[ styles.signOut]}>Sign Out</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -98,8 +97,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
+    fontSize: 16,
+    color: "#607D8B",
   },
-  value: {},
+  value: {
+    fontSize: 17,
+    
+  },
   underline: {
     textDecorationLine: "underline",
   },
@@ -118,5 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     textAlign: "center",
     color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

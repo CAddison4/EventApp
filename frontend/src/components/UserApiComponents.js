@@ -142,7 +142,7 @@ export const getUserData = async (username, dispatch) => {
       };
     }
     const accessToken = await AsyncStorage.getItem("accessToken");
-    console.log("ACCESS TOKEN", accessToken);
+    // console.log("ACCESS TOKEN", accessToken);
 
     // console.log("USER JWT TOKEN", userJwtToken);
     const apiEndpoint = `${API_END_POINT}user/email/${username}`;
@@ -173,15 +173,19 @@ export const getUserData = async (username, dispatch) => {
         },
       }
     );
-
+    
+    
+    
     const loyaltyJson = await loyalty.json();
 
+
+    
     const mergedUserData = {
       ...apiResponseJson,
       ...loyaltyJson,
     };
 
-    console.log("MERGED USER DATA", mergedUserData);
+    // console.log("MERGED USER DATA", mergedUserData);
     dispatch(setUser(mergedUserData));
 
     const tokens = await getCognitoTokens();
