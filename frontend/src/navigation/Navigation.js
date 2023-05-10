@@ -94,14 +94,14 @@ const Navigation = () => {
             }
           }
         } catch (error) {
-          console.log("ERROR", error);
+          // console.log("ERROR", error);
         }
       }
 
       return config;
     },
     (error) => {
-      console.log("ERROR", error);
+      // console.log("ERROR", error);
       return Promise.reject(error);
     }
   );
@@ -126,7 +126,7 @@ const Navigation = () => {
           setAutoLoginLoading(false);
         }
       } catch (e) {
-        console.log("ERROR NAVIGATION", e);
+        // console.log("ERROR NAVIGATION", e);
         setAuthenticated(false);
         setAutoLoginLoading(false);
       }
@@ -144,7 +144,7 @@ const Navigation = () => {
               const userData = await getUserData(userEmail, dispatch);
 
               if (userData.success == true) {
-                console.log("userData", userData);
+                // console.log("userData", userData);
                 const userToken = await AsyncStorage.getItem("accessToken");
                 axios.defaults.headers.common[
                   "Authorization"
@@ -159,7 +159,7 @@ const Navigation = () => {
             };
             fetchData();
           } catch (e) {
-            console.log("ERROR NAVIGATION", e);
+            // console.log("ERROR NAVIGATION", e);
           }
           // When user signs in, set authenticated to true
           break;

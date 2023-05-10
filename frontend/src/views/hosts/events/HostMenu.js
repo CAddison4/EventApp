@@ -14,6 +14,7 @@ export default function HostMenu({ navigation }) {
     // get the event for today
     const getEvents = async () => {
       try {
+        console.log("API_END_POINT", formattedDate)
         const response = await axios.get(
           `${API_END_POINT}event/date/${formattedDate}`
         );
@@ -32,27 +33,27 @@ export default function HostMenu({ navigation }) {
     getEvents();
   }, []);
 
-  const testEventObj = {
-    cancelled: false,
-    capacity: "44",
-    event_date: "2023-05-18T07:00:00.000Z",
-    event_end: "2023-05-20T06:09:06.838Z",
-    event_id: "2d398f01-bde9-4613-bba0-640ae19bf604",
-    event_location: "Toronto",
-    event_name: "May Bronze Event",
-    event_start: "2023-05-19T06:09:06.838Z",
-    loyalty_max: "0",
-    reason: "",
-    type_id: "Bronze Tier",
-  };
+  // const testEventObj = {
+  //   cancelled: false,
+  //   capacity: "44",
+  //   event_date: "2023-05-18T07:00:00.000Z",
+  //   event_end: "2023-05-20T06:09:06.838Z",
+  //   event_id: "2d398f01-bde9-4613-bba0-640ae19bf604",
+  //   event_location: "Toronto",
+  //   event_name: "May Bronze Event",
+  //   event_start: "2023-05-19T06:09:06.838Z",
+  //   loyalty_max: "0",
+  //   reason: "",
+  //   type_id: "Bronze Tier",
+  // };
 
   return (
     <View style={styles.buttonsContainer}>
       <View style={styles.buttonWrapper}>
-        {testEventObj ? (
+        {eventObj ? (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Attendance", { eventObj: testEventObj });
+              navigation.navigate("Attendance", { eventObj: eventObj });
             }}
           >
             <View style={styles.card}>

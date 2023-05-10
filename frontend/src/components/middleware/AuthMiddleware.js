@@ -6,7 +6,7 @@ const requireAuth = (navigation) => async (nextState, replace) => {
     await Auth.currentAuthenticatedUser();
     next();
   } catch (error) {
-    console.log('Not authenticated. Redirecting to login page.');
+    // console.log('Not authenticated. Redirecting to login page.');
     const navigateAction = NavigationActions.navigate({
       routeName: 'SignIn',
     });

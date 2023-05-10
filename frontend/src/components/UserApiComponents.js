@@ -174,8 +174,11 @@ export const getUserData = async (username, dispatch) => {
       }
     );
 
+    
     const loyaltyJson = await loyalty.json();
 
+
+    
     const mergedUserData = {
       ...apiResponseJson,
       ...loyaltyJson,
