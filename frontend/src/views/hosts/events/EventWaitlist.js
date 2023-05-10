@@ -17,11 +17,8 @@ import { API_END_POINT } from "@env";
 export default function EventWaitlist({ navigation, route }) {
 	const [waitlist, setWaitlist] = React.useState([]);
 	const eventObj = route.params.eventObj;
-	// console.log("attendeeList", attendeeList);
-	// const listType = route.params.type;
 	const eventName = eventObj.event_name;
 	const eventWaitlist = eventObj.waitlist;
-	console.log("eventWaitlist", eventWaitlist);
 
 	const getData = async () => {
 		const apiURL = API_END_POINT;
@@ -30,7 +27,6 @@ export default function EventWaitlist({ navigation, route }) {
 				`${apiURL}waitlist/users/${eventObj.event_id}`
 			);
 			const data = response.data;
-			console.log("data", data);
 			setWaitlist(
 				data.sort((a, b) => {
 					const dateA = new Date(a.date_signed_up);
@@ -83,7 +79,6 @@ export default function EventWaitlist({ navigation, route }) {
 								})
 							}
 							style={{ paddingTop: 20 }}></TouchableOpacity> */}
-						{console.log("item", item)}
 						<UsersListItem userObj={item} />
 						{/* <Text
 							onPress={() =>

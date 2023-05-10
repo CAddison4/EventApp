@@ -142,18 +142,11 @@ export default function Users({ navigation }) {
 		]);
 		setEditedMemberships(edited);
 		setUsers(users);
-		setUpdateFilter(true); // set the flag to trigger the useEffect
+		setUpdateFilter(true);
 	};
 
 	const handleMembershipFilterChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue);
-		// if (itemValue === "All") {
-		// 	setFilteredUsers(users);
-		// 	return;
-		// }
-		// setFilteredUsers(
-		// 	users.filter((user) => user.membership_status_id === itemValue)
-		// );
 	};
 
 	useEffect(() => {
@@ -197,7 +190,6 @@ export default function Users({ navigation }) {
 				<>
 					<View style={styles.header}>
 						<Text style={styles.title}>Filter by membership:</Text>
-						{console.log("users", users)}
 						<View style={{ zIndex: 2000 }}>
 							<DropDownPicker
 								open={open}
