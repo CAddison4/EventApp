@@ -244,12 +244,13 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignContent: "center",
+    borderRadius: 5,
     margin: 10,
   },
   submitButtonText: {
     color: "white",
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
   },
 });

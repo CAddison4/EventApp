@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
 		padding: 20,
 	},
 	actionButtons: {
-		marginTop: 5,
+		marginTop: 20,
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
@@ -259,16 +259,18 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		width: 300,
-        height: 60,
+        height: 50,
+		marginBottom: 5,
         backgroundColor: "#159E31",
         justifyContent:"center",
-        textAlign:"center"
+        textAlign:"center",
+		borderRadius: 5,
 	},
 	buttonText:{
         color:"white",
         textAlign:"center",
         fontWeight:500,
-        fontSize:18,
+        fontSize:15,
     },
 	eventInfoItem: {
 		flexDirection: "row",

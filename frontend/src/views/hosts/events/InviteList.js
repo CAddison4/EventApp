@@ -360,16 +360,17 @@ const styles = StyleSheet.create({
 
 	button: {
 		// width: 300,
-		height: 60,
+		height: 50,
 		backgroundColor: "#159E31",
 		justifyContent: "center",
 		textAlign: "center",
 		marginBottom: 20,
+		borderRadius: 5,
 	},
 	buttonText: {
 		color: "white",
 		textAlign: "center",
 		fontWeight: 500,
-		fontSize: 18,
+		fontSize: 15,
 	},
 });

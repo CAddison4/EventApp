@@ -179,16 +179,17 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		marginTop: 20,
-        height: 60,
+        height: 50,
         backgroundColor: "#159E31",
         justifyContent:"center",
         textAlign:"center",
 		color: "#fff",
+		borderRadius: 5,
 	},
 	buttonText: {
         color:"white",
         textAlign:"center",
         fontWeight:500,
-        fontSize:18,
+        fontSize:15,
     },
 });
