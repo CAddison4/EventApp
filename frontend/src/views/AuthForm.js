@@ -23,12 +23,24 @@ const AuthForm = ({route}) => {
 
   return (
     <>
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#159E31",
+          //    backgroundColor: "#f6d5a7",
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        }
+      }
+    }>
       <Stack.Screen
         name="SignInForm"
         component={SignInForm}
         options={{ 
-          headerShown: false,
+          title: "Sign In",
+          // headerShown: false,
         }}
         initialParams={
           {initialUsername: initialUsername ?? "",
@@ -39,22 +51,23 @@ const AuthForm = ({route}) => {
       <Stack.Screen
         name="SignUpForm"
         component={SignUpForm}
-        options={{ headerShown: false }}
+        options={{ title: "Sign Up" }}
+        
       />
       <Stack.Screen
         name="ForgotPasswordForm"
         component={ForgotPasswordForm}
-        options={{ headerShown: false }}
+        options={{ title: "Forgot Password" }}
       />
       <Stack.Screen
         name="ConfirmationForm"
         component={ConfirmationForm}
-        options={{ headerShown: false }}
+        options={{ title: "Account Confirmation" }}
       />
       <Stack.Screen
         name="ResetPasswordForm"
         component={ResetPasswordForm}
-        options={{ headerShown: false }}
+        options={{ title: "Reset Password" }}
       />
       </Stack.Navigator>
             <HideWithKeyboard style={styles.tabBar}>

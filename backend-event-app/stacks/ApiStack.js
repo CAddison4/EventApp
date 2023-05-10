@@ -69,7 +69,7 @@ export function API({ stack }) {
         function: "packages/functions/src/users/postUser.main",
         authorizer: "eventAppJwtAuthorizer",
       },
-
+      // "POST /user": "packages/functions/src/users/postUser.main",
       "PUT /user/{userId}": "packages/functions/src/users/putUser.main",
       // Routes for getting single/all/cancelled events, creating and updating events
       "GET /events": "packages/functions/src/events/getEvents.main",
