@@ -19,6 +19,10 @@ export default function EventsCalHost({ route, navigation }) {
 		setSelected(year + "-01-01");
 	};
 
+	useEffect(() => {
+		setSelected(selectedYear + "-01-01");
+	}, [selectedYear]);
+
 	// create marked array
 	useEffect(() => {
 		// if you want to switch the array to have only the selected year, use this
