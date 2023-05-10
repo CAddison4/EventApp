@@ -8,7 +8,6 @@ import * as React from "react";
 
 export default function ProfileNavButton() {
 	const navigation = useNavigation();
-//	console.log("navigation: ", navigation);
 	return (
 		<View>
 			<Ionicons
@@ -27,4 +26,3 @@ const styles = StyleSheet.create({
 		marginRight: 10,
 	},
 });
-

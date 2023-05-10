@@ -129,10 +129,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 								.includes(searchQuery.toLowerCase())
 				)}
 				renderItem={({ item }) => (
-					// <View style={{ zIndex: 2000 }}>
 					<View>
-						{/* something about this is broken - all showing full. */}
-						{/* {console.log("item", item)} */}
 						<TouchableOpacity
 							onPress={() =>
 								navigation.navigate("EventDetailsHost", {
@@ -141,7 +138,6 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 								})
 							}>
 							<EventListItem eventObj={item} />
-							{console.log("item", item)}
 						</TouchableOpacity>
 					</View>
 				)}
