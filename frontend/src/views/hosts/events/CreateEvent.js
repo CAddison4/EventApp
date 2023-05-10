@@ -163,20 +163,26 @@ export default function CreateEvent({ navigation }) {
 										setValue={handleEventTypeChange}
 									/>
 								</View>
-								{selectedEventType == "Loyalty" && (
+								{selectedEventType === "Loyalty" && (
 									<>
 										{errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
-										<Text syle={styles.labelText}>Loyalty Minimum:</Text>
+										<Text style={styles.labelText}>Loyalty Minimum:</Text>
 										<TextInput
 											value={loyaltyMinimum.toString()}
 											style={styles.nameInput}
-											onChangeText={(loyaltyMinimum) =>
-												setLoyaltyMinimum(parseInt(loyaltyMinimum))
-											}
+											onChangeText={(loyaltyMinimum) => {
+												const formatted = loyaltyMinimum.replaceAll(/\s+/g, '')
+												if (formatted !== "" && formatted !== null && isNaN(formatted) === false ) {
+													setLoyaltyMinimum(parseInt(formatted));
+												}else{
+													setLoyaltyMinimum("");
+												}
+											}}
 											keyboardType="numeric"
 										/>
 									</>
 								)}
+
 								{errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
 								<Text syle={styles.labelText}>Event name</Text>
 								<TextInput

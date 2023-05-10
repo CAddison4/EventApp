@@ -18,12 +18,10 @@ export default function AttendanceRecords({
 
 	const handleGetAttendanceRecords = async () => {
 		const apiURL = API_END_POINT;
-		console.log(user.user_id);
 		const response = await axios.get(
 			`${apiURL}attendee/events/${user.user_id}`
 		);
 		const data = response.data;
-		console.log("data", data);
 		setEventObjs(data);
 	};
 

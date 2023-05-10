@@ -6,10 +6,30 @@ import { API_END_POINT } from "@env";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HostMenu({ navigation }) {
-  const formattedDate = new Date().toISOString().slice(0, 10);
-  const [eventObj, setEventObj] = useState(null);
-  const [errors, setErrors] = useState([]);
+	const formattedDate = new Date().toISOString().slice(0, 10);
+	const [eventObj, setEventObj] = useState(null);
+	const [errors, setErrors] = useState([]);
 
+	useEffect(() => {
+		// get the event for today
+		const getEvents = async () => {
+			try {
+				const response = await axios.get(
+					`${API_END_POINT}event/date/${formattedDate}`
+				);
+				if (response.status === 200) {
+					const eventExists = response.data.eventExists;
+					if (eventExists) {
+						setEventObj(response.data.eventExists);
+					}
+				}
+			} catch (error) {
+				if (error.response && error.response.statusCode === 500) {
+				}
+			}
+		};
+		getEvents();
+	}, []);
   useEffect(() => {
     // get the event for today
     const getEvents = async () => {
@@ -112,84 +132,83 @@ export default function HostMenu({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  buttonsContainer: {
-	flex: 1,
-	
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
-  buttonWrapper: {
-	// flex: 1,
-	maxWidth: 300,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  listsWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+	buttonsContainer: {
+		flex: 1,
 
-  },
-  listCard: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginBottom: 30,
-    flexDirection: "column",
-	justifyContent: "center",
-    alignItems: "center",
-    width: 150,
-    height: 150,
-    margin: 10,
-  },
-  listText: {
-	fontSize: 20,
-	fontWeight: "bold",
-	color: "#000",
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: 50,
+	},
+	buttonWrapper: {
+		// flex: 1,
+		maxWidth: 300,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	listsWrapper: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	listCard: {
+		backgroundColor: "#fff",
+		borderRadius: 10,
+		padding: 10,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		marginBottom: 30,
+		flexDirection: "column",
+		justifyContent: "center",
+		alignItems: "center",
+		width: 150,
+		height: 150,
+		margin: 10,
+	},
+	listText: {
+		fontSize: 20,
+		fontWeight: "bold",
+		color: "#000",
 	},
 
-  card: {
-	display: "flex",
-	height: 100,
-	width: 320,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-	padding: 10,
-    shadowColor: "#000", 
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginBottom: 30,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-	marginTop: 10,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
-    marginLeft: 10,
-  },
-  usersWrapper: {
-	width:"100%",
-	flexDirection: "row",
-	alignItems: "center",
-	justifyContent: "center",
-},
+	card: {
+		display: "flex",
+		height: 100,
+		width: 320,
+		backgroundColor: "#fff",
+		borderRadius: 10,
+		padding: 10,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		marginBottom: 30,
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
+		marginTop: 10,
+	},
+	buttonText: {
+		fontSize: 20,
+		fontWeight: "bold",
+		color: "#000",
+		marginLeft: 10,
+	},
+	usersWrapper: {
+		width: "100%",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
 });

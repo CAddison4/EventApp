@@ -1,15 +1,15 @@
 // Main navigation file for the app. This file contains the navigation stack for the app.
 
 // Imports
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+// import { StatusBar } from "expo-status-bar";
+// import { StyleSheet, Text, View, Button } from "react-native";
 import * as React from "react";
 import { useEffect } from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { CommonActions } from "@react-navigation/native";
+// import Ionicons from "@expo/vector-icons/Ionicons";
+// import { CommonActions } from "@react-navigation/native";
 import jwt_decode from "jwt-decode";
 // View imports
 import MainProfile from "../../src/views/users/profile/MainProfile";
@@ -19,7 +19,7 @@ import Confirmation from "../../src/views/users/events/Confirmation";
 import AttendeeQRCode from "../../src/views/users/events/AttendeeQRCode";
 import EventsList from "../../src/views/users/events/EventsList";
 import EventsCal from "../../src/views/users/events/EventsCal";
-import eventObjs from "../../src/views/users/events/Invited";
+// import eventObjs from "../../src/views/users/events/Invited";
 import Events from "../../src/views/users/events/Events";
 import PendingMembership from "../views/users/profile/PendingMembership";
 import RejectedMembership from "../views/users/profile/RejectedMembership";
@@ -28,8 +28,8 @@ import HostMenu from "../../src/views/hosts/events/HostMenu";
 import CreateEvent from "../../src/views/hosts/events/CreateEvent";
 import EventsHost from "../../src/views/hosts/events/EventsHost";
 import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
-import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
-import PastEvents from "../../src/views/hosts/events/PastEvents";
+// import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
+// import PastEvents from "../../src/views/hosts/events/PastEvents";
 import EventWaitlist from "../views/hosts/events/EventWaitlist";
 import Attendance from "../views/hosts/events/Attendance";
 import EventsListHost from "../views/hosts/events/EventsListHost";
@@ -40,15 +40,15 @@ import UserDetails from "../views/hosts/users/UserDetails";
 import AttendanceRecords from "../views/hosts/users/AttendanceRecords";
 
 // Component imports
-import store from "../../src/components/store/index";
+// import store from "../../src/components/store/index";
 import EventListItem from "../../src/components/EventListItem";
 import ProfileNavButton from "../../src/components/ProfileNavButton";
 import LoadingScreen from "../components/LoadingScreen";
 import axios from "axios";
 import {
-  getUserData,
-  removeCognitoTokens,
-  amplifyRefreshTokens,
+	getUserData,
+	removeCognitoTokens,
+	amplifyRefreshTokens,
 } from "../components/UserApiComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -62,11 +62,11 @@ import { handleAutoSignIn } from "../components/AuthComponents";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
-  const [authenticated, setAuthenticated] = React.useState(false);
-  const [user, setUser] = React.useState(null);
-  const dispatch = useDispatch();
-  const [refreshMessage, setRefreshMessage] = React.useState("");
-  const [autoLoginLoading, setAutoLoginLoading] = React.useState(false);
+	const [authenticated, setAuthenticated] = React.useState(false);
+	const [user, setUser] = React.useState(null);
+	const dispatch = useDispatch();
+	const [refreshMessage, setRefreshMessage] = React.useState("");
+	const [autoLoginLoading, setAutoLoginLoading] = React.useState(false);
 
   axios.interceptors.request.use(
     async (config) => {
@@ -173,193 +173,188 @@ const Navigation = () => {
     });
   }, []);
 
-  const contextUser = useSelector((state) => state.user);
+	const contextUser = useSelector((state) => state.user);
 
-  useEffect(() => {
-    if (contextUser) {
-      setUser(contextUser);
-    }
-  }, [contextUser]);
+	useEffect(() => {
+		if (contextUser) {
+			setUser(contextUser);
+		}
+	}, [contextUser]);
 
-  // const testUserStatus = { membership_status_id: "None" };
-  // const testUserStatus = { membership_status_id: "Gold" };
-
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#159E31",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerRight: () => <ProfileNavButton />,
-        }}
-      >
-        {autoLoginLoading ? (
-          <Stack.Screen
-            name="Loading"
-            component={LoadingScreen}
-            options={{ title: "" }}
-          />
-        ) : authenticated == false ? (
-          <Stack.Screen
-            name="AuthForm"
-            options={{
-              headerShown: false,
-              headerRight: () => "",
-            }}
-            initialParams={{
-              refreshMessage: refreshMessage !== "" ? refreshMessage : "",
-            }}
-          >
-            {() => <AuthForm />}
-          </Stack.Screen>
-        ) : (
-          <>
-            {(user &&
-              user !== null &&
-              user.role_id !== "Host" &&
-              user.membership_status_id === "None") ||
-            user.membership_status_id === "Rejected" ? (
-              <Stack.Screen
-                name={
-                  user.membership_status_id === "None"
-                    ? "PendingMembership"
-                    : "RejectedMembership"
-                }
-                component={
-                  user.membership_status_id === "None"
-                    ? PendingMembership
-                    : RejectedMembership
-                }
-                options={{ headerRight: () => "" }}
-              />
-            ) : (
-              <>
-                {user.role_id === "Host" ? (
-                  <Stack.Screen
-                    name="HostMenu"
-                    component={HostMenu}
-                    options={{
-                      title: "Menu",
-                    }}
-                  />
-                ) : (
-                  <Stack.Screen name="Events" component={Events} />
-                )}
-                <Stack.Screen
-                  name="MainProfile"
-                  component={MainProfile}
-                  options={
-                    ({ headerRight: () => "" }, { title: "User Profile" })
-                  }
-                />
-                <Stack.Screen
-                  name="EventsList"
-                  component={EventsList}
-                  options={{
-                    title: "Events",
-                  }}
-                />
-                <Stack.Screen
-                  name="EventsCal"
-                  component={EventsCal}
-                  options={{
-                    title: "Calendar",
-                  }}
-                />
-                <Stack.Screen name="EventListItem" component={EventListItem} />
-                <Stack.Screen
-                  name="EventDetails"
-                  component={EventDetails}
-                  options={{
-                    title: "Event Details",
-                  }}
-                />
-                <Stack.Screen name="Confirmation" component={Confirmation} />
-                <Stack.Screen
-                  name="AttendeeQRCode"
-                  component={AttendeeQRCode}
-                  options={{
-                    title: "QR Code",
-                  }}
-                />
-                <Stack.Screen
-                  name="ProfileNavButton"
-                  component={ProfileNavButton}
-                />
-                <Stack.Screen
-                  name="CreateEvent"
-                  component={CreateEvent}
-                  options={{
-                    title: "Create Event",
-                  }}
-                />
-                <Stack.Screen
-                  name="EventsHost"
-                  component={EventsHost}
-                  options={{
-                    title: "Events",
-                  }}
-                />
-                <Stack.Screen
-                  name="EventDetailsHost"
-                  component={EventDetailsHost}
-                  options={{
-                    title: "Event Details",
-                  }}
-                />
-                <Stack.Screen
-                  name="EventsListHost"
-                  component={EventsListHost}
-                  options={{
-                    title: "Events",
-                  }}
-                />
-                <Stack.Screen
-                  name="InviteList"
-                  component={InviteList}
-                  options={{
-                    title: "Event Invitations",
-                  }}
-                />
-                <Stack.Screen name="Users" component={Users} />
-                <Stack.Screen
-                  name="UserDetails"
-                  component={UserDetails}
-                  options={{
-                    title: "User Details",
-                  }}
-                />
-                <Stack.Screen
-                  name="EventWaitlist"
-                  component={EventWaitlist}
-                  options={{ title: "Waitlist" }}
-                />
-                <Stack.Screen
-                  name="Attendance"
-                  component={Attendance}
-                  options={{
-                    title: "Event Attendance",
-                  }}
-                />
-                <Stack.Screen
-                  name="AttendanceRecords"
-                  component={AttendanceRecords}
-                  options={{
-                    title: "Event Attendance",
-                  }}
-                />
-              </>
-            )}
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+	return (
+		<NavigationContainer>
+			<Stack.Navigator
+				screenOptions={{
+					headerStyle: {
+						backgroundColor: "#159E31",
+					},
+					headerTintColor: "#fff",
+					headerTitleStyle: {
+						fontWeight: "bold",
+					},
+					headerRight: () => <ProfileNavButton />,
+				}}>
+				{autoLoginLoading ? (
+					<Stack.Screen
+						name="Loading"
+						component={LoadingScreen}
+						options={{ title: "" }}
+					/>
+				) : authenticated == false ? (
+					<Stack.Screen
+						name="AuthForm"
+						options={{
+							headerShown: false,
+							headerRight: () => "",
+						}}
+						initialParams={{
+							refreshMessage: refreshMessage !== "" ? refreshMessage : "",
+						}}>
+						{() => <AuthForm />}
+					</Stack.Screen>
+				) : (
+					<>
+						{(user &&
+							user !== null &&
+							user.role_id !== "Host" &&
+							user.membership_status_id === "None") ||
+						user.membership_status_id === "Rejected" ? (
+							<Stack.Screen
+								name={
+									user.membership_status_id === "None"
+										? "PendingMembership"
+										: "RejectedMembership"
+								}
+								component={
+									user.membership_status_id === "None"
+										? PendingMembership
+										: RejectedMembership
+								}
+								options={{ headerRight: () => "" }}
+							/>
+						) : (
+							<>
+								{user.role_id === "Host" ? (
+									<Stack.Screen
+										name="HostMenu"
+										component={HostMenu}
+										options={{
+											title: "Menu",
+										}}
+									/>
+								) : (
+									<Stack.Screen name="Events" component={Events} />
+								)}
+								<Stack.Screen
+									name="MainProfile"
+									component={MainProfile}
+									options={
+										({ headerRight: () => "" }, { title: "User Profile" })
+									}
+								/>
+								<Stack.Screen
+									name="EventsList"
+									component={EventsList}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsCal"
+									component={EventsCal}
+									options={{
+										title: "Calendar",
+									}}
+								/>
+								<Stack.Screen name="EventListItem" component={EventListItem} />
+								<Stack.Screen
+									name="EventDetails"
+									component={EventDetails}
+									options={{
+										title: "Event Details",
+									}}
+								/>
+								{/* <Stack.Screen name="Confirmation" component={Confirmation} /> */}
+								<Stack.Screen
+									name="AttendeeQRCode"
+									component={AttendeeQRCode}
+									options={{
+										title: "QR Code",
+									}}
+								/>
+								<Stack.Screen
+									name="ProfileNavButton"
+									component={ProfileNavButton}
+								/>
+								<Stack.Screen
+									name="CreateEvent"
+									component={CreateEvent}
+									options={{
+										title: "Create Event",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsHost"
+									component={EventsHost}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="EventDetailsHost"
+									component={EventDetailsHost}
+									options={{
+										title: "Event Details",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsListHost"
+									component={EventsListHost}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="InviteList"
+									component={InviteList}
+									options={{
+										title: "Event Invitations",
+									}}
+								/>
+								<Stack.Screen name="Users" component={Users} />
+								<Stack.Screen
+									name="UserDetails"
+									component={UserDetails}
+									options={{
+										title: "User Details",
+									}}
+								/>
+								<Stack.Screen
+									name="EventWaitlist"
+									component={EventWaitlist}
+									options={{ title: "Waitlist" }}
+								/>
+								<Stack.Screen
+									name="Attendance"
+									component={Attendance}
+									options={{
+										title: "Event Attendance",
+									}}
+								/>
+								<Stack.Screen
+									name="AttendanceRecords"
+									component={AttendanceRecords}
+									options={{
+										title: "Event Attendance",
+									}}
+								/>
+							</>
+						)}
+					</>
+				)}
+			</Stack.Navigator>
+		</NavigationContainer>
+	);
 };
 
 export default Navigation;
