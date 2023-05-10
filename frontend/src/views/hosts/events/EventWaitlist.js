@@ -67,28 +67,17 @@ export default function EventWaitlist({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>{eventName}</Text>
-			<FlatList
-				data={waitlist}
-				keyExtractor={(item) => `${item.event_id}${item.user_id}`}
-				renderItem={({ item }) => (
-					<View>
-						{/* <TouchableOpacity
-							onPress={() =>
-								navigation.navigate("UserDetails", {
-									eventObj: item.user_id,
-								})
-							}
-							style={{ paddingTop: 20 }}></TouchableOpacity> */}
-						<UsersListItem userObj={item} />
-						{/* <Text
-							onPress={() =>
-								navigation.navigate("UserDetails", { user: item })
-							}>
-							{item.first_name} {item.last_name} - {item.email}
-						</Text> */}
-					</View>
-				)}
-			/>
+			<View style={[{ paddingTop: 20 }, styles.eventInfoContainer]}>
+				<FlatList
+					data={waitlist}
+					keyExtractor={(item) => `${item.event_id}${item.user_id}`}
+					renderItem={({ item }) => (
+						<View>
+							<UsersListItem userObj={item} showArrow={false} />
+						</View>
+					)}
+				/>
+			</View>
 		</View>
 	);
 }
@@ -96,13 +85,20 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#fff",
+		padding: 16,
 		alignItems: "center",
-		justifyContent: "center",
+		// justifyContent: "center",
 	},
 	title: {
 		fontSize: 20,
 		fontWeight: "bold",
 		paddingTop: 20,
 		paddingBottom: 20,
+	},
+	eventInfoContainer: {
+		width: "100%",
+		backgroundColor: "#eee",
+		borderRadius: 10,
+		padding: 20,
 	},
 });
