@@ -18,8 +18,6 @@ Promise.onPossiblyUnhandledRejection(function(error){
   console.log(error);
 });
 
-
-
 const App = () => {
 
   return (

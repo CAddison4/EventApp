@@ -53,11 +53,11 @@ const MainProfile = () => {
             marginVertical: 10,
           }}
         />
-        {/* <TouchableOpacity
-          onPress={() => navigation.navigate("ChangePassword")}
-        >
-          <Text style={[styles.label, styles.button]}>Change Password</Text>
-        </TouchableOpacity> */}
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate("ChangePassword")}
+          >
+            <Text style={[styles.label, styles.button]}>Change Password</Text>
+          </TouchableOpacity> */}
 
         <TouchableOpacity 
           onPress={handleSubmit}
