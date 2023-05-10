@@ -30,7 +30,7 @@ import EventsHost from "../../src/views/hosts/events/EventsHost";
 import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
 import UpcomingEvents from "../../src/views/hosts/events/UpcomingEvents";
 import PastEvents from "../../src/views/hosts/events/PastEvents";
-import EventWaitlist from "../views/hosts/events/EventWaitist";
+import EventWaitlist from "../views/hosts/events/EventWaitlist";
 import Attendance from "../views/hosts/events/Attendance";
 import EventsListHost from "../views/hosts/events/EventsListHost";
 
@@ -246,121 +246,166 @@ const Navigation = () => {
 					/>
 				  ) : (
 					<Stack.Screen
-					  name="Events"
-					  component={Events}
-					  // options={{
-					  // 	title: "Event App",
-					  // }}
-					/>
-				  )}
-				  {/* Attendee Screens */}
-				  <Stack.Screen
-					name="MainProfile"
-					component={MainProfile}
-					options={
-					  ({ headerRight: () => "" }, { title: "User Profile" })
-					}
-				  />
-				  <Stack.Screen
-					name="EventsList"
-					component={EventsList}
-					options={{
-					  title: "Events",
-					}}
-				  />
-				  <Stack.Screen
-					name="EventsCal"
-					component={EventsCal}
-					options={{
-					  title: "Calendar",
-					}}
-				  />
-				  <Stack.Screen name="EventListItem" component={EventListItem} />
-				  <Stack.Screen
-					name="EventDetails"
-					component={EventDetails}
-					options={{
-					  title: "Event Details",
-					}}
-				  />
-				  <Stack.Screen name="Confirmation" component={Confirmation} />
-				  <Stack.Screen
-					name="AttendeeQRCode"
-					component={AttendeeQRCode}
-					options={{
-					  title: "QR Code",
-					}}
-				  />
-				  <Stack.Screen
-					name="ProfileNavButton"
-					component={ProfileNavButton}
-				  />
-				  {/* Host Screens */}
-				  <Stack.Screen
-					name="CreateEvent"
-					component={CreateEvent}
-					options={{
-					  title: "Create Event",
-					}}
-				  />
-				  <Stack.Screen
-					name="EventsHost"
-					component={EventsHost}
-					options={{
-					  title: "Events",
-					}}
-				  />
-				  <Stack.Screen
-					name="EventDetailsHost"
-					component={EventDetailsHost}
-					options={{
-					  title: "Event Details",
-					}}
-				  />
-				  <Stack.Screen
-					name="EventsListHost"
-					component={EventsListHost}
-					options={{
-					  title: "Events",
-					}}
-				  />
-				  <Stack.Screen
-					name="InviteList"
-					component={InviteList}
-					options={{
-					  title: "Event Invitations",
-					}}
-				  />
-				  <Stack.Screen name="Users" component={Users} />
-				  <Stack.Screen
-					name="UserDetails"
-					component={UserDetails}
-					options={{
-					  title: "User Details",
-					}}
-				  />
-				  <Stack.Screen name="EventWaitlist" component={EventWaitlist} />
-				  <Stack.Screen
-					name="Attendance"
-					component={Attendance}
-					options={{
-					  title: "Event Attendance",
-					}}
-				  />
-				  <Stack.Screen
-					name="AttendanceRecords"
-					component={AttendanceRecords}
-					options={{
-					  title: "Event Attendance",
-					}}
-				  />
-				</>
-			  )}
-			</>
-		  ))}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+						name="AuthForm"
+						options={{ headerRight: () => "" }}
+						initialParams={{
+							refreshMessage: refreshMessage !== "" ? refreshMessage : "",
+						}}>
+						{() => <AuthForm />}
+					</Stack.Screen>
+				) : (
+					<>
+						{(user &&
+							user !== null &&
+							user.role_id !== "Host" &&
+							user.membership_status_id === "None") ||
+						user.membership_status_id === "Rejected" ? (
+							<Stack.Screen
+								name={
+									user.membership_status_id === "None"
+										? "PendingMembership"
+										: "RejectedMembership"
+								}
+								component={
+									user.membership_status_id === "None"
+										? PendingMembership
+										: RejectedMembership
+								}
+								options={{ headerRight: () => "" }}
+							/>
+						) : (
+							<>
+								{user.role_id === "Host" ? (
+									<Stack.Screen
+										name="HostMenu"
+										component={HostMenu}
+										options={{
+											title: "Menu",
+											// headerRight: () => <ProfileNavButton />,
+										}}
+									/>
+								) : (
+									<Stack.Screen
+										name="Events"
+										component={Events}
+										// options={{
+										// 	title: "Event App",
+										// }}
+									/>
+								)}
+								{/* Attendee Screens */}
+								<Stack.Screen
+									name="MainProfile"
+									component={MainProfile}
+									options={
+										({ headerRight: () => "" }, { title: "User Profile" })
+									}
+								/>
+								<Stack.Screen
+									name="EventsList"
+									component={EventsList}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsCal"
+									component={EventsCal}
+									options={{
+										title: "Calendar",
+									}}
+								/>
+								<Stack.Screen name="EventListItem" component={EventListItem} />
+								<Stack.Screen
+									name="EventDetails"
+									component={EventDetails}
+									options={{
+										title: "Event Details",
+									}}
+								/>
+								<Stack.Screen name="Confirmation" component={Confirmation} />
+								<Stack.Screen
+									name="AttendeeQRCode"
+									component={AttendeeQRCode}
+									options={{
+										title: "QR Code",
+									}}
+								/>
+								<Stack.Screen
+									name="ProfileNavButton"
+									component={ProfileNavButton}
+								/>
+								{/* Host Screens */}
+								<Stack.Screen
+									name="CreateEvent"
+									component={CreateEvent}
+									options={{
+										title: "Create Event",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsHost"
+									component={EventsHost}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="EventDetailsHost"
+									component={EventDetailsHost}
+									options={{
+										title: "Event Details",
+									}}
+								/>
+								<Stack.Screen
+									name="EventsListHost"
+									component={EventsListHost}
+									options={{
+										title: "Events",
+									}}
+								/>
+								<Stack.Screen
+									name="InviteList"
+									component={InviteList}
+									options={{
+										title: "Event Invitations",
+									}}
+								/>
+								<Stack.Screen name="Users" component={Users} />
+								<Stack.Screen
+									name="UserDetails"
+									component={UserDetails}
+									options={{
+										title: "User Details",
+									}}
+								/>
+								<Stack.Screen
+									name="EventWaitlist"
+									component={EventWaitlist}
+									options={{ title: "Waitlist" }}
+								/>
+								<Stack.Screen
+									name="Attendance"
+									component={Attendance}
+									options={{
+										title: "Event Attendance",
+									}}
+								/>
+								<Stack.Screen
+									name="AttendanceRecords"
+									component={AttendanceRecords}
+									options={{
+										title: "Event Attendance",
+									}}
+								/>
+							</>
+						)}
+					</>
+				)}
+			</Stack.Navigator>
+		</NavigationContainer>
+	);
+
 };
 
 export default Navigation;

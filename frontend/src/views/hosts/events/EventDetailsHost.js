@@ -1,12 +1,18 @@
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import {
+	View,
+	Text,
+	Button,
+	TextInput,
+	StyleSheet,
+	Alert,
+	TouchableOpacity,
+	ActivityIndicator,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 // import AttendeeList from "./EventWaitist";
-import {
-	formatLongDateShortDay,
-	formatTime,
-} from "../../../utilities/dates";
+import { formatLongDateShortDay, formatTime } from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;
@@ -19,25 +25,68 @@ export default function EventDetailsHost({ navigation, route }) {
 	const [editedEndDate, setEditedEndDate] = useState(eventObj.event_end);
 	const [editedLocation, setEditedLocation] = useState(eventObj.event_location);
 	const [editedCapacity, setEditedCapacity] = useState(eventObj.capacity);
-	const [attendees, setAttendees] = useState([]);
+	// const [attendees, setAttendees] = useState([]);
+	const [response, setResponse] = useState("");
+	const [attended, setAttended] = useState("0");
+	const [noShow, setNoShow] = useState("0");
+	const [isLoading, setIsLoading] = useState(true);
 
 	const formattedStartDate = new Date(eventObj.event_start);
 	const currentDate = new Date();
+	const apiURL = API_END_POINT;
+
+	const getAttendanceStatusData = async () => {
+		try {
+			const response = await axios.get(`${apiURL}eventcounts`);
+			setResponse(response);
+		} catch (error) {
+			console.error("Error getting attendance records:", error);
+		}
+	};
+
+	const setAttendanceStatusData = async () => {
+		if (response && response.data) {
+			const data = response.data;
+			try {
+				setAttended(
+					data.filter(
+						(item) =>
+							item.attendance_status_id === "Attended" &&
+							item.event_id === eventId
+					)[0].count
+				);
+			} catch {
+				setAttended("0");
+			}
+
+			try {
+				setNoShow(
+					data.filter(
+						(item) =>
+							item.attendance_status_id === "No Show" &&
+							item.event_id === eventId
+					)[0].count
+				);
+			} catch (error) {
+				setNoShow("0");
+			}
+		}
+	};
 
 	useEffect(() => {
-		const getData = async () => {
-			const apiURL = API_END_POINT;
-			try {
-				const response = await axios.get(`${apiURL}attendee/users/${eventId}`);
-				const data = response.data;
-				console.log("data", data);
-				setAttendees(data);
-			} catch (error) {
-				console.error("Error getting attendees:", error);
-			}
+		const fetchData = async () => {
+			await getAttendanceStatusData();
+			setIsLoading(false);
 		};
-		getData();
-	}, [eventId]);
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			await setAttendanceStatusData();
+		};
+		fetchData();
+	}, [response]);
 
 	const handleSubmit = async () => {
 		// formart setInpEvnStartDatetime with just date
@@ -137,9 +186,9 @@ export default function EventDetailsHost({ navigation, route }) {
 				</View>
 			) : (
 				eventObj && (
-                    <View style={styles.container}>
-                        <Text style={styles.title}>{eventObj.event_name}</Text>
-                        <View style={styles.eventInfoContainer}>
+					<View style={styles.container}>
+						<Text style={styles.title}>{eventObj.event_name}</Text>
+						<View style={styles.eventInfoContainer}>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Start: </Text>
 								<Text style={styles.value}>
@@ -170,51 +219,55 @@ export default function EventDetailsHost({ navigation, route }) {
 
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Registered:</Text>
-								<Text style={styles.value}>{eventObj.number_of_attendees}</Text>
+								{isLoading ? (
+									<ActivityIndicator size="small" color="#0000ff" />
+								) : (
+									<Text style={styles.value}>
+										{eventObj.number_of_attendees}
+									</Text>
+								)}
 							</View>
 							<View style={styles.eventInfoItem}>
 								<Text style={styles.label}>Waitlisted:</Text>
-								<Text style={styles.value}>{eventObj.waitlist.length}</Text>
+								{isLoading ? (
+									<ActivityIndicator size="small" color="#0000ff" />
+								) : (
+									<Text style={styles.value}>{eventObj.waitlist.length}</Text>
+								)}
 							</View>
 
 							{formattedStartDate < currentDate && (
 								<>
 									<View style={styles.eventInfoItem}>
-										<Text
-											// onPress={() => {
-											// 	navigation.navigate("AttendeeList", {
-											// 		attendeeList: eventObj.attendees.filter(
-											// 			(attendee) =>
-											// 				attendee.attendance_status_id === "Attended"
-											// 		),
-											// 		type: "Attended",
-											// 		eventName: eventObj.event_name,
-											// 		eventDate: eventObj.event_date,
-											// 	});
-											// }}
-											style={styles.label}>
-											Attended:
-										</Text>
-										<Text style={styles.value}>
-											{
-												attendees.filter(
-													(attendee) =>
-														attendee.attendance_status_id === "Attended"
-												).length
-											}
-										</Text>
+										<Text style={styles.label}>Attended:</Text>
+										{isLoading ? (
+											<ActivityIndicator size="small" color="#0000ff" />
+										) : (
+											<Text style={styles.value}>{attended}</Text>
+										)}
+									</View>
+
+									<View style={styles.eventInfoItem}>
+										<Text style={styles.label}>No Show:</Text>
+										{isLoading ? (
+											<ActivityIndicator size="small" color="#0000ff" />
+										) : (
+											<Text style={styles.value}>{noShow}</Text>
+										)}
 									</View>
 								</>
 							)}
 							<View style={styles.actionButtons}>
 								{eventObj.type_id === "Guest List" &&
-								formattedStartDate >= currentDate && (
-									<TouchableOpacity
-										style={styles.inviteButton}
-										onPress={() => navigation.navigate("InviteList", { eventObj })}>
-										<Text style={styles.buttonText}>Set Invites</Text>
-									</TouchableOpacity>
-								)}
+									formattedStartDate >= currentDate && (
+										<TouchableOpacity
+											style={styles.inviteButton}
+											onPress={() =>
+												navigation.navigate("InviteList", { eventObj })
+											}>
+											<Text style={styles.buttonText}>Set Invites</Text>
+										</TouchableOpacity>
+									)}
 								<View style={styles.buttonRow}>
 									{formattedStartDate >= currentDate && (
 										<>
@@ -227,7 +280,7 @@ export default function EventDetailsHost({ navigation, route }) {
 												onPress={() => handleDelete()}
 												style={styles.button}>
 												<Text style={styles.buttonText}>Delete</Text>
-											</TouchableOpacity>	
+											</TouchableOpacity>
 										</>
 									)}
 								</View>
@@ -239,15 +292,18 @@ export default function EventDetailsHost({ navigation, route }) {
 										style={styles.button}>
 										<Text style={styles.buttonText}>Attendance</Text>
 									</TouchableOpacity>
-									{formattedStartDate >= currentDate && (
-										<TouchableOpacity
-											style={styles.button}
-											onPress={() => {
-												navigation.navigate("EventWaitlist", { eventObj: eventObj });
-											}}>
-											<Text style={styles.buttonText}>Waitlist</Text>
-										</TouchableOpacity>
-									)}
+									{formattedStartDate >= currentDate &&
+										eventObj.hasRoom === false && (
+											<TouchableOpacity
+												style={styles.button}
+												onPress={() => {
+													navigation.navigate("EventWaitlist", {
+														eventObj: eventObj,
+													});
+												}}>
+												<Text style={styles.buttonText}>Waitlist</Text>
+											</TouchableOpacity>
+										)}
 								</View>
 							</View>
 						</View>
@@ -290,9 +346,9 @@ const styles = StyleSheet.create({
 	},
 	inviteButton: {
 		width: 300,
-        height: 60,
-        backgroundColor: "#159E31",
-        justifyContent:"center",
+		height: 60,
+		backgroundColor: "#159E31",
+		justifyContent: "center",
 	},
 	buttonRow: {
 		flexDirection: "row",
@@ -301,17 +357,17 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		width: 145,
-        height: 60,
-        backgroundColor: "#159E31",
-        justifyContent:"center",
-        textAlign:"center"
+		height: 60,
+		backgroundColor: "#159E31",
+		justifyContent: "center",
+		textAlign: "center",
 	},
-	buttonText:{
-        color:"white",
-        textAlign:"center",
-        fontWeight:500,
-        fontSize:18,
-    },
+	buttonText: {
+		color: "white",
+		textAlign: "center",
+		fontWeight: 500,
+		fontSize: 18,
+	},
 	eventInfoItem: {
 		flexDirection: "row",
 		justifyContent: "space-between",
