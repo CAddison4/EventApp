@@ -112,6 +112,11 @@ const Navigation = () => {
       try {
         const autoSignInStatus = await handleAutoSignIn(dispatch);
         setAutoLoginLoading(true);
+        if (!autoSignInStatus) {
+          setAuthenticated(false);
+          setAutoLoginLoading(false);
+          return;
+        }
         if (autoSignInStatus.success == true) {
           const userToken = await AsyncStorage.getItem("accessToken");
           axios.defaults.headers.common[

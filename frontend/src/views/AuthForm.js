@@ -70,7 +70,7 @@ const AuthForm = ({route}) => {
         options={{ title: "Reset Password" }}
       />
       </Stack.Navigator>
-            <HideWithKeyboard style={styles.tabBar}>
+            {/* <HideWithKeyboard style={styles.tabBar}>
             <TouchableOpacity
               style={styles.tab}
               onPress={() => navigation.navigate("ConfirmationForm", { initialUsername: username })}
@@ -97,7 +97,7 @@ const AuthForm = ({route}) => {
                 Reset Password
               </Text>
             </TouchableOpacity>
-          </HideWithKeyboard>
+          </HideWithKeyboard> */}
           </>
   );
 };
