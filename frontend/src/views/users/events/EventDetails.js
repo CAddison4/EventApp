@@ -1,5 +1,6 @@
 import * as React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert,
+	ActivityIndicator } from "react-native";
 import { formatLongDate, formatTime } from "../../../utilities/dates";
 
 import { registerForEvent, withdrawFromEvent } from "../../../actions/EventActions";
@@ -18,6 +19,7 @@ export default function EventDetails({ navigation, route }) {
 
 	const [waitlistPosition, setWaitlistPosition] = useState(0);
 	const [status, setStatus] = useState("");
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const yourStatus = 
@@ -40,6 +42,7 @@ export default function EventDetails({ navigation, route }) {
 			);
 			position = response.data.waitlistPosition;
 			setWaitlistPosition(position);
+			setIsLoading(false);
 		};
 		if (eventObj.isInWaitlist) {
 			findWaitlistPosition();
@@ -124,7 +127,16 @@ export default function EventDetails({ navigation, route }) {
 				{eventObj.isInWaitlist &&
 					<View style={styles.eventInfoItem}>
 						<Text style={styles.label}>Waitlist position:</Text>
-						<Text style={styles.value}>{waitlistPosition}</Text>
+
+						{isLoading ? (
+							<ActivityIndicator size="small" color="#0000ff" />
+						) : (
+							<Text style={styles.value}>
+								{waitlistPosition}
+							</Text>
+						)}
+
+						{/* <Text style={styles.value}>{waitlistPosition}</Text> */}
 					</View>
 				}
 				{eventObj.type_id === "Loyalty" &&
@@ -238,7 +250,7 @@ const styles = StyleSheet.create({
 		padding: 20,
 	},
 	actionButtons: {
-		marginTop: 5,
+		marginTop: 20,
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
@@ -247,16 +259,18 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		width: 300,
-        height: 60,
+        height: 50,
+		marginBottom: 5,
         backgroundColor: "#159E31",
         justifyContent:"center",
-        textAlign:"center"
+        textAlign:"center",
+		borderRadius: 5,
 	},
 	buttonText:{
         color:"white",
         textAlign:"center",
         fontWeight:500,
-        fontSize:18,
+        fontSize:15,
     },
 	eventInfoItem: {
 		flexDirection: "row",

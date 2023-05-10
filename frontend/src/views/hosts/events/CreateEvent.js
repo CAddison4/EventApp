@@ -333,10 +333,11 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		backgroundColor: "#159E31",
 		height: 50,
+		borderRadius: 5,
 	},
 	submitText: {
 		color: "white",
-		fontSize: 20,
+		fontSize:19,
 		padding: 10,
 	},
 	selectedDateTimeText: {

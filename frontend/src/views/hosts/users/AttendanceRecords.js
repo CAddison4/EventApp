@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		fontWeight: "bold",
 		textAlign: "center",
+		fontSize: 15,
 	},
 	value: {},
 
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		backgroundColor: "#607D8B",
 		padding: 10,
-		borderRadius: 10,
+		borderRadius: 5,
 		textAlign: "center",
 		color: "white",
 	},
