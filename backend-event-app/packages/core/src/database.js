@@ -149,7 +149,7 @@ export async function getCancelledEvents() {
 export async function getEventWithDate(date) {
   const res = await getPool().query(`
     SELECT * FROM events
-    WHERE DATE_TRUNC('day', event_date) = $1
+    WHERE DATE(event_date) = DATE($1)
     AND cancelled = false
     ORDER BY event_date`, [date]);
   return res.rows[0] || null;
