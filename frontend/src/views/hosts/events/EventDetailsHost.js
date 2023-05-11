@@ -69,7 +69,7 @@ export default function EventDetailsHost({ navigation, route }) {
 				// setUpdatedEventObj([data, waitlist]);
 			} catch (error) {
 				console.log("Error getting attendace details:", error);
-				setAttended("0");
+				//setAttended("0")
 			}
 
 			try {
@@ -81,7 +81,7 @@ export default function EventDetailsHost({ navigation, route }) {
 					)[0].count
 				);
 			} catch (error) {
-				setNoShow("0");
+				// setNoShow("0");
 				console.log("Error getting no-show details:", error);
 			}
 		};
