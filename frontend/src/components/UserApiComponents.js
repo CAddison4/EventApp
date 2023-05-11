@@ -142,12 +142,11 @@ export const getUserData = async (username, dispatch) => {
         message: "Failed to retrieve user data, Check your email and try again",
       };
     }
-    const getTokens = await amplifyRefreshTokens();
-    console.log(getTokens);
+    // console.log(getTokens);
     // const accessToken = await AsyncStorage.getItem("accessToken");
     const session = await Auth.currentSession();
     const accessToken = await session.getAccessToken().getJwtToken();
-    console.log("ACCESS TOKEN", accessToken);
+    // console.log("ACCESS TOKEN", accessToken);
 
     // console.log("USER JWT TOKEN", userJwtToken);
     const apiEndpoint = `${API_END_POINT}user/email/${username}`;
@@ -167,8 +166,8 @@ export const getUserData = async (username, dispatch) => {
     }
 
     const apiResponseJson = await apiResponse.json();
-    console.log("USER ID", apiResponseJson.user_id)
-    console.log("ACCESS TOKEN", accessToken)
+    // console.log("USER ID", apiResponseJson.user_id)
+    // console.log("ACCESS TOKEN", accessToken)
     const loyalty = await fetch(
       `${API_END_POINT}loyalty/${apiResponseJson.user_id}`,
       {
