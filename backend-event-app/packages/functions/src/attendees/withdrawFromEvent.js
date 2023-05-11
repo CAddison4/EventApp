@@ -10,10 +10,6 @@ export async function main(event) {
 
         const event_type = JSON.parse(event.body).event_type;
 
-        console.log("userId:", userId);
-        console.log("eventId:", eventId);
-        console.log("event_type:", event_type);
-
         if (!eventId || !userId || !event_type) {
             return {
                 statusCode: 400,
@@ -28,7 +24,6 @@ export async function main(event) {
         var attendee = null;
         if (event_type === "Guest List") {
             attendee = await editAttendeeStatus(eventId, userId, "Invited");
-            console.log("attendee:", attendee);
         }
         else {
         // Not guest list, delete attendee record
@@ -37,7 +32,6 @@ export async function main(event) {
 
         // subtract 1 to number of attendees for this event
         const capacity = await editEventCapacity(eventId, "subtract");
-        console.log("capacity:", capacity);
 
         // If event was full, it now has an open spot, so find first waitlist record
         // Delete waitlist record and create attendee record with status "Registered"
