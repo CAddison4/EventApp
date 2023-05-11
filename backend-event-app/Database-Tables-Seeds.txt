@@ -100,3 +100,6 @@ INSERT INTO attendancestatuses (attendance_status_id) VALUES ('Unknown');
 
 INSERT INTO attendeestatuses (attendee_status_id) VALUES ('Registered');
 INSERT INTO attendeestatuses (attendee_status_id) VALUES ('Invited');
+
+INSERT INTO attendeestatuses (attendee_status_id) VALUES ('Registered');
+INSERT INTO attendeestatuses (attendee_status_id) VALUES ('Invited');
