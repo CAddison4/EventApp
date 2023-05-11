@@ -51,6 +51,7 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 
 	//add hasRoom and capacityAvailable params to each eventObj
 	const updatedEventObjs = eventObjs.map((eventObj) => {
+		if (eventObj.length === 0) return eventObj;
 		return {
 			...eventObj,
 			hasRoom:
@@ -69,79 +70,83 @@ export default function EventsListHost({ eventObjs, handleRefresh }) {
 
 	return (
 		<View style={styles.container}>
-			{eventObjs[0].type === "upcoming" && (
-				<View
-					style={{
-						flexDirection: "row",
-						gap: 20,
-						justifyContent: "center",
-					}}>
-					{colors.map((color, index) => (
-						<TouchableOpacity
-							key={index}
-							onPress={() => handleSelectColor(color.color)}
+			{eventObjs.length > 0 && (
+				<>
+					{eventObjs[0].type === "upcoming" && (
+						<View
 							style={{
-								backgroundColor:
-									selectedColor === color.color ? "#4CAF50" : "#fff",
-								padding: 10,
-								marginVertical: 5,
-								borderRadius: 5,
-								borderWidth: 1,
-								borderColor: "#ccc",
-								width: 100,
-								alignItems: "center",
-								// zIndex: 2000,
+								flexDirection: "row",
+								gap: 20,
+								justifyContent: "center",
 							}}>
-							<Text
-								style={{
-									color: selectedColor === color.color ? "#fff" : "#000",
-								}}>
-								{`${color.color === "green" ? "Open" : "Full"}`}
-							</Text>
-						</TouchableOpacity>
-					))}
-				</View>
-			)}
-			<View
-				style={{
-					flexDirection: "row",
-					marginVertical: 10,
-					paddingHorizontal: 20,
-				}}>
-				<SearchBar
-					value={searchQuery}
-					onChangeText={handleSearchQuery}
-					onSubmitEditing={handleSearchSubmit}
-					// onPress={handleSearchSubmit}
-				/>
-				<ClearFilterButton onPress={handleClearFilter} icon={icon} />
-			</View>
-
-			<FlatList
-				data={updatedEventObjs.filter((eventObj) =>
-					eventObj.type === "upcoming"
-						? eventObj.color === selectedColor &&
-						  eventObj.event_name
-								.toLowerCase()
-								.includes(searchQuery.toLowerCase())
-						: eventObj.event_name
-								.toLowerCase()
-								.includes(searchQuery.toLowerCase())
-				)}
-				renderItem={({ item }) => (
-					<View>
-						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate("EventDetailsHost", {
-									upcomingEvent: item,
-									handleRefresh: handleRefresh,
-								})
-							}>
-							<EventListItem eventObj={item} />
-						</TouchableOpacity>
+							{colors.map((color, index) => (
+								<TouchableOpacity
+									key={index}
+									onPress={() => handleSelectColor(color.color)}
+									style={{
+										backgroundColor:
+											selectedColor === color.color ? "#4CAF50" : "#fff",
+										padding: 10,
+										marginVertical: 5,
+										borderRadius: 5,
+										borderWidth: 1,
+										borderColor: "#ccc",
+										width: 100,
+										alignItems: "center",
+										// zIndex: 2000,
+									}}>
+									<Text
+										style={{
+											color: selectedColor === color.color ? "#fff" : "#000",
+										}}>
+										{`${color.color === "green" ? "Open" : "Full"}`}
+									</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+					)}
+					<View
+						style={{
+							flexDirection: "row",
+							marginVertical: 10,
+							paddingHorizontal: 20,
+						}}>
+						<SearchBar
+							value={searchQuery}
+							onChangeText={handleSearchQuery}
+							onSubmitEditing={handleSearchSubmit}
+							// onPress={handleSearchSubmit}
+						/>
+						<ClearFilterButton onPress={handleClearFilter} icon={icon} />
 					</View>
-				)}
-			/>
+
+					<FlatList
+						data={updatedEventObjs.filter((eventObj) =>
+							eventObj.type === "upcoming"
+								? eventObj.color === selectedColor &&
+								  eventObj.event_name
+										.toLowerCase()
+										.includes(searchQuery.toLowerCase())
+								: eventObj.event_name
+										.toLowerCase()
+										.includes(searchQuery.toLowerCase())
+						)}
+						renderItem={({ item }) => (
+							<View>
+								<TouchableOpacity
+									onPress={() =>
+										navigation.navigate("EventDetailsHost", {
+											upcomingEvent: item,
+											handleRefresh: handleRefresh,
+										})
+									}>
+									<EventListItem eventObj={item} />
+								</TouchableOpacity>
+							</View>
+						)}
+					/>
+				</>
+			)}
 		</View>
 	);
 }
