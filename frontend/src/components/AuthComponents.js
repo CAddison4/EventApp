@@ -11,6 +11,7 @@ import {
 } from "./UserApiComponents";
 
 import { Hub } from "aws-amplify";
+
 import jwt_decode from "jwt-decode";
 
 export const handleSignUp = async (
@@ -32,21 +33,6 @@ export const handleSignUp = async (
     };
   }
   try {
-    const userJwtToken = await generateToken();
-    const response = await fetch(`${API_END_POINT}users/email/${email}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userJwtToken.token}`,
-      },
-    });
-  } catch (error) {
-    return {
-      success: false,
-      message: "Error retrieving tokens",
-    };
-  }
-  try {
     await Auth.signUp({
       username: email,
       password: password,
@@ -54,6 +40,7 @@ export const handleSignUp = async (
         email: email,
       },
     });
+
     const cockroachEmail = email.toLowerCase();
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();

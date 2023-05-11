@@ -70,6 +70,10 @@ const SignInForm = ({ route }) => {
     try {
       const attendeeUserName = "scott.c19@live.com";
       const attendeePassword = "td3j5FnhiLHRa$KA";
+      Toast.show('Signing In...', {
+        duration: Toast.durations.SHORT,
+        position: -200,
+      });
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);
@@ -80,6 +84,10 @@ const SignInForm = ({ route }) => {
     try {
       const hostUserName = "sholmes47@my.bcit.ca";
       const hostPassword = "P@ssw0rd!";
+      Toast.show('Signing In...', {
+        duration: Toast.durations.SHORT,
+        position: -200,
+      });
       await handleSignIn(hostUserName, hostPassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);

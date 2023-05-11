@@ -48,10 +48,14 @@ const SignUpForm = ({}) => {
       setFormMessage("Last name should only contain alphabetic characters");
       return;
     }
-    Toast.show("Signing Up...", {
-      duration: Toast.durations.SHORT,
-      position: -200,
-    });
+    if(Platform.OS !== 'web')
+    {
+      Toast.show("Signing Up...", {
+        duration: Toast.durations.SHORT,
+        position: -200,
+      });
+    }
+
 
     const { success, message } = await handleSignUp(
       email,
@@ -60,7 +64,7 @@ const SignUpForm = ({}) => {
       firstName,
       lastName
     );
-
+      console.log("success", success, message)
     if (success === true) {
       // Handle successful sign-up here
       navigation.navigate("ConfirmationForm", {
