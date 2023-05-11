@@ -158,18 +158,9 @@ export default function Users({ navigation }) {
 	}, []);
 
 	useEffect(() => {
-		// const filterUsers = () => {
-		// 	if (selectedMembershipStatus === "All") {
-		// 		setFilteredUsers(users);
-		// 	} else {
-		// 		setFilteredUsers(
-		// 			users.filter(
-		// 				(user) => user.membership_status_id === selectedMembershipStatus
-		// 			)
-		// 		);
-		// 	}
-		// };
-		filterUsers();
+		if (users && users.length > 0) {
+			filterUsers();
+		}
 	}, [selectedMembershipStatus, users]);
 
 	useEffect(() => {
@@ -180,8 +171,9 @@ export default function Users({ navigation }) {
 	}, [updateFilter]);
 
 	useEffect(() => {
-		console.log("searchQuery", searchQuery);
-		filterUsers();
+		if (users && users.length > 0) {
+			filterUsers();
+		}
 	}, [searchQuery, selectedRole]);
 
 	return (
@@ -261,24 +253,32 @@ export default function Users({ navigation }) {
 							/>
 						</View>
 					</View>
-					<FlatList
-						style={styles.list}
-						data={filteredUsers}
-						keyExtractor={(item) => `${item.user_id}`}
-						renderItem={({ item }) => (
-							<View>
-								<TouchableOpacity
-									onPress={() =>
-										navigation.navigate("UserDetails", {
-											user: item,
-											handleRefresh: handlePageRefresh,
-										})
-									}>
-									<UsersListItem userObj={item} />
-								</TouchableOpacity>
-							</View>
-						)}
-					/>
+					{filteredUsers && filteredUsers.length > 0 ? (
+						<>
+							<FlatList
+								style={styles.list}
+								data={filteredUsers}
+								keyExtractor={(item) => `${item.user_id}`}
+								renderItem={({ item }) => (
+									<View>
+										<TouchableOpacity
+											onPress={() =>
+												navigation.navigate("UserDetails", {
+													user: item,
+													handleRefresh: handlePageRefresh,
+												})
+											}>
+											<UsersListItem userObj={item} />
+										</TouchableOpacity>
+									</View>
+								)}
+							/>
+						</>
+					) : (
+						<View style={{ alignItems: "center", justifyContent: "center" }}>
+							<Text style={styles.title}>No users found</Text>
+						</View>
+					)}
 				</>
 			) : (
 				<View style={styles.container}>
@@ -301,8 +301,7 @@ const styles = StyleSheet.create({
 		paddingRight: 5,
 		backgroundColor: "#fff",
 		width: "100%",
-		maxWidth: 400,
-		justifyContent: "center",
+		// maxWidth: 400,
 		paddingTop: 20,
 	},
 	header: {
