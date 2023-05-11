@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
 		paddingRight: 5,
 		backgroundColor: "#fff",
 		width: "100%",
-		// maxWidth: 400,
+//		maxWidth: 400,
 		justifyContent: "center",
 		paddingTop: 20,
 	},

@@ -72,7 +72,7 @@ export default function EventsList({ route }) {
 					/> 
 				</View>
 			)}
-			{filteredEvents && (
+			{filteredEvents && filteredEvents.length > 0 && (
 				<FlatList
 					style={styles.list}
 					data={filteredEvents}
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		width: "100%",
-    	maxWidth: 400,
 		backgroundColor: "#fff",
 		paddingLeft: 5,
 		paddingRight: 5,
