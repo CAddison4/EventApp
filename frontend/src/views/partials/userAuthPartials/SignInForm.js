@@ -68,8 +68,8 @@ const SignInForm = ({ route }) => {
 
   const handleAttendeeSignIn = async () => {
     try {
-      const attendeeUserName = "shmglade@gmail.com";
-      const attendeePassword = "P@ssw0rd!";
+      const attendeeUserName = "scott.c19@live.com";
+      const attendeePassword = "td3j5FnhiLHRa$KA";
       await handleSignIn(attendeeUserName, attendeePassword, dispatch);
     } catch (error) {
       console.log("Error signing in:", error);

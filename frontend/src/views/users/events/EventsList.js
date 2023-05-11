@@ -72,28 +72,31 @@ export default function EventsList({ route }) {
 					/> 
 				</View>
 			)}
-			<FlatList style={styles.list}
-				data={filteredEvents}
-				keyExtractor={(item) => `${item.event_id}${item.event_date}`}
-				renderItem={({ item }) => (
-					<View>
-						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate("EventDetails", {
-									eventObj: item,
-									userId: user_id,
-									navigation: navigation,
-									handleRefresh: handleRefresh,
-									type: type,
-									handleSetDisplayTab: handleSetDisplayTab
-								})
-							}>
-							<EventListItem
-								eventObj={item}/>
-						</TouchableOpacity>						
-					</View>
-				)}
-			/>
+			{filteredEvents && (
+				<FlatList
+					style={styles.list}
+					data={filteredEvents}
+					keyExtractor={(item) => `${item.event_id}${item.event_date}`}
+					renderItem={({ item }) => (
+						<View>
+							<TouchableOpacity
+								onPress={() =>
+									navigation.navigate("EventDetails", {
+										eventObj: item,
+										userId: user_id,
+										navigation: navigation,
+										handleRefresh: handleRefresh,
+										type: type,
+										handleSetDisplayTab: handleSetDisplayTab
+									})
+								}>
+								<EventListItem
+									eventObj={item}/>
+							</TouchableOpacity>						
+						</View>
+					)}
+				/>
+			)}
 		</View>
 	);
 }
