@@ -74,16 +74,25 @@ export default function Events({ navigation }) {
 
 		const loyaltyCount = await getLoyaltyCount(user_id);
 		
-		const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
-		const data = response.data;
-		
-		const eventData = data.filter(eventObj => new Date(eventObj.event_date) > today);
-		await Promise.all(
-			eventData.map(async (eventObj) => {
-				await determineEventFlags(eventObj, loyaltyCount);
-			})
-		);
-		setEvents(eventData);
+    try {
+      const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
+      const data = response.data;
+
+      if (!data) {
+        setEvents([]);
+      }
+      else {
+        const eventData = data.filter(eventObj => new Date(eventObj.event_date) > today);
+      await Promise.all(
+        eventData.map(async (eventObj) => {
+          await determineEventFlags(eventObj, loyaltyCount);
+        })
+      );
+      setEvents(eventData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 	};
 
 	const getLoyaltyCount = async (userid) => {

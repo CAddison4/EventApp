@@ -14,6 +14,7 @@ import {
 
 export default function Attendancce({ navigation, route }) {
 	const eventObj = route.params.eventObj;
+	const handleRefreshDetails = route.params.handleRefreshDetails;
 	const today = new Date().toISOString().slice(0, 10);
 	const [attendees, setAttendees] = useState([]);
 	const [editAttendance, setEditAttendance] = useState({});
@@ -88,6 +89,7 @@ export default function Attendancce({ navigation, route }) {
 					});
 				}, 500);
 			}
+			handleRefreshDetails();
 		} catch (error) {
 			console.log(error);
 		}

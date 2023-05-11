@@ -72,28 +72,31 @@ export default function EventsList({ route }) {
 					/> 
 				</View>
 			)}
-			<FlatList style={styles.list}
-				data={filteredEvents}
-				keyExtractor={(item) => `${item.event_id}${item.event_date}`}
-				renderItem={({ item }) => (
-					<View>
-						<TouchableOpacity
-							onPress={() =>
-								navigation.navigate("EventDetails", {
-									eventObj: item,
-									userId: user_id,
-									navigation: navigation,
-									handleRefresh: handleRefresh,
-									type: type,
-									handleSetDisplayTab: handleSetDisplayTab
-								})
-							}>
-							<EventListItem
-								eventObj={item}/>
-						</TouchableOpacity>						
-					</View>
-				)}
-			/>
+			{filteredEvents && filteredEvents.length > 0 && (
+				<FlatList
+					style={styles.list}
+					data={filteredEvents}
+					keyExtractor={(item) => `${item.event_id}${item.event_date}`}
+					renderItem={({ item }) => (
+						<View>
+							<TouchableOpacity
+								onPress={() =>
+									navigation.navigate("EventDetails", {
+										eventObj: item,
+										userId: user_id,
+										navigation: navigation,
+										handleRefresh: handleRefresh,
+										type: type,
+										handleSetDisplayTab: handleSetDisplayTab
+									})
+								}>
+								<EventListItem
+									eventObj={item}/>
+							</TouchableOpacity>						
+						</View>
+					)}
+				/>
+			)}
 		</View>
 	);
 }
@@ -101,7 +104,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		width: "100%",
-    	maxWidth: 400,
 		backgroundColor: "#fff",
 		paddingLeft: 5,
 		paddingRight: 5,

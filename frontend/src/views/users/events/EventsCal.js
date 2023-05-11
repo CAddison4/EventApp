@@ -29,6 +29,9 @@ export default function EventsCal({ navigation, route }) {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		if(!eventObjs) {
+			return;
+		}
 		setEvents(eventObjs);
 	}, []);
 
@@ -98,7 +101,15 @@ export default function EventsCal({ navigation, route }) {
 			{ cancelable: false }
 		);
 	};
-
+	if(!eventObjs) {
+		return(
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}>
+					There is no events to display
+				</Text>
+			</View>
+		)
+	}
 	return (
 		<>
 			<View style={styles.titleContainer}>

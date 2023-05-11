@@ -19,6 +19,7 @@ export default function EventsCalHost({ route, navigation }) {
 		setSelected(year + "-01-01");
 	};
 
+	//first time load, set selected date to the first day of the year
 	useEffect(() => {
 		setSelected(selectedYear + "-01-01");
 	}, [selectedYear]);
@@ -32,6 +33,9 @@ export default function EventsCalHost({ route, navigation }) {
 		// });
 
 		// console.log("filteredEvents",filteredEvents)
+		if(!eventObjs) {
+			return;
+		}
 		const eventDatesArray = eventObjs.map((event) => {
 			// check the date is valid
 			if (event.event_date && Date.parse(event.event_date)) {
@@ -93,6 +97,17 @@ export default function EventsCalHost({ route, navigation }) {
 			});
 		}
 	};
+
+	if(!eventObjs) {
+		return(
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}>
+					There is no events to display
+				</Text>
+			</View>
+		)
+	}
+
 	return (
 		<>
 			<View style={styles.titleContainer}>
@@ -138,11 +153,6 @@ const styles = StyleSheet.create({
 		height: "100%", // or any other desired height
 		zIndex: 1,
 	},
-	// calendarContainer: {
-	// 	marginTop: 10,
-	// 	width: "100%",
-	// 	height: "100%",
-	// },
 	titleContainer: {
 		flexDirection: "row",
 		alignItems: "center",

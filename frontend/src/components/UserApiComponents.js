@@ -125,6 +125,7 @@ export const getCognitoTokens = async () => {
       message: "Successfully stored tokens",
     };
   } catch (error) {
+    console.log(error)
     return {
       success: false,
       message: "Error retrieving tokens",
@@ -141,7 +142,10 @@ export const getUserData = async (username, dispatch) => {
         message: "Failed to retrieve user data, Check your email and try again",
       };
     }
-    const accessToken = await AsyncStorage.getItem("accessToken");
+    // console.log(getTokens);
+    // const accessToken = await AsyncStorage.getItem("accessToken");
+    const session = await Auth.currentSession();
+    const accessToken = await session.getAccessToken().getJwtToken();
     // console.log("ACCESS TOKEN", accessToken);
 
     // console.log("USER JWT TOKEN", userJwtToken);
@@ -162,7 +166,8 @@ export const getUserData = async (username, dispatch) => {
     }
 
     const apiResponseJson = await apiResponse.json();
-
+    // console.log("USER ID", apiResponseJson.user_id)
+    // console.log("ACCESS TOKEN", accessToken)
     const loyalty = await fetch(
       `${API_END_POINT}loyalty/${apiResponseJson.user_id}`,
       {
@@ -173,8 +178,6 @@ export const getUserData = async (username, dispatch) => {
         },
       }
     );
-    
-    
     
     const loyaltyJson = await loyalty.json();
 
@@ -190,7 +193,7 @@ export const getUserData = async (username, dispatch) => {
 
     const tokens = await getCognitoTokens();
     // console.log("TOKENS", tokens);
-
+    await amplifyRefreshTokens();
     return {
       success: true,
       message: "Successfully signed in",
