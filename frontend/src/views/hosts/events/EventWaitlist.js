@@ -27,10 +27,11 @@ export default function EventWaitlist({ navigation, route }) {
 				`${apiURL}waitlist/users/${eventObj.event_id}`
 			);
 			const data = response.data;
+			console.log("waitlist", data);
 			setWaitlist(
 				data.sort((a, b) => {
-					const dateA = new Date(a.date_signed_up);
-					const dateB = new Date(b.date_signed_up);
+					const dateA = new Date(a.waitlist_date);
+					const dateB = new Date(b.waitlist_date);
 
 					if (dateA.getTime() < dateB.getTime()) {
 						return -1;
@@ -74,6 +75,7 @@ export default function EventWaitlist({ navigation, route }) {
 					renderItem={({ item }) => (
 						<View>
 							<UsersListItem userObj={item} showArrow={false} />
+							<Text>Date signed up: {item.waitlist_date}</Text>
 						</View>
 					)}
 				/>

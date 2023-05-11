@@ -277,9 +277,14 @@ export default function EventDetailsHost({ navigation, route }) {
 									<ActivityIndicator size="small" color="#0000ff" />
 								) : (
 									<Text style={styles.value}>
-										{eventObj.number_of_attendees !== null
+										{eventObj.number_of_attendees !== undefined
 											? eventObj.number_of_attendees
 											: 0}
+
+										{console.log(
+											"eventAttendees: ",
+											typeof eventObj.number_of_attendees
+										)}
 									</Text>
 								)}
 							</View>
