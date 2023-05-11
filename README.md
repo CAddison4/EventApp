@@ -1,5 +1,13 @@
 # BCIT 2022-2023 Agilitek 3 ISSP
 
+- [Getting Started](#getting-started)
+- [Set up CockroachDB](#set-up-cockroachdb)
+- [Set up AWS](#set-up-aws)
+- [Set up the Front End](#set-up-the-front-end)
+- [Set up the Back End](#set-up-the-back-end)
+- [Set up the Authorization](#set-up-the-authorization)
+- [Create a Host Account](#create-a-host-account)
+
 ## Getting Started
 
 Before getting started, make sure you have the following dependencies installed:
