@@ -17,6 +17,7 @@ import { formatLongDateShortDay, formatTime } from "../../../utilities/dates";
 export default function EventDetailsHost({ navigation, route }) {
 	const eventObj = route.params.upcomingEvent;
 	const eventId = eventObj.event_id;
+	const [updatedEventObj, setUpdatedEventObj] = useState(eventObj);
 	const handleRefresh = route.params.handleRefresh;
 	//const eventView = route.params.eventView;
 	const [isEdit, setIsEdit] = useState(false);
@@ -30,6 +31,7 @@ export default function EventDetailsHost({ navigation, route }) {
 	const [attended, setAttended] = useState("0");
 	const [noShow, setNoShow] = useState("0");
 	const [isLoading, setIsLoading] = useState(true);
+	const [refreshDetails, setRefreshDetails] = useState(false);
 
 	const formattedStartDate = new Date(eventObj.event_start);
 	const currentDate = new Date();
@@ -42,6 +44,48 @@ export default function EventDetailsHost({ navigation, route }) {
 		} catch (error) {
 			console.error("Error getting attendance records:", error);
 		}
+	};
+
+	const handleRefreshDetails = () => {
+		setRefreshDetails(true);
+		setIsLoading(true);
+		const apiURL = API_END_POINT;
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(`${apiURL}event/${eventId}`);
+				const data = response.data;
+				setAttended(
+					data.filter(
+						(item) =>
+							item.attendance_status_id === "Attended" &&
+							item.event_id === eventId
+					)[0].count
+				);
+
+				// const waitlistResponse = await axios.get(
+				// 	`${apiURL}waitlist/users/${eventId}`
+				// );
+				// const waitlist = waitlistResponse.data;
+				// setUpdatedEventObj([data, waitlist]);
+			} catch (error) {
+				console.log("Error getting attendace details:", error);
+				setAttended("0");
+			}
+
+			try {
+				setNoShow(
+					data.filter(
+						(item) =>
+							item.attendance_status_id === "No Show" &&
+							item.event_id === eventId
+					)[0].count
+				);
+			} catch (error) {
+				setNoShow("0");
+				console.log("Error getting no-show details:", error);
+			}
+		};
+		fetchData();
 	};
 
 	const setAttendanceStatusData = async () => {
@@ -79,7 +123,17 @@ export default function EventDetailsHost({ navigation, route }) {
 			setIsLoading(false);
 		};
 		fetchData();
-	}, []);
+		console.log("eventObj", eventObj);
+	}, [eventObj, refreshDetails]);
+
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		await getAttendanceStatusData();
+	// 		setIsLoading(false);
+	// 	};
+	// 	fetchData();
+	// 	console.log("event", eventObj);
+	// }, [refreshDetails]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -223,7 +277,9 @@ export default function EventDetailsHost({ navigation, route }) {
 									<ActivityIndicator size="small" color="#0000ff" />
 								) : (
 									<Text style={styles.value}>
-										{eventObj.number_of_attendees}
+										{eventObj.number_of_attendees !== null
+											? eventObj.number_of_attendees
+											: 0}
 									</Text>
 								)}
 							</View>
@@ -287,7 +343,10 @@ export default function EventDetailsHost({ navigation, route }) {
 								<View style={styles.buttonRow}>
 									<TouchableOpacity
 										onPress={() => {
-											navigation.navigate("Attendance", { eventObj: eventObj });
+											navigation.navigate("Attendance", {
+												eventObj: eventObj,
+												handleRefreshDetails: handleRefreshDetails,
+											});
 										}}
 										style={styles.button}>
 										<Text style={styles.buttonText}>Attendance</Text>
