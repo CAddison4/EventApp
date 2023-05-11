@@ -268,6 +268,9 @@ export async function editAttendee(eventId, userId, attendanceStatus) {
 
 // Update attendee status for a specific event and user
 export async function editAttendeeStatus(eventId, userId, attendeeStatusId) {
+  console.log("userId:", userId);
+  console.log("eventId:", eventId);
+  console.log("attendeeStatusId:", attendeeStatusId);
   const res = await getPool().query(`
   UPDATE eventattendees SET (attendee_status_id) = ($3)
   WHERE event_id = $1 AND user_id = $2
