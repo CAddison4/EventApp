@@ -11,7 +11,10 @@ export default function HostMenu({ navigation }) {
 	const [errors, setErrors] = useState([]);
 
 	useEffect(() => {
-		// get the event for today
+		/**
+		 * Fetches the events from the API for a specific date
+		 * @returns {Promise} A Promise that resolves to the event object
+		 * */
 		const getEvents = async () => {
 			try {
 				const response = await axios.get(
@@ -30,105 +33,63 @@ export default function HostMenu({ navigation }) {
 		};
 		getEvents();
 	}, []);
-  useEffect(() => {
-    // get the event for today
-    const getEvents = async () => {
-      try {
-        console.log("API_END_POINT", formattedDate)
-        const response = await axios.get(
-          `${API_END_POINT}event/date/${formattedDate}`
-        );
-        console.log("response: " + response.status);
-        if (response.status === 200) {
-          const eventExists = response.data.eventExists;
-          if (eventExists) {
-            setEventObj(response.data.eventExists);
-          }
-        }
-      } catch (error) {
-        if (error.response && error.response.statusCode === 500) {
-        }
-      }
-    };
-    getEvents();
-  }, []);
 
-  // const testEventObj = {
-  //   cancelled: false,
-  //   capacity: "44",
-  //   event_date: "2023-05-18T07:00:00.000Z",
-  //   event_end: "2023-05-20T06:09:06.838Z",
-  //   event_id: "2d398f01-bde9-4613-bba0-640ae19bf604",
-  //   event_location: "Toronto",
-  //   event_name: "May Bronze Event",
-  //   event_start: "2023-05-19T06:09:06.838Z",
-  //   loyalty_max: "0",
-  //   reason: "",
-  //   type_id: "Bronze Tier",
-  // };
-
-  return (
-    <View style={styles.buttonsContainer}>
-      <View style={styles.buttonWrapper}>
-        {eventObj ? (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Attendance", { eventObj: eventObj });
-            }}
-          >
-            <View style={styles.card}>
-              <Ionicons name="checkmark-circle" size={40} color="black" />
-              <Text style={styles.buttonText}>Todays Attendance</Text>
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.card}>
-            <Text style={styles.buttonText}>No event today</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.listsWrapper}>
-        <View style={styles.buttonWrapper}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("EventsHost", );
-            }}
-          >
-            <View style={styles.listCard}>
-              <Ionicons name="ios-calendar" size={40} color="black" />
-              <Text style={styles.listText}>Events</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.buttonWrapper}>
-
-		  <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("CreateEvent");
-          }}
-        >	
-		<View style={styles.listCard}>
-		<Ionicons name="add-circle-outline" size={40} color="black" />
-          <Text style={styles.listText}>Create Event</Text>
-		  </View>
-        </TouchableOpacity>
-        </View>
-		
-      </View>
-      <View style={styles.usersWrapper}>
-	  <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Users");
-            }}
-          >
-            <View style={styles.card}>
-              <Ionicons name="ios-people" size={40} color="black" />
-              <Text style={styles.buttonText}>Users</Text>
-            </View>
-          </TouchableOpacity>
-      </View>
-    </View>
-  );
+	return (
+		<View style={styles.buttonsContainer}>
+			<View style={styles.buttonWrapper}>
+				{eventObj ? (
+					<TouchableOpacity
+						onPress={() => {
+							navigation.navigate("Attendance", { eventObj: eventObj });
+						}}>
+						<View style={styles.card}>
+							<Ionicons name="checkmark-circle" size={40} color="black" />
+							<Text style={styles.buttonText}>Todays Attendance</Text>
+						</View>
+					</TouchableOpacity>
+				) : (
+					<View style={styles.card}>
+						<Text style={styles.buttonText}>No event today</Text>
+					</View>
+				)}
+			</View>
+			<View style={styles.listsWrapper}>
+				<View style={styles.buttonWrapper}>
+					<TouchableOpacity
+						onPress={() => {
+							navigation.navigate("EventsHost");
+						}}>
+						<View style={styles.listCard}>
+							<Ionicons name="ios-calendar" size={40} color="black" />
+							<Text style={styles.listText}>Events</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+				<View style={styles.buttonWrapper}>
+					<TouchableOpacity
+						onPress={() => {
+							navigation.navigate("CreateEvent");
+						}}>
+						<View style={styles.listCard}>
+							<Ionicons name="add-circle-outline" size={40} color="black" />
+							<Text style={styles.listText}>Create Event</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+			</View>
+			<View style={styles.usersWrapper}>
+				<TouchableOpacity
+					onPress={() => {
+						navigation.navigate("Users");
+					}}>
+					<View style={styles.card}>
+						<Ionicons name="ios-people" size={40} color="black" />
+						<Text style={styles.buttonText}>Users</Text>
+					</View>
+				</TouchableOpacity>
+			</View>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({

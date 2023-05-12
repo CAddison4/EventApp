@@ -4,15 +4,20 @@ import { API_END_POINT } from "@env";
 import {
 	View,
 	Text,
-	Button,
 	FlatList,
 	StyleSheet,
 	TouchableOpacity,
-	ScrollView,
 	ActivityIndicator,
 } from "react-native";
 
-export default function Attendancce({ navigation, route }) {
+/**
+ * Renders a screen that displays the attendees for an event, allows the host to edit their attendance, and submit the changes.
+ * @param {object} navigation - The navigation object passed by the React Navigation library.
+ * @param {object} route - The route object passed by the React Navigation library, containing the event object
+ * and a function to refresh the event details page.
+ * @returns {JSX.Element} - A JSX.Element representing the Attendance screen.
+ */
+export default function Attendance({ navigation, route }) {
 	const eventObj = route.params.eventObj;
 	const handleRefreshDetails = route.params.handleRefreshDetails;
 	const today = new Date().toISOString().slice(0, 10);
@@ -23,19 +28,23 @@ export default function Attendancce({ navigation, route }) {
 	const noShowColor = "#E31E1E";
 
 	useEffect(() => {
-		// get event attendees
+		/**
+		 * Retrieves the attendees for the current event.
+		 * It sends a request to the API to fetch the attendee data for the event.
+		 * The attendee data is filtered to include only registered attendees.
+		 * If there are registered attendees, the editAttendance object is updated with user IDs as keys and attendance statuses as values.
+		 * Finally, the attendees state is updated with the registered attendees, and the loading state is set to false.
+		 * @returns {void}
+		 */
 		const getAttendees = async () => {
 			const response = await axios.get(
 				`${API_END_POINT}attendee/users/${eventObj.event_id}`
 			);
 			const data = response.data;
-			// filter it to only registered attendees
 			const registeredAttendees = data.filter(
 				(attendee) => attendee.attendee_status_id == "Registered"
 			);
 
-			// if there is registered attendees, set editAttendance object
-			// to have the user_id as key and attendance status as value
 			if (registeredAttendees.length > 0) {
 				const editAttendanceObj = {};
 				registeredAttendees.map((attendee) => {
@@ -49,7 +58,11 @@ export default function Attendancce({ navigation, route }) {
 		getAttendees();
 	}, []);
 
-	// toggle the editAttendance array
+	/**
+	 * 	Handle attendance button click event, which toggles attendance status for the specified user
+	 * @param {string} userId - The user id of the attendee whose attendance status needs to be updated
+	 * @returns {void}
+	 * */
 	const handleAttendanceButton = (userId) => {
 		setEditAttendance((editAttendance) => ({
 			...editAttendance,
@@ -57,6 +70,13 @@ export default function Attendancce({ navigation, route }) {
 		}));
 	};
 
+	/**
+	 * Handles the submission of edited attendance data for an event.
+	 * If there are changes to the attendance status for any of the attendees, updates the database with a PUT request.
+	 * Then fetches the updated attendee list and navigates back to the event details page with the updated data.
+	 * Also triggers a refresh of the event details page and sets the loading state to true.
+	 * @returns {Promise<void>} - A Promise that resolves when the function finishes executing.
+	 */
 	const handleSubmit = async () => {
 		try {
 			// check if there is value in the editattendance array
@@ -73,14 +93,13 @@ export default function Attendancce({ navigation, route }) {
 					);
 				});
 
-				// fetch the updated attendees list
 				setTimeout(async () => {
 					setLoading(true);
 					const response = await axios.get(
 						`${API_END_POINT}attendee/users/${eventObj.event_id}`
 					);
 					const attendees = response.data;
-					// add it to the upcomming event object and push it back to detail
+
 					navigation.navigate("EventDetailsHost", {
 						upcomingEvent: {
 							...eventObj,

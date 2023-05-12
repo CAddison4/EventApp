@@ -6,6 +6,11 @@ import MainProfile from "../views/users/profile/MainProfile";
 
 import * as React from "react";
 
+/**
+ * A component that renders a navigation button to the user's profile page.
+ * The button shows an icon of a person and when pressed, it navigates the user to their profile page.
+ * @returns {JSX.Element} The JSX representation of the ProfileNavButton component.
+ */
 export default function ProfileNavButton() {
 	const navigation = useNavigation();
 	return (

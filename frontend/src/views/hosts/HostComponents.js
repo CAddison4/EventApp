@@ -1,6 +1,11 @@
 import axios from "axios";
 import { API_END_POINT } from "@env";
 
+/**
+ * Fetches all events and their respective attendees and waitlist from the API.
+ * @returns {Promise<Array>} An array of event objects, each containing information about the event,
+ * its attendees, and whether it's upcoming or past.
+ */
 export const getEventsWithAttendees = async () => {
 	const apiURL = API_END_POINT;
 

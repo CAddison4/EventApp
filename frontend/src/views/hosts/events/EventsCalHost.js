@@ -5,6 +5,11 @@ import { CalendarList } from "react-native-calendars";
 import YearPicker from "../../../components/YearPicker";
 import Calendar from "../../../components/Calendar";
 
+/**
+ * Component for displaying calendar of events for host
+ * @component
+ * @returns view of calendar of events for host
+ */
 export default function EventsCalHost({ route, navigation }) {
 	const { eventObjs, handleRefresh } = route.params;
 	const [markedDates, setMarkedDates] = useState({});
@@ -26,14 +31,7 @@ export default function EventsCalHost({ route, navigation }) {
 
 	// create marked array
 	useEffect(() => {
-		// if you want to switch the array to have only the selected year, use this
-		// const filteredEvents = eventObjs.filter((event) => {
-		// 	const eventDate = new Date(event.event_date);
-		// 	return eventDate.getFullYear() === selectedYear;
-		// });
-
-		// console.log("filteredEvents",filteredEvents)
-		if(!eventObjs) {
+		if (!eventObjs) {
 			return;
 		}
 		const eventDatesArray = eventObjs.map((event) => {
@@ -68,6 +66,11 @@ export default function EventsCalHost({ route, navigation }) {
 		setLoading(false);
 	}, [eventObjs]);
 
+	/**
+	 * Displays an alert with descriptions of the different colors used in the event calendar.
+	 * @function infoPressed
+	 * @description Shows an alert box containing information about the color codes used in the event calendar.
+	 */
 	const infoPressed = () => {
 		// show alert that has descriptions of the different colors
 		Alert.alert(
@@ -83,8 +86,12 @@ export default function EventsCalHost({ route, navigation }) {
 		);
 	};
 
+	/**
+	 * Handle the selection of a specific day on the event calendar.
+	 * If there is an event scheduled for the selected day, navigate to the EventDetailsHost screen with the details of the event.
+	 * @param {Date} day - The selected day on the calendar.
+	 * */
 	const handleDateSelect = (day) => {
-		// jump to the event details page
 		const selectedDate = day;
 		const { eventId } = markedDates[day];
 		if (eventId) {
@@ -98,14 +105,12 @@ export default function EventsCalHost({ route, navigation }) {
 		}
 	};
 
-	if(!eventObjs) {
-		return(
+	if (!eventObjs) {
+		return (
 			<View style={styles.titleContainer}>
-				<Text style={styles.title}>
-					There is no events to display
-				</Text>
+				<Text style={styles.title}>There is no events to display</Text>
 			</View>
-		)
+		);
 	}
 
 	return (

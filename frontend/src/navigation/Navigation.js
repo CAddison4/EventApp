@@ -5,6 +5,7 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
+
 import jwt_decode from "jwt-decode";
 // View imports
 import MainProfile from "../../src/views/users/profile/MainProfile";
@@ -14,6 +15,7 @@ import AttendeeQRCode from "../../src/views/users/events/AttendeeQRCode";
 import EventsList from "../../src/views/users/events/EventsList";
 import EventsCal from "../../src/views/users/events/EventsCal";
 
+
 import Events from "../../src/views/users/events/Events";
 import PendingMembership from "../views/users/profile/PendingMembership";
 import RejectedMembership from "../views/users/profile/RejectedMembership";
@@ -22,6 +24,7 @@ import HostMenu from "../../src/views/hosts/events/HostMenu";
 import CreateEvent from "../../src/views/hosts/events/CreateEvent";
 import EventsHost from "../../src/views/hosts/events/EventsHost";
 import EventDetailsHost from "../../src/views/hosts/events/EventDetailsHost";
+
 
 import EventWaitlist from "../views/hosts/events/EventWaitlist";
 import Attendance from "../views/hosts/events/Attendance";
@@ -54,6 +57,12 @@ import { handleAutoSignIn } from "../components/AuthComponents";
 // Navigation stack
 const Stack = createNativeStackNavigator();
 
+/**
+ * Navigation component renders the navigation stack and listens to auth events using Amplify Hub.
+ * When user is signed in, it sets `authenticated` state to true and adds Bearer token to axios headers.
+ * When user signs out, it clears the async storage and sets `authenticated` state to false.
+ * @returns {JSX.Element} - Rendered component tree
+ */
 /**
  * Navigation component renders the navigation stack and listens to auth events using Amplify Hub.
  * When user is signed in, it sets `authenticated` state to true and adds Bearer token to axios headers.
@@ -98,6 +107,13 @@ const Navigation = () => {
 				}
 			}
 
+			return config;
+		},
+		(error) => {
+			// console.log("ERROR", error);
+			return Promise.reject(error);
+		}
+	);
 			return config;
 		},
 		(error) => {

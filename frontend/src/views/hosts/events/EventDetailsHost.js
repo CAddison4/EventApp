@@ -11,7 +11,6 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-// import AttendeeList from "./EventWaitist";
 import { formatLongDateShortDay, formatTime } from "../../../utilities/dates";
 
 export default function EventDetailsHost({ navigation, route }) {
@@ -19,14 +18,12 @@ export default function EventDetailsHost({ navigation, route }) {
 	const eventId = eventObj.event_id;
 	const [updatedEventObj, setUpdatedEventObj] = useState(eventObj);
 	const handleRefresh = route.params.handleRefresh;
-	//const eventView = route.params.eventView;
 	const [isEdit, setIsEdit] = useState(false);
 	const [editedName, setEditedName] = useState(eventObj.event_name);
 	const [editedStartDate, setEditedStartDate] = useState(eventObj.event_start);
 	const [editedEndDate, setEditedEndDate] = useState(eventObj.event_end);
 	const [editedLocation, setEditedLocation] = useState(eventObj.event_location);
 	const [editedCapacity, setEditedCapacity] = useState(eventObj.capacity);
-	// const [attendees, setAttendees] = useState([]);
 	const [response, setResponse] = useState("");
 	const [attended, setAttended] = useState("0");
 	const [noShow, setNoShow] = useState("0");
@@ -46,6 +43,14 @@ export default function EventDetailsHost({ navigation, route }) {
 		}
 	};
 
+	/**
+	 * Handles refreshing the attendance details for an event. Sets the state of
+	 * 'refreshDetails' to true and 'isLoading' to true, then fetches the attendance
+	 * data for the event from the API. If successful, sets the state of 'attended' and
+	 * 'noShow' based on the data retrieved from the API. If there is an error, logs it
+	 * to the console.
+	 * @returns {void}
+	 */
 	const handleRefreshDetails = () => {
 		setRefreshDetails(true);
 		setIsLoading(true);
@@ -61,12 +66,6 @@ export default function EventDetailsHost({ navigation, route }) {
 							item.event_id === eventId
 					)[0].count
 				);
-
-				// const waitlistResponse = await axios.get(
-				// 	`${apiURL}waitlist/users/${eventId}`
-				// );
-				// const waitlist = waitlistResponse.data;
-				// setUpdatedEventObj([data, waitlist]);
 			} catch (error) {
 				console.log("Error getting attendace details:", error);
 				//setAttended("0")
@@ -81,13 +80,18 @@ export default function EventDetailsHost({ navigation, route }) {
 					)[0].count
 				);
 			} catch (error) {
-				// setNoShow("0");
 				console.log("Error getting no-show details:", error);
+				// setNoShow("0");
 			}
 		};
 		fetchData();
 	};
 
+	/**
+	 * Set the attended and no-show counts for the specified event based on the response data.
+	 * If the data is not available, sets the attended and no-show counts to "0".
+	 * @returns {void}
+	 */
 	const setAttendanceStatusData = async () => {
 		if (response && response.data) {
 			const data = response.data;
@@ -118,30 +122,35 @@ export default function EventDetailsHost({ navigation, route }) {
 	};
 
 	useEffect(() => {
+		/**
+		 * Asynchronously fetches attendance status data and sets the isLoading state to false when finished.
+		 * @returns {void}
+		 */
 		const fetchData = async () => {
 			await getAttendanceStatusData();
 			setIsLoading(false);
 		};
 		fetchData();
-		console.log("eventObj", eventObj);
 	}, [eventObj, refreshDetails]);
 
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		await getAttendanceStatusData();
-	// 		setIsLoading(false);
-	// 	};
-	// 	fetchData();
-	// 	console.log("event", eventObj);
-	// }, [refreshDetails]);
-
 	useEffect(() => {
+		/**
+		 * Asynchronously retrieves attendance status data from the API
+		 * and sets it using the `setAttendanceStatusData` function.
+		 * @returns {void}
+		 */
 		const fetchData = async () => {
 			await setAttendanceStatusData();
 		};
 		fetchData();
 	}, [response]);
 
+	/**
+	 * Handles the submission of the form to update an event.
+	 * Updates the event details on the backend based on the edited values.
+	 * Navigates back to the event details page with the updated event data.
+	 * @returns {void}
+	 */
 	const handleSubmit = async () => {
 		// formart setInpEvnStartDatetime with just date
 		const eventDate = editedStartDate.slice(0, 10);
@@ -163,14 +172,12 @@ export default function EventDetailsHost({ navigation, route }) {
 			const data = response.data;
 			setIsEdit(false);
 			// push to event details page
-			// const attendees = eventObj.attendees;
 			const waitlist = eventObj.waitlist;
 			handleRefresh();
 			Alert.alert("Event Updated");
 			navigation.goBack({
 				upcomingEvent: {
 					...data,
-					// attendees,
 					waitlist,
 				},
 			});
@@ -180,6 +187,14 @@ export default function EventDetailsHost({ navigation, route }) {
 		}
 	};
 
+	/**
+	 * Function that sends a delete request to the backend API to cancel an event.
+	 * If the request is successful, it triggers the handleRefresh function to reload the event data,
+	 * and navigates back to the event list page ("EventsHost").
+	 * If the request is unsuccessful, it logs an error message to the console.
+	 * @throws {Error} if the delete request fails
+	 * @returns {void}
+	 */
 	const handleDelete = async () => {
 		try {
 			const response = await axios.put(`${API_END_POINT}/event/${eventId}`, {

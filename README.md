@@ -7,6 +7,10 @@
 - [Set up the Back End](#set-up-the-back-end)
 - [Set up the Authorization](#set-up-the-authorization)
 - [Create a Host Account](#create-a-host-account)
+- [Functional Features](#functional-features)
+- [Wireframes](#wireframes)
+- [Use Case Diagram](#use-case-diagram)
+- [Daily Standups](#daily-standups)
 
 ## Getting Started
 
@@ -91,5 +95,52 @@ The DATABASE_URL is the general connection string we saved earlier when making t
 
 That's it! You should now be able to run the app with CockroachDB as the database and AWS as the backend.
 
+### Functional Features
+Essential Features
+1.	Events are divided by type into guest list or “tier” events.
+       - Guest list events open eligibility for invited attendees. 
+       - Tier events are divided into bronze, silver, and gold tiers. They open eligibility for attendees with a membership status that is greater than or equal to the event’s tier.
 
+Attendees can:
+1.	Self-register for the app with a name and email.
+      - Upon registration, an attendee cannot use the app until a host account updates their membership status to bronze, silver, or gold.
+      - If an attendee’s registration is rejected, they cannot use the app.
+2.	View and filter all events upon registration acceptance.
+3.	Register for events if they meet the eligibility criteria. 
+4.	View (but not register for) events if they do not meet the eligibility criteria.
+5.	Withdraw from the event prior to the event start date if they are registered for an event.
+6.	Access a QR code to present upon arrival at the event upon registration.
 
+Hosts can:
+1.	Create events with a name, date and time, location, and type.
+2.	Set a list of attendees for guest list events and set the membership status minimums for tier events.
+3.	View reports of attendees for upcoming and past events.
+
+IMPORTANT FEATURES:
+1.	Events are displayed in both list format and a calendar format.
+2.	Can be set to a third “loyalty” type, so an attendee who has already attended at least X number of prior events is eligible.
+
+Attendees can:
+1.	Register for eligible events if the event has capacity.
+2.	Join the waitlist if an event does not have capacity.
+      - Waitlisted attendees will be automatically registered for an event in the order they were added to the waitlist if spots become available.
+3.	Remove themselves from the waitlist prior to the event’s start date. 
+
+Hosts can:
+1.	Set a maximum capacity for events.
+2.	Set the number of events an attendee must have attended to be eligible for a loyalty event.
+
+NICE-TO-HAVE FEATURES:
+1.	An attendee’s event QR code is scannable. 
+2.	Upon QR code scan, an attendee’s status could automatically be updated to “Attended”. 
+3.	If an attendee’s QR code was not scanned by the end of the event, their status could automatically be updated to “No Show”. 
+4.	The app could have a logo and thoughtful styling to improve the user experience (e.g., removing unnecessary labels, adjusting button sizing and placement based on expected usage). 
+
+### Wireframes
+Link to Wireframes: https://drive.google.com/file/d/1Om_bSPtu6KGgHMFjRXsULl4HYKBHqFYc/view?usp=sharing
+
+### Use Case Diagram
+Link to Use Case Diagram: https://drive.google.com/file/d/1zFK2RYxU4hDRnwFMCjM5usZ0njqkoGO8/view?usp=sharing
+
+### Daily Standups
+Link to Daily Standup Log: https://docs.google.com/spreadsheets/d/1Z55A8hLo0H3X5AhpeViiq_23zo8IqnnnN-reYlHl_i0/edit?usp=sharing

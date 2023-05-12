@@ -5,6 +5,7 @@ export async function ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, sele
     let errors = {};
   
     try {
+      // check if event name already exists
         const response = await axios.get(`${API_END_POINT}event/date/${startDateTime.toISOString().slice(0, 10)}`);
         if (response.status === 200) {
           const eventExists = response.data.eventExists;

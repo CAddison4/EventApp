@@ -1,5 +1,9 @@
 import { Image, View, StyleSheet } from "react-native";
 
+/**
+ * Logo component displays the logo of the application
+ * @returns {JSX.Element} - Rendered component tree
+ */
 export const Logo = () => {
 	return (
 		<Image
