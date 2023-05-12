@@ -5,9 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
 import {
-	getUserData,
-	generateToken,
-	handleSignUpApi,
+  getUserData,
+  generateToken,
+  handleSignUpApi,
 } from "./UserApiComponents";
 
 import { Hub } from "aws-amplify";
@@ -40,14 +40,14 @@ export const handleSignUp = async (
         email: email,
       },
     });
-    
+
     if (!amplifySignup) {
       return {
         success: false,
         message: "Error signing up",
       };
     }
-
+    console.log("amplifySignup", amplifySignup);
     const cockroachEmail = email.toLowerCase();
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();

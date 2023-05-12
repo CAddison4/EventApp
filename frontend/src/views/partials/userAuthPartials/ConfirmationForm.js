@@ -60,7 +60,7 @@ const ConfirmationForm = ({ route }) => {
       <SafeAreaView>
           <Text style={styles.title}></Text>
             <Text style={styles.errorMessage}>{formMessage ? formMessage : ""}</Text>
-            <Text style={styles.errorMessage}>{confirmation ? confirmation : ""}</Text>
+            <Text style={styles.confirmationMessage}>{confirmation ? confirmation : ""}</Text>
           <TextInput
             defaultValue={username}
             onChangeText={setUsername}
@@ -93,6 +93,10 @@ const ConfirmationForm = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  confirmationMessage: {
+    color: "#159E31",
+    marginBottom: 10,
+  },
   container: {
     flex: 1,
     width: "100%",

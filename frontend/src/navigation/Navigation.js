@@ -114,13 +114,6 @@ const Navigation = () => {
 			return Promise.reject(error);
 		}
 	);
-			return config;
-		},
-		(error) => {
-			// console.log("ERROR", error);
-			return Promise.reject(error);
-		}
-	);
 
 	useEffect(() => {
 		// Check if user is signed in async

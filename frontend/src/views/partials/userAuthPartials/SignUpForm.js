@@ -47,7 +47,7 @@ const SignUpForm = ({}) => {
     if (!/^[a-zA-Z]+$/.test(lastName)) {
       setFormMessage("Last name should only contain alphabetic characters");
       return;
-    }z
+    }
     Toast.show("Signing Up...", {
       duration: Toast.durations.SHORT,
       position: -200,

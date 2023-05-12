@@ -24,26 +24,40 @@ You will also need a CockroachDB account to get the app up and running right awa
 
 ### Set up CockroachDB
 
-1. Create a CockroachDB account and a cluster. Save the username and password that are generated.
-2. Create a database and select connect.
-3. Save the general connection string for later to point the SST to this database.
-4. Run the Download CA Cert script in the same page as the General connection string.
+1. Create a CockroachDB account and a cluster.
+
+2. Create a database and select connect. You will need to input a username and a password will be generated for you. Save this password as you will need it to connect to the database through the cockroach CLI.
+  
+3. Make sure the Select SQL user and Database selected in the dropdowns are correct.Save the general connection string for later to point the SST to this database. replace the <ENTER-SQL-USER-PASSWORD> with your password that was just generated.
+
+4. Run the Download CA Cert script in powershell. It is located in the same page as the General connection string. 
+
 5. Change the "Select option/language" to CockroachDB Client.
-6. Download the latest CockroachDB Client for your OS and run it in the terminal.
-7. Run the DB connection string that starts with `cockroach sql -url`.
+
+6. Download the latest CockroachDB Client for your OS and run it in the powershell.
+
+7. Run the DB connection string that starts with `cockroach sql -url`. It will ask you for a password. The password will be the password we saved in step 2.
+
 8. Run the database script in the terminal. It can be found in the root directory of the backend.
 
 ### Set up AWS
 
-1. Create an IAM user and give it an AWS CLI Access Key if you do not have one already. Save the keys as you will use them a few times in this setup.
-2. Attach the Administrator access policy to your IAM user.
-3. Login to the AWS CLI with `aws configure`.
+1. In AWS Create an IAM user and give it an AWS CLI Access Key if you do not have one already. Attach the Administrator access policy to your IAM user. 
+
+2. Save the keys as you will use them a few times in this setup. Make sure you are in the correct region you want to use for this application.
+
+3. Login to the AWS CLI with `aws configure` in your bash terminal.
+
+4. When it asks for the default reigon. It will be important to remember what reigon you set.
 
 ### Set up the front end
 
-1. Change into the front end directory and run `npm install` to install the package dependencies.
-2. Run `amplify init` and configure the environment name and region of the deployment. You will need the Access keys and Secret Access keys of the IAM user in this step.
+1. Change into the front end directory in your bash terminal and run `npm install` to install the package dependencies.
+
+2. Run `amplify init` and configure the environment name and region of the deployment. You will need the Access keys and Secret Access keys of the IAM user in this step. Keeping things consistent please choose the same reigon you used when configuring your aws cli account.
+
 3. Run `amplify push`.
+
 4. Create a `.env` file and include the following:
 
   API_END_POINT="SST END POINT"
@@ -55,14 +69,16 @@ Replace the secret with any string that you will use to verify a JWT request lat
 ### Set up the back end
 
 1. Change into the backend directory and run `npm install`.
+
 2. Create a `.env` file and include the following:
 
   AWS_ACCESS_KEY_ID=AccessKey
   
   AWS_SECRET_ACCESS_KEY=SecretAccessKey
   
-  DATABASE_URL=""
+  DATABASE_URL="DATA BASE URL"
   
+
   COGNITO_USER_POOL_ID="USER POOL ID"
   
   COGNITO_USER_POOL_CLIENT_ID="APP CLIENT ID"
@@ -71,29 +87,50 @@ Replace the secret with any string that you will use to verify a JWT request lat
   
   COGNITO_USER_POOL_ARN="ARN"
   
+
   SECRET_KEY=secret
 
-The DATABASE_URL is the general connection string we saved earlier when making the CockroachDB. The COGNITO_USER_POOL_ID, COGNITO_USER_POOL_ARN, and DEFAULT_REGION should be found in the User pool overview. The COGNITO_USER_POOL_CLIENT_ID can be found in the App Integration of the user pool. There might be multiple values, but use the app_client one for COGNITO_USER_POOL_CLIENT_ID. The SECRET_KEY must be the same string as was put into the front end as it will compare the strings for a match when creating a user.
 
-3. Run `npx sst dev` to get them initially deployed. This may take some time.
+The DATABASE_URL is the general connection string we saved earlier when making the CockroachDB. 
+
+The COGNITO_USER_POOL_ID, COGNITO_USER_POOL_ARN, and DEFAULT_REGION should be found in the User pool overview of Cognito the AWS Service. This was automatically created by amplify. 
+
+The COGNITO_USER_POOL_CLIENT_ID can be found in the App Integration of the user pool. There might be multiple values, but use the app_client one for COGNITO_USER_POOL_CLIENT_ID. 
+
+The SECRET_KEY must be the same string as was put into the front end as it will compare the strings for a match when creating a user.
+
+3. Check the `sst.config.js` to ensure the reigon is set to the reigon of your user pool. Run `npx sst dev` to get them initially deployed. This may take some time.
+You will be asked to enter a name for the stage but a default value is provided.
+
 4. When `npx sst dev` is complete, it will return a number of items, but one of importance is the `ApiEndpoint`. Replace the `API_END_POINT` value in the front end `.env` file with this generated value.
+
+5. For now when running the application you will need a bash terminal running the `npx sst dev` command in the backend directory to access the api endpoint.
+
+MEMO: If you encounter erros during this process you may need to manualy remove the remnants of the attempt in the AWS Services as sometimes the roll back does not clean up after itself. There may be remnant files in the S3 buckets. Usually the bucket will be prefaced with CDK but ensure it is a file that is not connected to existing infastructure and was indeed created during the sst process of this application.
 
 
 ## Set up the authorization
 
 1. Open API Gateway in the AWS services and navigate to the newly created API.
+
 2. Go to the authorization view and manage authorizers. There should be 3 authorizers, with 2 being the ones that were deployed with SST.
+
 3. Open the Cognito authorizer and click edit.
+
 4. Add the 2 client IDs we got from the Cognito user pool.
 
 ### Create a host account
+
+To run the app localy use the command `npx expo start` in the front end directory
 
 1. Create an account in the app.
 2. Use the CockroachDB client that we used to input the database script to run the command `select * from users;` to see all the users.
 3. Once you have found your user, run the command `UPDATE users SET membership_status_id = 'Gold', role_id = 'Host' WHERE user_id = 'UUID';`, and replace `UUID` with your user's `user_id` found in the database.
 4. Now that you have a host account, you can change the membership statuses of other accounts to allow them access to the app. Remember, if you want to make other host accounts for now, you will have to use the database script to do so.
 
-That's it! You should now be able to run the app with CockroachDB as the database and AWS as the backend.
+That's it! You should now be able to run the app.
+
+If you are using android you will need to install the Expo Go app in the app store.
 
 ### Functional Features
 Essential Features

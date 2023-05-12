@@ -80,6 +80,7 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
       };
     }
 
+
     const existingUser = await fetch(`${API_END_POINT}user/${email}`, {
       method: "GET",
       headers: {
@@ -87,6 +88,7 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
         Authorization: `Bearer ${bearerToken.token}`,
       },
     });
+    console.log("existingUser", existingUser);
     if (existingUser.status === 200) {
       return {
         success: false,
