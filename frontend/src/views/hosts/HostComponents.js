@@ -33,5 +33,7 @@ export const getEventsWithAttendees = async () => {
 		return eventsWithAttendees;
 	} catch (error) {
 		console.log(error);
+		const events = [];
+		return events;
 	}
 };
