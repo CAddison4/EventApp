@@ -137,10 +137,10 @@ NICE-TO-HAVE FEATURES:
 4.	The app could have a logo and thoughtful styling to improve the user experience (e.g., removing unnecessary labels, adjusting button sizing and placement based on expected usage). 
 
 ### Wireframes
-https://drive.google.com/file/d/1Om_bSPtu6KGgHMFjRXsULl4HYKBHqFYc/view?usp=sharing
+Link to Wireframes: https://drive.google.com/file/d/1Om_bSPtu6KGgHMFjRXsULl4HYKBHqFYc/view?usp=sharing
 
 ### Use Case Diagram
-https://drive.google.com/file/d/1zFK2RYxU4hDRnwFMCjM5usZ0njqkoGO8/view?usp=sharing
+Link to Use Case Diagram: https://drive.google.com/file/d/1zFK2RYxU4hDRnwFMCjM5usZ0njqkoGO8/view?usp=sharing
 
 ### Daily Standups
-https://docs.google.com/spreadsheets/d/1Z55A8hLo0H3X5AhpeViiq_23zo8IqnnnN-reYlHl_i0/edit?usp=sharing
+Link to Daily Standup Log: https://docs.google.com/spreadsheets/d/1Z55A8hLo0H3X5AhpeViiq_23zo8IqnnnN-reYlHl_i0/edit?usp=sharing
