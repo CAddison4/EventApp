@@ -19,7 +19,6 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
-// import SearchButton from "../../partials/hostPartials/SearchButton";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 import UsersListItem from "../../../components/UsersListItem";
