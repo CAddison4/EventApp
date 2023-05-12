@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CalendarList } from "react-native-calendars";
 
+// receive markedDates array, currunt date, and onDateSelect function as props
 export default function Calendar({ markedDates, current, onDateSelect }) {
 	const [selected, setSelected] = useState("");
 
+	// when the user selects a date, set the selected date and call the onDateSelect function
 	function handleDayPress(day) {
 		const selectedDate = day.dateString;
 		setSelected(selectedDate);
