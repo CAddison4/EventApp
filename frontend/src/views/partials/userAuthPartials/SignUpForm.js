@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
 		justifyContent: "space-around",
 		backgroundColor: "#fff",
 		width: "100%",
-		maxWidth: 400,
+		//maxWidth: 400,
 	},
 
 	title: {
