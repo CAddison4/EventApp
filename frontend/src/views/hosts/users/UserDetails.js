@@ -1,38 +1,40 @@
-import {
-	StyleSheet,
-	View,
-	Text,
-	Button,
-	TextInput,
-	Alert,
-	TouchableOpacity,
-	Touchable,
-} from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { StyleSheet, View, Text, Alert, TouchableOpacity } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useState, useEffect } from "react";
-// import SelectDropdown from "react-native-select-dropdown";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-import { formatLongDate, formatTime } from "../../../utilities/dates";
+import { formatLongDate } from "../../../utilities/dates";
 
+/**
+ * Renders the user details screen which allows the user to view and update the membership status of a user
+ * @param {object} navigation - Navigation prop object provided by the React Navigation library
+ * @param {object} route - Route prop object provided by the React Navigation library
+ * @returns {JSX.Element} - Rendered component tree
+ */
 export default function UserDetails({ navigation, route }) {
 	const user = route.params.user;
 	const handleRefresh = route.params.handleRefresh;
-
 	const [memberships, setMemberships] = useState([]);
-
 	const [selectedMembershipStatus, setSelectedMembershipStatus] = useState(
 		user.membership_status_id
 	);
 	const [isPickerVisible, setIsPickerVisible] = useState(false);
 	const [open, setOpen] = useState(false);
 
+	/**
+	 * Handle the change of the membership status picker
+	 * @param {*} itemValue
+	 * @param {*} itemIndex
+	 * @returns {void}
+	 */
 	const handleMembershipStatusChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue); // Update the state with the selected membership status value
 	};
 
+	/**
+	 * Fetches membership data from the API and sets it to the component state
+	 * @returns {void}
+	 */
 	const handleGetMemberships = async () => {
 		const apiURL = API_END_POINT;
 		const response = await axios.get(`${apiURL}membership`);
@@ -41,6 +43,10 @@ export default function UserDetails({ navigation, route }) {
 		setIsPickerVisible(true);
 	};
 
+	/**
+	 * Updates the membership status of a user by sending a PUT request to the API with the updated information
+	 * @returns {void}
+	 */
 	const handleUpdateUserMembershipStatus = async () => {
 		const apiURL = API_END_POINT;
 		const response = await axios.put(`${apiURL}/user/${user.user_id}`, {
@@ -60,7 +66,6 @@ export default function UserDetails({ navigation, route }) {
 	};
 
 	useEffect(() => {
-		// handleGetUpdatedUser();
 		handleGetMemberships();
 	}, [user]);
 
@@ -108,24 +113,6 @@ export default function UserDetails({ navigation, route }) {
 							</TouchableOpacity>
 						</>
 					)}
-					{/* <View style={styles.card}>
-						<TouchableOpacity
-							style={styles.eventInfoContainer}
-							onPress={() =>
-								navigation.navigate("AttendanceRecords", { user: user })
-							}>
-							<View style={styles.eventInfoItem}>
-								<Text style={styles.title}>Event Attendance</Text>
-								<Ionicons
-									name="chevron-forward-outline"
-									size={24}
-									color="grey"
-									style={styles.title}
-								/>
-							</View>
-						</TouchableOpacity>
-					</View> */}
-					
 					<TouchableOpacity
 						style={styles.button}
 						onPress={() =>
@@ -133,15 +120,7 @@ export default function UserDetails({ navigation, route }) {
 						}>
 						<Text style={styles.buttonText}>Event Attendance</Text>
 					</TouchableOpacity>
-
 				</View>
-
-				{/* <View style={{ zIndex: -1 }}>
-					<AttendanceRecords
-						user={user}
-						// navigation={navigation}
-					/>
-				</View> */}
 			</View>
 		</View>
 	);
@@ -179,17 +158,17 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		marginTop: 20,
-        height: 50,
-        backgroundColor: "#159E31",
-        justifyContent:"center",
-        textAlign:"center",
+		height: 50,
+		backgroundColor: "#159E31",
+		justifyContent: "center",
+		textAlign: "center",
 		color: "#fff",
 		borderRadius: 5,
 	},
 	buttonText: {
-        color:"white",
-        textAlign:"center",
-        fontWeight:500,
-        fontSize:15,
-    },
+		color: "white",
+		textAlign: "center",
+		fontWeight: 500,
+		fontSize: 15,
+	},
 });

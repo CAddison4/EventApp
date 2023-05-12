@@ -12,38 +12,50 @@ import { StatusBar } from "expo-status-bar";
 import { useState, useEffect, memo } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
-// import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 import EventListItem from "../../../components/EventListItem";
 
-// export default function EventsListHost({ route })
 export default function EventsListHost({ eventObjs, handleRefresh }) {
 	const [searchQuery, setSearchQuery] = useState("");
-	// const { eventObjs, handleRefresh } = route.params;
 	const [icon, setIcon] = useState("close-circle-outline");
-
 	const navigation = useNavigation();
-
 	const [selectedColor, setSelectedColor] = useState("green");
-
 	const colors = [{ color: "green" }, { color: "orange" }];
 
+	/**
+	 * Handles the selection of a color.
+	 * @param {string} itemValue - The value of the selected color.
+	 * @returns {void}
+	 */
 	const handleSelectColor = (itemValue) => {
 		setSelectedColor(itemValue);
 	};
 
+	/**
+	 * Handles the search query input.
+	 * @param {string} query - The search query.
+	 * @returns {void}
+	 */
 	const handleSearchQuery = (query) => {
 		setIcon("close-circle");
 		setSearchQuery(query);
 	};
 
+	/**
+	 * Dismisses the keyboard upon submitting the search query.
+	 * @returns {void}
+	 */
 	const handleSearchSubmit = () => {
 		Keyboard.dismiss();
 	};
 
+	/**
+	 * Clears the search query and sets the icon to a close circle outline.
+	 * @returns {void}
+	 */
 	const handleClearFilter = () => {
 		setSearchQuery("");
 		setIcon("close-circle-outline");
@@ -158,10 +170,8 @@ const styles = StyleSheet.create({
 		paddingRight: 5,
 		backgroundColor: "#fff",
 		width: "100%",
-//		maxWidth: 400,
+		//		maxWidth: 400,
 		justifyContent: "center",
 		paddingTop: 20,
 	},
 });
-
-// export default memo(EventsListHost);

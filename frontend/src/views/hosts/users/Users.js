@@ -19,7 +19,6 @@ import axios from "axios";
 import { API_END_POINT } from "@env";
 
 import UserDetails from "./UserDetails";
-// import SearchButton from "../../partials/hostPartials/SearchButton";
 import SearchBar from "../../partials/hostPartials/SearchBar";
 import ClearFilterButton from "../../partials/hostPartials/ClearFilterButton";
 import UsersListItem from "../../../components/UsersListItem";
@@ -27,13 +26,6 @@ import UsersListItem from "../../../components/UsersListItem";
 LogBox.ignoreLogs([
 	"Non-serializable values were found in the navigation state",
 ]);
-// function ClearFilterButton({ onPress }) {
-// 	return <Button title="Clear Filter" onPress={onPress} />;
-// }
-
-// function SearchButton({ onPress }) {
-// 	return <Button title="Search" onPress={onPress} />;
-// }
 
 export default function Users({ navigation }) {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -50,6 +42,11 @@ export default function Users({ navigation }) {
 
 	const roles = [{ role_id: "Attendee" }, { role_id: "Host" }];
 
+	/**
+	 * Refreshes the page by fetching the list of users again and resetting selected membership status,
+	 * search query, and icon.
+	 * @returns {Promise<void>}
+	 */
 	const handlePageRefresh = async () => {
 		const newUsers = await getUsers();
 		setUsers(newUsers);
@@ -58,25 +55,49 @@ export default function Users({ navigation }) {
 		setIcon("close-circle-outline");
 	};
 
+	/**
+	 * Updates the search query state when the user types in the search bar
+	 * @param {string} query - The search query entered by the user
+	 * @returns {void}
+	 */
 	const handleSearchQuery = (query) => {
 		setSearchQuery(query);
 		setIcon("close-circle");
 	};
 
+	/**
+	 * Dismisses the keyboard when the user submits their search query
+	 * @returns {void}
+	 */
 	const handleSearchSubmit = () => {
 		Keyboard.dismiss();
 	};
 
+	/**
+	 * Clears the search query and selected membership status, and resets the icon state
+	 * @returns {void}
+	 */
 	const handleClearFilter = () => {
 		setSearchQuery("");
 		setSelectedMembershipStatus("All");
 		setIcon("close-circle-outline");
 	};
 
+	/**
+	 * Updates the selected role state when the user selects a role from the dropdown menu
+	 * @param {string} itemValue - The value of the selected role
+	 * @returns {void}
+	 */
 	const handleSelectRole = (itemValue) => {
 		setSelectedRole(itemValue);
 	};
 
+	/**
+	 * Filter users based on search query and selected membership status and role.
+	 * If selectedMembershipStatus is "All", it will filter users only based on role and searchQuery.
+	 * Otherwise, it will filter users based on membership status, role, and searchQuery.
+	 * @returns {void}
+	 */
 	const filterUsers = () => {
 		if (selectedMembershipStatus === "All") {
 			setFilteredUsers(
@@ -85,11 +106,13 @@ export default function Users({ navigation }) {
 						user.role_id === selectedRole &&
 						(user.first_name
 							.toLowerCase()
-							.includes(searchQuery.toLowerCase()) ||
+							.includes(searchQuery.toLowerCase().trim()) ||
 							user.last_name
 								.toLowerCase()
-								.includes(searchQuery.toLowerCase()) ||
-							user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+								.includes(searchQuery.toLowerCase().trim()) ||
+							user.email
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase().trim()))
 				)
 			);
 		} else {
@@ -101,16 +124,23 @@ export default function Users({ navigation }) {
 						user.role_id === selectedRole &&
 						(user.first_name
 							.toLowerCase()
-							.includes(searchQuery.toLowerCase()) ||
+							.includes(searchQuery.toLowerCase().trim()) ||
 							user.last_name
 								.toLowerCase()
 								.includes(searchQuery.toLowerCase()) ||
-							user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+							user.email
+								.toLowerCase()
+								.includes(searchQuery.toLowerCase().trim()))
 				)
 			);
 		}
 	};
 
+	/**
+	 * A function that retrieves users from an API endpoint.
+	 * @async
+	 * @returns {Array} An array of users retrieved from the API endpoint.
+	 */
 	const getUsers = async () => {
 		const apiURL = API_END_POINT;
 		try {
@@ -121,7 +151,11 @@ export default function Users({ navigation }) {
 			return [];
 		}
 	};
-
+	/**
+	 * Returns an array of membership statuses that can be used as filter options.
+	 * If the API call fails, it returns an array with a single "All" option.
+	 * @returns {Array} An array of membership status objects with a "membership_status_id" property.
+	 */
 	const getFilteredMemberships = async () => {
 		const apiURL = API_END_POINT;
 		try {
@@ -135,6 +169,11 @@ export default function Users({ navigation }) {
 		}
 	};
 
+	/**
+	 * Function that gets the filtered membership statuses and users using Promise.all.
+	 * It then sets the state variables editedMemberships, users, and updateFilter.
+	 * @returns {void}
+	 */
 	const handleGetEditedMemberships = async () => {
 		const [edited, users] = await Promise.all([
 			getFilteredMemberships(),
@@ -145,11 +184,20 @@ export default function Users({ navigation }) {
 		setUpdateFilter(true);
 	};
 
+	/**
+	 * Handle changes to the selected membership status filter.
+	 * @param {string} itemValue - The selected value of the membership filter.
+	 * @param {number} itemIndex - The index of the selected value in the membership filter.
+	 */
 	const handleMembershipFilterChange = (itemValue, itemIndex) => {
 		setSelectedMembershipStatus(itemValue);
 	};
 
 	useEffect(() => {
+		/**
+		 * Fetches filtered memberships and users, and sets the state for edited memberships and users.
+		 * Also sets the state for displaying the membership status filter picker.
+		 */
 		const fetchData = async () => {
 			await handleGetEditedMemberships();
 			setIsPickerVisible(true);
@@ -243,14 +291,8 @@ export default function Users({ navigation }) {
 									filterUsers(searchQuery);
 								}}
 								onSubmitEditing={handleSearchSubmit}
-								// color={"#91C4D9"}
-								// backgroundColor="#4A738C"
 							/>
-							<ClearFilterButton
-								onPress={handleClearFilter}
-								icon={icon}
-								// color={"#91C4D9"}
-							/>
+							<ClearFilterButton onPress={handleClearFilter} icon={icon} />
 						</View>
 					</View>
 					{filteredUsers && filteredUsers.length > 0 ? (
@@ -281,7 +323,7 @@ export default function Users({ navigation }) {
 					)}
 				</>
 			) : (
-				<View style={styles.container}>
+				<View style={[styles.container, { justifyContent: "center" }]}>
 					<ActivityIndicator
 						size="large"
 						color="#0000ff"

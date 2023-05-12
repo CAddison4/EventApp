@@ -2,6 +2,15 @@ import { StyleSheet, Text, View } from "react-native";
 import { formatLongDate } from "../utilities/dates";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+/**
+ * A component that represents a user item in a list.
+ * It displays user information such as name, email, membership status, and date of signup.
+ * It also shows an icon corresponding to the membership status.
+ * By default, it includes an arrow icon indicating navigation to another screen, but it can be optionally hidden.
+ * @param {object} userObj - The user object containing user information.
+ * @param {boolean} showArrow - Determines whether to show the arrow icon for navigation (default: true).
+ * @returns {JSX.Element} - The rendered UsersListItem component.
+ */
 export default function UsersListItem({ userObj, showArrow = true }) {
 	const statusToIconNameMap = {
 		Gold: "checkmark-circle-outline",

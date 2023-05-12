@@ -26,6 +26,11 @@ export default function EventsHost({ navigation }) {
 	const [eventsCalObjs, setEventsCalObjs] = useState([]);
 
 	useEffect(() => {
+		/**
+		 * Fetches event data with attendees and sorts the events by date.
+		 * Sets the event objects, calendar event objects, loading and refreshing states using the retrieved data.
+		 * @returns {Promise<void>}
+		 */
 		const getData = async () => {
 			const eventsWithAttendees = await getEventsWithAttendees();
 
@@ -44,6 +49,11 @@ export default function EventsHost({ navigation }) {
 		filterEvents();
 	}, [eventObjs]);
 
+	/**
+	 * Filters the event objects based on their type and updates the state with separate arrays of past and upcoming events.
+	 *
+	 * @returns {void}
+	 */
 	const filterEvents = () => {
 		setPastEvents(
 			eventObjs.filter((eventObj) => {
@@ -56,7 +66,12 @@ export default function EventsHost({ navigation }) {
 			})
 		);
 	};
-
+	/**
+	 * Refreshes the event data by resetting all event-related state variables and setting the refresh flag to true.
+	 * This function is intended to be called when the user triggers a refresh action.
+	 *
+	 * @returns {void}
+	 */
 	const handleRefresh = () => {
 		setRefresh(true);
 		setLoading(true);

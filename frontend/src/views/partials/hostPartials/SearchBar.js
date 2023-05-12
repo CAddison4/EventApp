@@ -1,13 +1,18 @@
 import { TextInput, StyleSheet, Button } from "react-native";
-// import { setSearchQuery, searchQuery } from "../../../state/searchQuery";
 
+/**
+ * SearchBar component displays a text input field that allows users to search for items.
+ * @param {string} value - The current value of the text input.
+ * @param {function} onChangeText - A function to be called when the text input's value changes.
+ * @param {function} onSubmitEditing - A function to be called when the user submits the search query.
+ * @param {string} color - The color of the text in the search bar.
+ * @returns {JSX.Element} A text input field with a placeholder "Search..." and a specified color.
+ */
 export default function SearchBar({
 	value,
 	onChangeText,
 	onSubmitEditing,
-	onPress,
 	color = "#000",
-	backgroundColor = "#fff",
 }) {
 	return (
 		<>
@@ -20,12 +25,9 @@ export default function SearchBar({
 					styles.searchBar,
 					{
 						color: color,
-						// backgroundColor: backgroundColor
 					},
 				]}
 			/>
-			{/* <Button title="Search" onPress={onPress} /> */}
-			{/* <SearchButton onPress={filterUsers} /> */}
 		</>
 	);
 }
