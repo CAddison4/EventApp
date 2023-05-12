@@ -3,19 +3,24 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_END_POINT } from "@env";
 import DropDownPicker from "react-native-dropdown-picker";
-import { formatLongDate, formatTime } from "../../../utilities/dates";
-//Add event attendance list
+import { formatLongDate } from "../../../utilities/dates";
 
-export default function AttendanceRecords({
-	// navigation,
-	route,
-}) {
+/**
+ * AttendanceRecords component displays a list of attendance records for a user. The component fetches attendance records for a user from an API and filters the records based on a selected filter option.
+ * @param {Object} route - The route object contains the user object as a parameter
+ * @returns {JSX.Element} - Rendered component tree
+ */
+export default function AttendanceRecords({ route }) {
 	const [eventObjs, setEventObjs] = useState([]);
 	const [selectedFilter, setSelectedFilter] = useState("Upcoming");
 	const [filteredEventObjs, setFilteredEventObjs] = useState([]);
 	const [open, setOpen] = useState(false);
 	const user = route.params.user;
 
+	/**
+	 * Fetches the attendance records of a user from the API and sets it to the component state
+	 * @returns {void}
+	 */
 	const handleGetAttendanceRecords = async () => {
 		const apiURL = API_END_POINT;
 		const response = await axios.get(
@@ -25,6 +30,10 @@ export default function AttendanceRecords({
 		setEventObjs(data);
 	};
 
+	/**
+	 * Filters the attendance records based on the selected filter option and updates the state with the filtered data
+	 * @returns {void}
+	 */
 	const filterRecords = () => {
 		if (selectedFilter === "Attended") {
 			setFilteredEventObjs(
@@ -47,11 +56,20 @@ export default function AttendanceRecords({
 		}
 	};
 
+	/**
+	 * Handle the change of the selected filter value
+	 * @param {string} value - The value of the selected filter
+	 * @returns {void}
+	 */
 	const handleFilterChange = (value) => {
 		setSelectedFilter(value);
 	};
 
 	useEffect(() => {
+		/**
+		 * Fetches attendance records for a user and sets it to the component state
+		 * @returns {void}
+		 */
 		const fetchData = async () => {
 			await handleGetAttendanceRecords();
 		};
@@ -60,7 +78,6 @@ export default function AttendanceRecords({
 
 	useEffect(() => {
 		filterRecords();
-		// setSelectedFilter()
 	}, [selectedFilter, eventObjs]);
 
 	return (
@@ -78,7 +95,6 @@ export default function AttendanceRecords({
 							{ label: "No Show", value: "No Show" },
 						]}
 						value={selectedFilter}
-						// defaultValue={selectedFilter}
 						containerStyle={{ height: 40 }}
 						style={{ backgroundColor: "#fafafa" }}
 						itemStyle={{ justifyContent: "flex-start" }}

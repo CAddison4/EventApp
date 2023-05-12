@@ -36,29 +36,69 @@ export default function CreateEvent({ navigation }) {
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
 
+	/**
+	 * Update the start and end date/time based on the selected date/time and identifier.
+	 * @param {Date} selectedDateTime The selected date/time
+	 * @param {String} identifier The identifier to determine which date/time to update
+	 * @returns {void}
+	 */
 	const handleDateTimeChange = (selectedDateTime, identifier) => {
 		if (identifier === "startDate") {
 			setStartDate(selectedDateTime);
-			setStartDateTime(new Date(selectedDateTime.setHours(startTime.getHours(), startTime.getMinutes())));
+			setStartDateTime(
+				new Date(
+					selectedDateTime.setHours(
+						startTime.getHours(),
+						startTime.getMinutes()
+					)
+				)
+			);
 		} else if (identifier === "startTime") {
 			setStartTime(selectedDateTime);
-			setStartDateTime(new Date(startDate.setHours(selectedDateTime.getHours(), selectedDateTime.getMinutes())));
+			setStartDateTime(
+				new Date(
+					startDate.setHours(
+						selectedDateTime.getHours(),
+						selectedDateTime.getMinutes()
+					)
+				)
+			);
 		} else if (identifier === "endDate") {
 			setEndDate(selectedDateTime);
-			setEndDateTime(new Date(selectedDateTime.setHours(endTime.getHours(), endTime.getMinutes())));
+			setEndDateTime(
+				new Date(
+					selectedDateTime.setHours(endTime.getHours(), endTime.getMinutes())
+				)
+			);
 		} else if (identifier === "endTime") {
 			setEndTime(selectedDateTime);
-			setEndDateTime(new Date(endDate.setHours(selectedDateTime.getHours(), selectedDateTime.getMinutes())));
+			setEndDateTime(
+				new Date(
+					endDate.setHours(
+						selectedDateTime.getHours(),
+						selectedDateTime.getMinutes()
+					)
+				)
+			);
 		}
 	};
 
+	/**
+	 * Update the state with the selected event type value
+	 * @param {string} itemValue - The value of the selected event type option
+	 * @param {number} itemIndex - The index of the selected event type option in the dropdown menu
+	 * */
 	const handleEventTypeChange = (itemValue, itemIndex) => {
 		setSelectedEventType(itemValue); // Update the state with the selected event type value
 	};
 
 	useEffect(() => {
+		/**
+		 * Fetches the eligibility data from the backend API and updates the component's state with it.
+		 * Sets the state of 'isPickerVisible' to true, allowing the eligibility picker component to be rendered.
+		 * @returns {void}
+		 * */
 		const geteligibility = async () => {
-			// GET eligibility
 			const response = await axios.get(`${apiURL}eligibility`);
 			const data = response.data;
 			setEligibilityData(data);
@@ -67,13 +107,28 @@ export default function CreateEvent({ navigation }) {
 		geteligibility();
 	}, []);
 
+	/**
+	 * Handles creating a new event and posts the event object to the API.
+	 * Validates user inputs and checks if there are any errors, if there are it sets the errors state and returns.
+	 * If there are no errors it sends a post request to the API with the event object and creates an event capacity.
+	 * It then resets the input states and navigates to the appropriate screen depending on the selected event type.
+	 * @returns {void}
+	 */
 	const handleCreateEvent = async () => {
 		// error handling for inputs
-		const errors = await ValidateInputs(inpEvnName, inpEvnMax, inpEvnLocation, selectedEventType, loyaltyMinimum, startDateTime, endDateTime);
+		const errors = await ValidateInputs(
+			inpEvnName,
+			inpEvnMax,
+			inpEvnLocation,
+			selectedEventType,
+			loyaltyMinimum,
+			startDateTime,
+			endDateTime
+		);
 		console.log(errors);
 		// error occured
 		if (Object.keys(errors).length > 0) {
-			console.log("error occured")
+			console.log("error occured");
 			setErrors(errors);
 			return;
 		}
@@ -94,9 +149,12 @@ export default function CreateEvent({ navigation }) {
 			const response = await axios.post(`${apiURL}/event`, postEventObj);
 
 			// create event capacity
-			const response_capacity = await axios.post(`${apiURL}/event/capacity/${response.data.event.event_id}`, {
-				capacity: inpEvnMax,
-			});
+			const response_capacity = await axios.post(
+				`${apiURL}/event/capacity/${response.data.event.event_id}`,
+				{
+					capacity: inpEvnMax,
+				}
+			);
 			// Reset the state
 			setInpEvnName("");
 			setInpEvnMax("");
@@ -130,7 +188,7 @@ export default function CreateEvent({ navigation }) {
 		} catch (error) {
 			console.log("Error creating event:", error);
 		}
-	}
+	};
 
 	if (loading) {
 		return (
@@ -139,13 +197,14 @@ export default function CreateEvent({ navigation }) {
 				color="#0000ff"
 				animating={true}
 				style={styles.activityIndicator}
-			/>)
+			/>
+		);
 	}
 	return (
 		<KeyboardAvoidingView behavior={"padding"} enabled style={styles.wrapper}>
 			<FlatList
 				style={styles.container}
-				data={[{ key: 'eventForm' }]}
+				data={[{ key: "eventForm" }]}
 				renderItem={({ item }) => (
 					<View style={styles.container}>
 						{isPickerVisible && (
@@ -165,16 +224,24 @@ export default function CreateEvent({ navigation }) {
 								</View>
 								{selectedEventType === "Loyalty" && (
 									<>
-										{errors.loyaltyMinimum && <Text style={{ color: "red" }}>{errors.loyaltyMinimum}</Text>}
+										{errors.loyaltyMinimum && (
+											<Text style={{ color: "red" }}>
+												{errors.loyaltyMinimum}
+											</Text>
+										)}
 										<Text style={styles.labelText}>Loyalty Minimum:</Text>
 										<TextInput
 											value={loyaltyMinimum.toString()}
 											style={styles.nameInput}
 											onChangeText={(loyaltyMinimum) => {
-												const formatted = loyaltyMinimum.replaceAll(/\s+/g, '')
-												if (formatted !== "" && formatted !== null && isNaN(formatted) === false ) {
+												const formatted = loyaltyMinimum.replaceAll(/\s+/g, "");
+												if (
+													formatted !== "" &&
+													formatted !== null &&
+													isNaN(formatted) === false
+												) {
 													setLoyaltyMinimum(parseInt(formatted));
-												}else{
+												} else {
 													setLoyaltyMinimum("");
 												}
 											}}
@@ -183,14 +250,18 @@ export default function CreateEvent({ navigation }) {
 									</>
 								)}
 
-								{errors.inpEvnName && <Text style={{ color: "red" }}>{errors.inpEvnName}</Text>}
+								{errors.inpEvnName && (
+									<Text style={{ color: "red" }}>{errors.inpEvnName}</Text>
+								)}
 								<Text syle={styles.labelText}>Event name</Text>
 								<TextInput
 									value={inpEvnName}
 									style={styles.nameInput}
 									onChangeText={(inpEvnName) => setInpEvnName(inpEvnName)}
 								/>
-								{errors.inpEvnMax && <Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>}
+								{errors.inpEvnMax && (
+									<Text style={{ color: "red" }}>{errors.inpEvnMax}</Text>
+								)}
 								<Text syle={styles.labelText}>Max Participants</Text>
 								<TextInput
 									value={inpEvnMax}
@@ -199,10 +270,13 @@ export default function CreateEvent({ navigation }) {
 									keyboardType="numeric"
 								/>
 								<View style={styles.dateTimeContainer}>
-
 									<View style={styles.dateContainer}>
 										<Text style={styles.labelText}>Start</Text>
-										{errors.startDateTime && <Text style={{ color: "red" }}>{errors.startDateTime}</Text>}
+										{errors.startDateTime && (
+											<Text style={{ color: "red" }}>
+												{errors.startDateTime}
+											</Text>
+										)}
 										<View>
 											<MyDateTimePicker
 												style={styles.dateTimePicker}
@@ -210,10 +284,14 @@ export default function CreateEvent({ navigation }) {
 												buttonTitle="Change Date"
 												mode={"date"}
 												date={startDate}
-												onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, "startDate")}
+												onDateChange={(selectedDate) =>
+													handleDateTimeChange(selectedDate, "startDate")
+												}
 											/>
 										</View>
-										<Text style={styles.selectedDateTimeText}>{startDateTime.toDateString()}</Text>
+										<Text style={styles.selectedDateTimeText}>
+											{startDateTime.toDateString()}
+										</Text>
 									</View>
 
 									<View style={styles.dateContainer}>
@@ -224,11 +302,14 @@ export default function CreateEvent({ navigation }) {
 											buttonTitle="Change Date"
 											mode={"date"}
 											date={endDate}
-											onDateChange={(selectedDate) => handleDateTimeChange(selectedDate, "endDate")}
+											onDateChange={(selectedDate) =>
+												handleDateTimeChange(selectedDate, "endDate")
+											}
 										/>
-										<Text style={styles.selectedDateTimeText}>{endDateTime.toDateString()}</Text>
+										<Text style={styles.selectedDateTimeText}>
+											{endDateTime.toDateString()}
+										</Text>
 									</View>
-
 								</View>
 								<View style={styles.dateTimeContainer}>
 									<View style={styles.timeContainer}>
@@ -238,7 +319,9 @@ export default function CreateEvent({ navigation }) {
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={startDateTime}
-											onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, "startTime")}
+											onDateChange={(selectedTime) =>
+												handleDateTimeChange(selectedTime, "startTime")
+											}
 										/>
 										<Text style={styles.selectedDateTimeText}>
 											{startDateTime.toLocaleTimeString("en-US", {
@@ -255,7 +338,9 @@ export default function CreateEvent({ navigation }) {
 											buttonTitle="Change Time"
 											mode={"time"}
 											date={endDateTime}
-											onDateChange={(selectedTime) => handleDateTimeChange(selectedTime, "endTime")}
+											onDateChange={(selectedTime) =>
+												handleDateTimeChange(selectedTime, "endTime")
+											}
 										/>
 										<Text style={styles.selectedDateTimeText}>
 											{endDateTime.toLocaleTimeString("en-US", {
@@ -265,7 +350,9 @@ export default function CreateEvent({ navigation }) {
 										</Text>
 									</View>
 								</View>
-								{errors.inpEvnLocation && <Text style={{ color: "red" }}>{errors.inpEvnLocation}</Text>}
+								{errors.inpEvnLocation && (
+									<Text style={{ color: "red" }}>{errors.inpEvnLocation}</Text>
+								)}
 								<Text>Location</Text>
 								<TextInput
 									value={inpEvnLocation}
@@ -274,12 +361,13 @@ export default function CreateEvent({ navigation }) {
 										setInpEvnLocation(inpEvnLocation)
 									}
 								/>
-								{errors.sameDate && <Text style={{ color: "red" }}>{errors.sameDate}</Text>}
+								{errors.sameDate && (
+									<Text style={{ color: "red" }}>{errors.sameDate}</Text>
+								)}
 								<TouchableOpacity
 									style={styles.submitButton}
 									onPress={handleCreateEvent}>
-									<Text
-										style={styles.submitText}> Create </Text>
+									<Text style={styles.submitText}> Create </Text>
 								</TouchableOpacity>
 							</>
 						)}
@@ -329,7 +417,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		height: 80
+		height: 80,
 	},
 	dateTimePicker: {
 		backgroundColor: "#159E31",
@@ -343,7 +431,7 @@ const styles = StyleSheet.create({
 	},
 	submitText: {
 		color: "white",
-		fontSize:19,
+		fontSize: 19,
 		padding: 10,
 	},
 	selectedDateTimeText: {
@@ -351,5 +439,5 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		justifyContent: "center",
 		marginLeft: -7,
-	}
+	},
 });

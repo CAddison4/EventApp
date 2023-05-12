@@ -20,6 +20,10 @@ export default function EventWaitlist({ navigation, route }) {
 	const eventName = eventObj.event_name;
 	const eventWaitlist = eventObj.waitlist;
 
+	/**
+	Asynchronously retrieves data from an API endpoint and sorts the waitlist by date and time
+	@return {void}
+	*/
 	const getData = async () => {
 		const apiURL = API_END_POINT;
 		try {
@@ -58,6 +62,10 @@ export default function EventWaitlist({ navigation, route }) {
 	};
 
 	useEffect(() => {
+		/**
+		 * Fetches data from the API endpoint
+		 * @return {void}
+		 * */
 		const fetchData = async () => {
 			await getData();
 		};

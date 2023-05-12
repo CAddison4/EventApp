@@ -33,17 +33,25 @@ export default function InviteList({ navigation, route }) {
 	const [memberships, setMemberships] = useState([]);
 	const [icon, setIcon] = useState("close-circle-outline");
 
+	/**
+    Filters an array of users based on a search query
+    @returns {Array} The filtered array of users
+    */
 	const filterUsers = () => {
 		const filteredUsers = users.filter(
 			(user) =>
 				user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				user.last_name.toLowerCase().includes(searchQuery.toLowerCase())
-			// user.email.toLowerCase().includes(searchQuery.toLowerCase())
 		);
 
 		return filteredUsers;
 	};
 
+	/**
+    Filters users based on search query and membership status
+    @param {string} status - The membership status to filter by, or "All" to include all users
+    @returns {Promise} A Promise that resolves to the filtered users array
+    */
 	const filterMembership = async (status) => {
 		// filter users based on search query
 		const filteredUsersByQuery = filterUsers();
@@ -57,20 +65,36 @@ export default function InviteList({ navigation, route }) {
 		}
 	};
 
+	/**
+	 * Handles the search button press event.
+	 * Filters the membership list based on the selected membership status.
+	 * Sets the search icon to "close-circle".
+	 * @returns {void}
+	 */
 	const handleSearchPress = () => {
 		filterMembership(selectedMembershipStatus);
 		setIcon("close-circle");
 	};
 
+	/**
+	 * Handles the membership search query event.
+	 * Sets the search query to the entered value.
+	 * Sets the search icon to "close-circle".
+	 * @param {string} query - The search query to filter the membership list.
+	 * @returns {void}
+	 */
 	const handleSearchQuery = (query) => {
 		setSearchQuery(query);
 		setIcon("close-circle");
 	};
 
-	const handleSearchSubmit = () => {
-		Keyboard.dismiss();
-	};
-
+	/**
+	 * Handles the membership status filter change event.
+	 * Sets the selected membership status to the selected item.
+	 * Sets the search icon to "close-circle".
+	 * @param {Object} item - The selected membership status item to filter the membership list.
+	 * @returns {void}
+	 */
 	const handleMembershipFilterChange = (item) => {
 		setSelectedMembershipStatus(item);
 		setIcon("close-circle");
@@ -80,9 +104,14 @@ export default function InviteList({ navigation, route }) {
 		filterMembership(selectedMembershipStatus);
 	}, [selectedMembershipStatus, searchQuery]);
 
-	// fetch all the users and also fetch the list of users that are already invited
-	// check if the userid is in the list of invited users
 	useEffect(() => {
+		/**
+		 * Fetches the list of users from the backend.
+		 * Filters out users with membership status "Rejected" and "None".
+		 * Sets the users state to the filtered list of users.
+		 * Sets the filteredUsers state to the filtered list of users.
+		 * @returns {void}
+		 */
 		const getUsers = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/users`);
@@ -97,7 +126,10 @@ export default function InviteList({ navigation, route }) {
 			setUsers(filteredData);
 			setFilteredUsers(filteredData);
 		};
-
+		/**
+		 * Fetches the membership status from the API and updates the state with the edited membership statuses.
+		 * @returns {Promise} A Promise that resolves to the edited membership statuses
+		 * */
 		const getFilteredMemberships = async () => {
 			const apiURL = API_END_POINT;
 			const membershipsResponse = await axios.get(`${apiURL}membership`);
@@ -112,6 +144,10 @@ export default function InviteList({ navigation, route }) {
 			setMemberships(edited);
 		};
 
+		/**
+		 * Fetches the list of users invited to an event and sets the state of selected and originalSelected based on the retrieved data
+		 * @returns {Promise} A Promise that resolves to the selected user IDs
+		 */
 		const getInvitedUsers = async () => {
 			const apiURL = API_END_POINT;
 			const response = await axios.get(`${apiURL}/attendee/users/${eventId}`);
@@ -137,6 +173,12 @@ export default function InviteList({ navigation, route }) {
 
 	// count how many users are selected
 	const numSelected = selected.length;
+
+	/**
+	 * Handles selection of a user.
+	 * @param {string} user_id - ID of the user to select.
+	 * @returns {void} Nothing is returned.
+	 * */
 	const handleSelect = (user_id) => {
 		setSelected((selected) => {
 			// if user_id is already in selected, remove it
@@ -148,6 +190,12 @@ export default function InviteList({ navigation, route }) {
 		});
 	};
 
+	/**
+    Handles submission of selected attendees for an event
+    @async
+    @function handleSubmit
+    @returns {void}
+    */
 	const handleSubmit = async () => {
 		const apiURL = API_END_POINT;
 		// send selected to backend
