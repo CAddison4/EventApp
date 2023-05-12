@@ -11,8 +11,8 @@ import {
 } from "./UserApiComponents";
 
 import { Hub } from "aws-amplify";
-
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 export const handleSignUp = async (
   email,
@@ -33,13 +33,20 @@ export const handleSignUp = async (
     };
   }
   try {
-    await Auth.signUp({
+    const amplifySignup = await Auth.signUp({
       username: email,
       password: password,
       attributes: {
         email: email,
       },
     });
+    
+    if (!amplifySignup) {
+      return {
+        success: false,
+        message: "Error signing up",
+      };
+    }
 
     const cockroachEmail = email.toLowerCase();
     const cockroachFirstName = firstName.toProperCase();
@@ -88,6 +95,10 @@ export const handleAutoSignIn = async (dispatch) => {
         const newTokens = await Auth.currentSession();
         const newAccessToken = newTokens.getAccessToken().getJwtToken();
         const newIdToken = newTokens.getIdToken().getJwtToken();
+
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${newAccessToken}`;
 
         await AsyncStorage.setItem("accessToken", newAccessToken);
         await AsyncStorage.setItem("idToken", newIdToken);

@@ -80,6 +80,21 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
       };
     }
 
+    const existingUser = await fetch(`${API_END_POINT}user/${email}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${bearerToken.token}`,
+      },
+    });
+    if (existingUser.status === 200) {
+      return {
+        success: false,
+        message: "User already exists",
+      };
+    }
+
+    console.log("bearerToken", bearerToken);
     const userData = JSON.stringify({
       email: email,
       firstName: firstName,
@@ -101,6 +116,7 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
       message: "Successfully signed up",
     };
   } catch (error) {
+    console.log(error)
     return {
       success: false,
       message: "Error signing up",
