@@ -74,6 +74,7 @@ export default function Events({ navigation }) {
 
 		const loyaltyCount = await getLoyaltyCount(user_id);
 		
+    // get all events and filter by event date greater than today
     try {
       const response = await axios.get(`${API_END_POINT}attendee/events/${user_id}`);
       const data = response.data;
@@ -95,11 +96,15 @@ export default function Events({ navigation }) {
     }
 	};
 
+  // get the number of past events this user has attended
 	const getLoyaltyCount = async (userid) => {
 		const response = await axios.get(`${API_END_POINT}loyalty/${userid}`);
 		return response.data.eventCount;
 	}
 	
+  // set flags for each event to indicate if the user is eligible for it, if it has 
+  // any room left, if the user is already registered for it, or whether they are in
+  // the waitlist for it
 	const determineEventFlags = (eventObj, loyaltyCount) => {
 		const eligibility = [];
 		switch (eventObj.type_id) {
@@ -138,9 +143,12 @@ export default function Events({ navigation }) {
         ? true
         : false;
     }
-
+    // User is in the waitlist if the query returned the user_id from the
+    // waitlist table. If the user_id is null then no record was returned
+    // from the waitlist table.
     eventObj.isInWaitlist = eventObj.user_id === null ? false : true;
 
+    // set colors for the event icons, depending on the flags
     if (eventObj.isInWaitlist) {
       eventObj.color = "orange";
     } else if (eventObj.isAttending) {
@@ -152,6 +160,7 @@ export default function Events({ navigation }) {
     }
   };
 
+  // apply the filter selected in the dropdown picker
   const applyFilters = (type, filterValue) => {
     if (type === "upcoming") {
       switch (filterValue) {

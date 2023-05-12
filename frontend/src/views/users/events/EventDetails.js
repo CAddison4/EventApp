@@ -168,6 +168,16 @@ export default function EventDetails({ navigation, route }) {
 						<>
 							<TouchableOpacity
 								style={styles.button}
+								onPress={() =>
+									//Will also need to pass the user information through to this screen.
+									navigation.navigate("AttendeeQRCode", {
+										eventObj: eventObj,
+									})
+								}>
+								<Text style={styles.buttonText}>QR Code</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.button}
 								onPress={async () => {
 									displayProgressAlert("Withdraw", eventObj);
 									await withdrawFromEvent(eventObj, userId);
@@ -177,16 +187,6 @@ export default function EventDetails({ navigation, route }) {
 									navigation.goBack();
 								}}>
 								<Text style={styles.buttonText}>Withdraw</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.button}
-								onPress={() =>
-									//Will also need to pass the user information through to this screen.
-									navigation.navigate("AttendeeQRCode", {
-										eventObj: eventObj,
-									})
-								}>
-								<Text style={styles.buttonText}>QR Code</Text>
 							</TouchableOpacity>
 						</>
 					)}
