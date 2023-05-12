@@ -8,6 +8,9 @@
 - [Set up the Authorization](#set-up-the-authorization)
 - [Create a Host Account](#create-a-host-account)
 - [Functional Features](#functional-features)
+- [Wireframes](#wireframes)
+- [Use Case Diagram](#use-case-diagram)
+- [Daily Standups](#daily-standups)
 
 ## Getting Started
 
@@ -132,3 +135,12 @@ NICE-TO-HAVE FEATURES:
 2.	Upon QR code scan, an attendee’s status could automatically be updated to “Attended”. 
 3.	If an attendee’s QR code was not scanned by the end of the event, their status could automatically be updated to “No Show”. 
 4.	The app could have a logo and thoughtful styling to improve the user experience (e.g., removing unnecessary labels, adjusting button sizing and placement based on expected usage). 
+
+### Wireframes
+https://drive.google.com/file/d/1Om_bSPtu6KGgHMFjRXsULl4HYKBHqFYc/view?usp=sharing
+
+### Use Case Diagram
+https://drive.google.com/file/d/1zFK2RYxU4hDRnwFMCjM5usZ0njqkoGO8/view?usp=sharing
+
+### Daily Standups
+https://docs.google.com/spreadsheets/d/1Z55A8hLo0H3X5AhpeViiq_23zo8IqnnnN-reYlHl_i0/edit?usp=sharing
