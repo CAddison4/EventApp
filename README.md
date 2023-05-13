@@ -26,7 +26,7 @@ You will also need a CockroachDB account to get the app up and running right awa
 
 1. Create a CockroachDB account and a cluster. Save the username and password that are generated.
 2. Create a database and select connect.
-3. Save the JavaScript/TypeScript string (start with $env:DATABASE_URL =...) for later to point the SST to this database.
+3. Save the general connection string for later to point the SST to this database.
 4. Run the Download CA Cert script in the same page as the General connection string.
 5. Change the "Select option/language" to CockroachDB Client.
 6. Download the latest CockroachDB Client for your OS and run it in the terminal.
