@@ -38,7 +38,7 @@ You will also need a CockroachDB account to get the app up and running right awa
 
 7. Run the DB connection string that starts with `cockroach sql -url`. It will ask you for a password. The password will be the password we saved in step 2.
 
-8. Run the database script in the terminal. It can be found in the root directory of the backend.
+8. Run the database script in the terminal. It can be found in the root directory of the backend. Make sure to hit enter one more time if the last line of the script does not automatically execute.
 
 ### Set up AWS
 
