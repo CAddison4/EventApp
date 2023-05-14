@@ -5,13 +5,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { API_URL } from '@env';
 import { API_END_POINT } from "@env";
 import {
-	getUserData,
-	generateToken,
-	handleSignUpApi,
+  getUserData,
+  generateToken,
+  handleSignUpApi,
 } from "./UserApiComponents";
 
 import { Hub } from "aws-amplify";
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 export const handleSignUp = async (
   email,
@@ -32,28 +33,21 @@ export const handleSignUp = async (
     };
   }
   try {
-    const userJwtToken = await generateToken();
-    const response = await fetch(`${API_END_POINT}users/email/${email}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userJwtToken.token}`,
-      },
-    });
-  } catch (error) {
-    return {
-      success: false,
-      message: "Error retrieving tokens",
-    };
-  }
-  try {
-    await Auth.signUp({
+    const amplifySignup = await Auth.signUp({
       username: email,
       password: password,
       attributes: {
         email: email,
       },
     });
+
+    if (!amplifySignup) {
+      return {
+        success: false,
+        message: "Error signing up",
+      };
+    }
+    console.log("amplifySignup", amplifySignup);
     const cockroachEmail = email.toLowerCase();
     const cockroachFirstName = firstName.toProperCase();
     const cockroachLastName = lastName.toProperCase();
@@ -101,6 +95,10 @@ export const handleAutoSignIn = async (dispatch) => {
         const newTokens = await Auth.currentSession();
         const newAccessToken = newTokens.getAccessToken().getJwtToken();
         const newIdToken = newTokens.getIdToken().getJwtToken();
+
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${newAccessToken}`;
 
         await AsyncStorage.setItem("accessToken", newAccessToken);
         await AsyncStorage.setItem("idToken", newIdToken);

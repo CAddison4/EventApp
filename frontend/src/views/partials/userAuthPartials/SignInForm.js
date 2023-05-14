@@ -13,6 +13,8 @@ import {
 	TouchableOpacity,
 } from "react-native";
 
+
+
 import { Logo } from "../../../components/Logo";
 import { handleSignIn } from "../../../components/AuthComponents";
 import { useDispatch } from "react-redux";
@@ -70,25 +72,6 @@ const SignInForm = ({ route }) => {
 		} catch (error) {}
 	};
 
-	const handleAttendeeSignIn = async () => {
-		try {
-			const attendeeUserName = "scott.c19@live.com";
-			const attendeePassword = "td3j5FnhiLHRa$KA";
-			await handleSignIn(attendeeUserName, attendeePassword, dispatch);
-		} catch (error) {
-			console.log("Error signing in:", error);
-		}
-	};
-
-	const handleHostSignIn = async () => {
-		try {
-			const hostUserName = "sholmes47@my.bcit.ca";
-			const hostPassword = "P@ssw0rd!";
-			await handleSignIn(hostUserName, hostPassword, dispatch);
-		} catch (error) {
-			console.log("Error signing in:", error);
-		}
-	};
 
 	return (
 		<KeyboardAvoidingView
@@ -100,7 +83,7 @@ const SignInForm = ({ route }) => {
 				<View style={styles.viewContainer}>
 					<View
 						style={{
-							flex: 1,
+							display: "flex",
 							width: "100%",
 							alignItems: "center",
 							justifyContent: "center",
@@ -113,10 +96,13 @@ const SignInForm = ({ route }) => {
 					<Text style={styles.errorMessage}>
 						{!!formMessage ? formMessage : null}
 					</Text>
+					<Text style={styles.confirmationMessage}>
+						{!!initialMessage ? initialMessage : null}
+					</Text>
 					<View style={styles.inputContainer}>
 						<TextInput
 							style={styles.input}
-							defaultValue={initialUsername ? initialUsername : username}
+							defaultValue={username}
 							onChangeText={setUsername}
 							placeholder="Email"
 							keyboardType="email-address"
@@ -159,13 +145,6 @@ const SignInForm = ({ route }) => {
 							<Text style={styles.signUpText}>Don't have an account? </Text>
 						</TouchableOpacity>
 					</View>
-					<View style={[styles.buttonContainer, styles.testButtons]}>
-						<Button
-							title="Sign In as Attendee"
-							onPress={handleAttendeeSignIn}
-						/>
-						<Button title="Sign In as Host" onPress={handleHostSignIn} />
-					</View>
 				</View>
 			</SafeAreaView>
 		</KeyboardAvoidingView>
@@ -173,6 +152,17 @@ const SignInForm = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+	confirmationMessage: {
+		color: "#00a86b",
+		fontSize: 16,
+		marginBottom: 20,
+	},
+	errorMessage: {
+		color: "#ff0000",
+		fontSize: 16,
+		marginBottom: 20,
+	},
+
 	container: {
 		flex: 3,
 		width: "100%",
@@ -234,10 +224,7 @@ const styles = StyleSheet.create({
 		textDecorationLine: "underline",
 		color: "#888",
 	},
-	errorMessage: {
-		color: "red",
-		marginBottom: 20,
-	},
+
 
 	testButtons: {
 		flex: 1,
