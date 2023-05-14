@@ -83,7 +83,7 @@ const SignInForm = ({ route }) => {
 				<View style={styles.viewContainer}>
 					<View
 						style={{
-							flex: 1,
+							display: "flex",
 							width: "100%",
 							alignItems: "center",
 							justifyContent: "center",

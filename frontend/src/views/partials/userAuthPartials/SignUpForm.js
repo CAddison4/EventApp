@@ -15,6 +15,7 @@ import {
 import { handleSignUp } from "../../../components/AuthComponents";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-root-toast";
+import { Logo } from "../../../components/Logo";
 
 const SignUpForm = ({}) => {
   const navigation = useNavigation();
@@ -76,32 +77,40 @@ const SignUpForm = ({}) => {
 
   const onFocus = () => {
     this.setState({
-        backgroundColor: 'green'
-    })
-  }
+      backgroundColor: "green",
+    });
+  };
 
   const onblur = () => {
     this.setState({
-      backgroundColor: '#ededed'
-    })
-  }
+      backgroundColor: "#ededed",
+    });
+  };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-      enabled={true}
-      onPress={Keyboard.dismiss}
-    >
+    <View style={styles.container}>
       <SafeAreaView>
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.inner}>
-            <Text style={styles.title}></Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          enabled={true}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
+          <View
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 30,
+            }}
+          >
+            <Logo />
+          </View>
 
+          <View style={styles.inner}>
             <Text style={styles.errorMessage}>
               {formMessage ? formMessage : ""}
             </Text>
-
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -153,17 +162,15 @@ const SignUpForm = ({}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 export default SignUpForm;
 
 const styles = StyleSheet.create({
-
-
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -175,6 +182,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     width: "100%",
     maxWidth: 400,
+  },
+  scrollView: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginVertical: 20,
   },
 
   title: {
@@ -209,7 +221,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-
   secondaryButton: {
     fontSize: 13,
     textDecorationLine: "underline",
@@ -217,7 +228,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
 
     borderRadius: 5,
-
   },
   errorMessage: {
     color: "red",
