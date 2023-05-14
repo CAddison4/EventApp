@@ -102,7 +102,7 @@ The SECRET_KEY must be the same string as was put into the front end as it will 
 3. Check the `sst.config.js` to ensure the reigon is set to the reigon of your user pool. Run `npx sst dev` to get them initially deployed. This may take some time.
 You will be asked to enter a name for the stage but a default value is provided.
 
-4. When `npx sst dev` is complete, it will return a number of items, but one of importance is the `ApiEndpoint`. Replace the `API_END_POINT` value in the front end `.env` file with this generated value.
+4. When `npx sst dev` is complete, it will return a number of items, but one of importance is the `ApiEndpoint`. Replace the `API_END_POINT` value in the front end `.env` file with this generated value.  Also you will need to add a / to the end of the url, for example your url should look like this (https://1234567890.execute-api.us-east-1.amazonaws.com/) with your own numb and reigon.
 
 5. For now when running the application you will need a bash terminal running the `npx sst dev` command in the backend directory to access the api endpoint.
 
