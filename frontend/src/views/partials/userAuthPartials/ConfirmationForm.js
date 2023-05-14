@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    maxWidth: 400,
+    // maxWidth: 400,
     backgroundColor: "#fff",
     paddingHorizontal: 20,
   },
