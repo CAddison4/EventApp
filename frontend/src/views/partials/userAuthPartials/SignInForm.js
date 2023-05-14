@@ -72,25 +72,6 @@ const SignInForm = ({ route }) => {
 		} catch (error) {}
 	};
 
-	const handleAttendeeSignIn = async () => {
-		try {
-			const attendeeUserName = "scott.c19@live.com";
-			const attendeePassword = "P@ssw0rd!";
-			await handleSignIn(attendeeUserName, attendeePassword, dispatch);
-		} catch (error) {
-			console.log("Error signing in:", error);
-		}
-	};
-
-	const handleHostSignIn = async () => {
-		try {
-			const hostUserName = "scroin@my.bcit.ca";
-			const hostPassword = "P@ssw0rd!";
-			await handleSignIn(hostUserName, hostPassword, dispatch);
-		} catch (error) {
-			console.log("Error signing in:", error);
-		}
-	};
 
 	return (
 		<KeyboardAvoidingView
@@ -163,13 +144,6 @@ const SignInForm = ({ route }) => {
 							}>
 							<Text style={styles.signUpText}>Don't have an account? </Text>
 						</TouchableOpacity>
-					</View>
-					<View style={[styles.buttonContainer, styles.testButtons]}>
-						<Button
-							title="Sign In as Attendee"
-							onPress={handleAttendeeSignIn}
-						/>
-						<Button title="Sign In as Host" onPress={handleHostSignIn} />
 					</View>
 				</View>
 			</SafeAreaView>

@@ -88,7 +88,6 @@ export const handleSignUpApi = async (email, firstName, lastName) => {
         Authorization: `Bearer ${bearerToken.token}`,
       },
     });
-    console.log("existingUser", existingUser);
     if (existingUser.status === 200) {
       return {
         success: false,
@@ -165,7 +164,7 @@ export const getUserData = async (username, dispatch) => {
     const session = await Auth.currentSession();
     const accessToken = await session.getAccessToken().getJwtToken();
     // console.log("ACCESS TOKEN", accessToken);
-
+  
     // console.log("USER JWT TOKEN", userJwtToken);
     const apiEndpoint = `${API_END_POINT}user/email/${username}`;
     const apiResponse = await fetch(apiEndpoint, {
